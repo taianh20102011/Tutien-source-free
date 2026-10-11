@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b13">
+  <title>Tu Tiên · License Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { ink: '#080b13', panel: '#101622', gold: '#eabf68', jade: '#4fd1b5' }, boxShadow: { glow: '0 0 40px rgba(234,191,104,.08)' } } } };
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    body { background: radial-gradient(ellipse at 10% -10%, rgba(48,69,105,.28), transparent 42%), #080b13; }
+    .glass { background: linear-gradient(145deg, rgba(20,28,43,.96), rgba(13,18,29,.96)); border: 1px solid rgba(148,163,184,.13); }
+    .nav-item { color:#8d9aaf; transition: .18s ease; }
+    .nav-item:hover,.nav-item.active { color:#f4d18d; background:rgba(234,191,104,.09); }
+    .nav-item.active { box-shadow: inset 2px 0 #eabf68; }
+    .field { width:100%; border:1px solid #293446; background:#0c121e; border-radius:12px; padding:10px 12px; color:#e7edf7; outline:none; }
+    .field:focus { border-color:#bd9652; box-shadow:0 0 0 3px rgba(234,191,104,.10); }
+    .btn-primary { background:linear-gradient(135deg,#f0cd87,#c9974a); color:#1b160d; font-weight:700; border-radius:12px; padding:10px 14px; transition:transform .15s,filter .15s; }
+    .btn-primary:hover { filter:brightness(1.06); transform:translateY(-1px); }
+    .btn-muted { background:#172131; border:1px solid #2a374a; color:#cbd5e1; border-radius:11px; padding:9px 12px; }
+    .btn-muted:hover { background:#1e2a3e; }
+    .badge { display:inline-flex; align-items:center; gap:6px; border-radius:999px; border:1px solid; padding:4px 9px; font-size:11px; font-weight:700; letter-spacing:.06em; }
+    .badge-green { color:#6ee7bd; background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.25); }
+    .badge-gold { color:#f2ce89; background:rgba(234,191,104,.08); border-color:rgba(234,191,104,.26); }
+    .badge-red { color:#fda4af; background:rgba(244,63,94,.08); border-color:rgba(244,63,94,.22); }
+    .badge-muted { color:#9ba9bd; background:rgba(148,163,184,.07); border-color:rgba(148,163,184,.18); }
+    .table-row:hover { background:rgba(148,163,184,.035); }
+    .hide { display:none !important; }
+    .modal-backdrop { background:rgba(2,5,11,.78); backdrop-filter:blur(10px); }
+    .scrollbar::-webkit-scrollbar { width:7px;height:7px; }
+    .scrollbar::-webkit-scrollbar-thumb { background:#2d3749;border-radius:10px; }
+    .metric-bar { height:4px; border-radius:20px; background:#202a3a; overflow:hidden; }
+    .metric-bar > div { height:100%; border-radius:20px; background:linear-gradient(90deg,#c9974a,#f0cd87); }
+    .skin-row { display:grid; grid-template-columns:minmax(150px,1fr) minmax(180px,1.2fr) 40px; gap:12px; align-items:end; }
+    @media(max-width:720px) { .skin-row { grid-template-columns:1fr; } .skin-row .remove-skin { justify-self:end; } }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 antialiased">
+  <div class="min-h-screen lg:flex">
+    <aside class="lg:fixed lg:inset-y-0 lg:w-[252px] flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800/80 bg-[#090d16]/90 backdrop-blur-xl z-20">
+      <div class="px-6 pt-6 pb-7 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#f6dda4] to-[#a97935] text-[#21170a] flex items-center justify-center shadow-glow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2 14.3 8.4 21 11l-6.7 2.4L12 20l-2.3-6.6L3 11l6.7-2.6L12 2Z"/><path d="m19 16 .9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9L19 16Z"/></svg>
+        </div>
+        <div><div class="font-black tracking-[.13em] text-sm">TU TIÊN</div><div class="text-[10px] text-slate-500 tracking-[.22em] mt-1">LICENSE CONTROL</div></div>
+      </div>
+      <div class="px-4 text-[10px] font-bold text-slate-600 tracking-[.2em] mb-2">WORKSPACE</div>
+      <nav class="px-3 space-y-1" id="navigation">
+        <button data-tab="overview" class="nav-item active w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-left"><span class="text-lg w-5">◈</span> Tổng quan</button>
+        <button data-tab="licenses" class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-left"><span class="text-lg w-5">⌘</span> License keys <span id="nav-count" class="ml-auto text-[10px] rounded-full bg-slate-800 px-2 py-1">0</span></button>
+        <button data-tab="skins" class="nav-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-left"><span class="text-lg w-5">✦</span> Skill skins <span class="ml-auto text-[9px] text-amber-300">PREMIUM</span></button>
+      </nav>
+      <div class="mt-auto p-4">
+        <div class="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
+          <div class="flex items-center gap-2 text-xs font-semibold"><span class="w-2 h-2 bg-emerald-400 rounded-full"></span> Host binding active</div>
+          <p class="mt-2 text-[11px] leading-relaxed text-slate-500">Mỗi key gắn vào IP công khai và mã cài đặt của máy chủ đầu tiên.</p>
+          <div class="mt-4 h-px bg-slate-800"></div>
+          <div class="mt-3 flex items-center justify-between text-[10px] text-slate-600"><span>API STATUS</span><span id="api-status" class="text-amber-300">CONNECTING</span></div>
+        </div>
+        <div class="mt-4 flex items-center gap-3 px-2"><div class="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-xs">AD</div><div class="min-w-0 flex-1"><div class="text-xs font-semibold">Administrator</div><div class="text-[10px] text-slate-500">Local control plane</div></div><button id="logout" title="Đăng xuất" class="text-slate-500 hover:text-white">↪</button></div>
+      </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 lg:ml-[252px]">
+      <header class="sticky top-0 z-10 border-b border-slate-800/70 bg-[#080b13]/85 backdrop-blur-xl px-5 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div><div id="eyebrow" class="text-[10px] text-amber-300/80 tracking-[.22em] uppercase">Control center / overview</div><h1 id="page-title" class="text-xl sm:text-2xl font-bold tracking-tight mt-1">Toàn cảnh license</h1></div>
+        <div class="flex items-center gap-2"><span class="hidden sm:inline-flex badge badge-muted"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>API protected</span><button id="open-create-top" class="btn-primary flex items-center gap-2 text-sm"><span class="text-lg leading-none">＋</span> Tạo license</button></div>
+      </header>
+
+      <div class="max-w-[1440px] mx-auto p-5 sm:p-8 space-y-7">
+        <section id="tab-overview" class="tab-panel space-y-7">
+          <div class="glass rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-glow">
+            <div class="absolute -right-10 -top-20 w-72 h-72 rounded-full border border-amber-100/5"></div><div class="absolute right-1 top-4 w-56 h-56 rounded-full border border-amber-100/5"></div><div class="absolute right-12 top-12 text-[100px] leading-none text-amber-100/[.035] select-none">✦</div>
+            <div class="relative max-w-2xl"><div class="badge badge-gold mb-4"><span>✧</span> HOST-BOUND LICENSING</div><h2 class="text-2xl sm:text-3xl font-bold leading-tight">Kiểm soát license.<br><span class="text-amber-200">Giữ trọn thế giới Tu Tiên.</span></h2><p class="mt-3 text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed">Phát hành bản FREE vĩnh viễn hoặc PREMIUM có thời hạn/lifetime. Mỗi license được xác minh phía server và khóa theo IP host cùng mã installation.</p><div class="mt-6 flex flex-wrap gap-3"><button id="open-create-hero" class="btn-primary">＋ Phát hành license</button><button id="goto-licenses" class="btn-muted">Quản lý keys <span class="ml-2">→</span></button></div></div>
+          </div>
+          <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div class="glass rounded-2xl p-5"><div class="flex justify-between items-start"><div class="text-xs text-slate-400">Tổng license</div><div class="w-9 h-9 rounded-xl bg-slate-800/80 flex items-center justify-center text-lg">⌘</div></div><div id="metric-total" class="mt-4 text-3xl font-semibold">—</div><div class="mt-3 metric-bar"><div id="bar-total" style="width:100%"></div></div><div class="mt-2 text-[11px] text-slate-500">Keys đã phát hành</div></div>
+            <div class="glass rounded-2xl p-5"><div class="flex justify-between items-start"><div class="text-xs text-slate-400">Đang hoạt động</div><div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-300">✓</div></div><div id="metric-active" class="mt-4 text-3xl font-semibold">—</div><div class="mt-3 metric-bar"><div id="bar-active" style="width:0%"></div></div><div class="mt-2 text-[11px] text-slate-500">Đã activate trên host</div></div>
+            <div class="glass rounded-2xl p-5"><div class="flex justify-between items-start"><div class="text-xs text-slate-400">FREE / VĨNH VIỄN</div><div class="w-9 h-9 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-300">◇</div></div><div id="metric-free" class="mt-4 text-3xl font-semibold">—</div><div class="mt-3 metric-bar"><div id="bar-free" style="width:0%"></div></div><div class="mt-2 text-[11px] text-slate-500">Giới hạn 1 FREE / IP host</div></div>
+            <div class="glass rounded-2xl p-5"><div class="flex justify-between items-start"><div class="text-xs text-slate-400">PREMIUM</div><div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-200">✦</div></div><div id="metric-premium" class="mt-4 text-3xl font-semibold">—</div><div class="mt-3 metric-bar"><div id="bar-premium" style="width:0%"></div></div><div class="mt-2 text-[11px] text-slate-500">30 / 90 / 180 / 365 / 730 ngày hoặc lifetime</div></div>
+          </div>
+          <div class="grid xl:grid-cols-[1.5fr_1fr] gap-4">
+            <div class="glass rounded-2xl p-5 sm:p-6"><div class="flex items-center justify-between gap-3"><div><h3 class="font-semibold">License mới nhất</h3><p class="text-xs text-slate-500 mt-1">Theo dõi key vừa tạo hoặc vừa activate</p></div><button id="view-all" class="text-xs text-amber-200 hover:text-amber-100">Xem tất cả →</button></div><div id="recent-licenses" class="mt-5 space-y-3"><div class="text-sm text-slate-500">Đang tải dữ liệu…</div></div></div>
+            <div class="glass rounded-2xl p-5 sm:p-6"><div class="flex items-center justify-between"><h3 class="font-semibold">Luồng bảo vệ</h3><span class="badge badge-green">SECURE</span></div><div class="mt-5 space-y-4"><div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-300 flex items-center justify-center shrink-0">1</div><div><div class="text-sm font-medium">Server-side IP detection</div><p class="text-xs text-slate-500 mt-1 leading-relaxed">IP được lấy từ kết nối tới API, không tin IP do plugin tự khai báo.</p></div></div><div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center shrink-0">2</div><div><div class="text-sm font-medium">Installation fingerprint</div><p class="text-xs text-slate-500 mt-1 leading-relaxed">UUID riêng được tạo một lần trong thư mục dữ liệu TuTien.</p></div></div><div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-200 flex items-center justify-center shrink-0">3</div><div><div class="text-sm font-medium">Anti-abuse và reset có kiểm soát</div><p class="text-xs text-slate-500 mt-1 leading-relaxed">Một IP chỉ dùng một FREE key cùng lúc; admin có thể unbind khi host đổi IP hợp lệ.</p></div></div></div></div>
+          </div>
+        </section>
+
+        <section id="tab-licenses" class="tab-panel hide space-y-5">
+          <div class="glass rounded-2xl p-5 flex flex-col md:flex-row md:items-center gap-4 justify-between"><div><h2 class="font-semibold text-lg">License inventory</h2><p class="text-xs text-slate-500 mt-1">Key gốc chỉ hiển thị đúng một lần khi phát hành.</p></div><div class="flex flex-wrap gap-2"><input id="license-search" class="field md:w-64" placeholder="Tìm owner, IP, key hint…"><select id="license-filter" class="field md:w-40"><option value="all">Tất cả trạng thái</option><option value="active">Active</option><option value="new">Chưa kích hoạt</option><option value="expired">Hết hạn</option><option value="revoked">Đã thu hồi</option></select><button id="refresh-licenses" class="btn-muted">↻ Làm mới</button></div></div>
+          <div class="glass rounded-2xl overflow-hidden"><div class="overflow-x-auto scrollbar"><table class="min-w-[920px] w-full text-left"><thead class="bg-slate-900/60 text-[10px] text-slate-500 uppercase tracking-[.14em]"><tr><th class="px-5 py-4 font-semibold">License / Owner</th><th class="px-4 py-4 font-semibold">Plan</th><th class="px-4 py-4 font-semibold">Host binding</th><th class="px-4 py-4 font-semibold">Thời hạn</th><th class="px-4 py-4 font-semibold">Trạng thái</th><th class="px-5 py-4 font-semibold text-right">Thao tác</th></tr></thead><tbody id="license-table" class="divide-y divide-slate-800/70"><tr><td colspan="6" class="p-8 text-center text-sm text-slate-500">Đang tải…</td></tr></tbody></table></div><div class="px-5 py-3 border-t border-slate-800/80 text-[11px] text-slate-500 flex justify-between"><span id="table-count">0 licenses</span><span>Keys are stored as SHA-256 hashes</span></div></div>
+        </section>
+
+        <section id="tab-skins" class="tab-panel hide space-y-5">
+          <div class="glass rounded-3xl p-6 sm:p-8 relative overflow-hidden"><div class="absolute right-4 top-2 text-[120px] text-amber-100/[.04]">✦</div><div class="relative"><div class="badge badge-gold mb-3">PREMIUM COSMETICS</div><h2 class="text-2xl font-bold">Skill skin studio</h2><p class="max-w-2xl text-sm text-slate-400 leading-relaxed mt-2">Gán hiệu ứng ItemsAdder riêng cho từng skill. Công cụ xuất phần cấu hình đúng định dạng mà hook hiện có đọc từ <code class="text-amber-200">effects.itemsadder.map</code>; các dòng để trống sẽ tiếp tục dùng particle mặc định.</p></div></div>
+          <div class="glass rounded-2xl p-5 sm:p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><h3 class="font-semibold">Mapping hiệu ứng</h3><p class="text-xs text-slate-500 mt-1">Định dạng ID: <code>namespace:entity_id</code></p></div><div class="flex flex-wrap gap-2"><button id="add-skin" class="btn-muted">＋ Thêm skill</button><button id="save-skins" class="btn-muted">Lưu nháp</button><button id="export-skins" class="btn-primary">Xuất config YAML ↓</button></div></div><div id="skins-list" class="mt-5 space-y-3"></div><div class="mt-5 pt-5 border-t border-slate-800/80"><label class="text-xs text-slate-400">Xem trước phần YAML sẽ xuất</label><pre id="skin-preview" class="scrollbar overflow-auto mt-2 rounded-xl bg-[#080c14] border border-slate-800 p-4 text-xs leading-6 text-emerald-200 min-h-36">effects:
+  itemsadder:
+    enabled: true
+    map: {}</pre><p class="text-[11px] text-slate-500 mt-3 leading-relaxed">Cách dùng: merge phần <code>map</code> vào file <code>plugins/TuTienPlugin/config.yml</code>, không ghi đè toàn bộ config đang chạy. Premium build cần license PREMIUM còn hiệu lực để phát hiệu ứng skin tùy chỉnh.</p></div></div>
+        </section>
+
+        <footer class="pt-2 pb-4 flex flex-col sm:flex-row gap-2 justify-between text-[10px] text-slate-600"><span>TuTien License Control · v1.0 · Host-bound entitlements</span><span>Release checklist: HTTPS · firewall · backup database · strong admin token</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <div id="login-modal" class="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="glass w-full max-w-md rounded-3xl p-7 sm:p-8 shadow-2xl"><div class="w-12 h-12 rounded-2xl bg-amber-200 text-slate-950 font-black text-xl flex items-center justify-center">✦</div><h2 class="text-2xl font-bold mt-5">Đăng nhập quản trị</h2><p class="text-sm text-slate-400 mt-2 leading-relaxed">Nhập admin token đã tạo khi chạy License Control. Token nằm trong console ở lần khởi động đầu hoặc tại file <code>data/admin-token.txt</code>.</p><form id="login-form" class="mt-6 space-y-3"><input id="admin-token" class="field" type="password" autocomplete="current-password" placeholder="Admin token" required><button class="btn-primary w-full" type="submit">Mở bảng điều khiển →</button><div id="login-error" class="text-xs text-rose-300"></div></form><div class="mt-5 text-[11px] text-slate-600">Quyền quản trị không dùng chung với license của khách hàng.</div></div>
+  </div>
+
+  <div id="create-modal" class="fixed inset-0 z-40 modal-backdrop hide items-center justify-center p-4">
+    <div class="glass w-full max-w-xl rounded-3xl p-6 sm:p-7 shadow-2xl max-h-[92vh] overflow-auto scrollbar"><div class="flex justify-between items-start"><div><div class="badge badge-gold">ISSUE NEW KEY</div><h2 class="text-2xl font-bold mt-3">Phát hành license</h2><p class="text-xs text-slate-500 mt-1">FREE dùng vĩnh viễn, không hết hạn. PREMIUM được cấp theo gói thời hạn hoặc lifetime.</p></div><button data-close="create-modal" class="text-slate-500 hover:text-white text-2xl">×</button></div><form id="create-form" class="mt-6 space-y-4"><div class="grid sm:grid-cols-2 gap-4"><div><label class="text-xs text-slate-400 block mb-2">Gói license</label><select id="new-plan" class="field"><option value="FREE">FREE · Vĩnh viễn</option><option value="PREMIUM">PREMIUM · Có trả phí</option></select></div><div><label class="text-xs text-slate-400 block mb-2">Thời hạn PREMIUM</label><select id="new-duration" class="field" disabled><option value="30">30 ngày</option><option value="90">90 ngày</option><option value="180">180 ngày</option><option value="365" selected>365 ngày</option><option value="730">730 ngày</option><option value="0">Lifetime</option></select></div></div><div><label class="text-xs text-slate-400 block mb-2">Khách hàng / máy chủ</label><input id="new-owner" class="field" maxlength="100" placeholder="VD: Server Thiên Đạo #01" required></div><div><label class="text-xs text-slate-400 block mb-2">Ghi chú (không bắt buộc)</label><input id="new-note" class="field" maxlength="240" placeholder="Mã đơn hàng, kênh liên hệ, ghi chú nội bộ…"></div><div class="rounded-xl bg-amber-200/[.06] border border-amber-200/15 p-3 text-xs text-amber-100/80 leading-relaxed">IP được ràng buộc khi key activate lần đầu. Mỗi IP chỉ được gắn một key FREE. Khi IP host hợp pháp thay đổi, admin có thể unbind sau khi xác minh yêu cầu.</div><div class="flex justify-end gap-2 pt-1"><button type="button" data-close="create-modal" class="btn-muted">Hủy</button><button type="submit" class="btn-primary">Tạo key an toàn</button></div></form></div>
+  </div>
+
+  <div id="key-modal" class="fixed inset-0 z-50 modal-backdrop hide items-center justify-center p-4"><div class="glass w-full max-w-lg rounded-3xl p-6 sm:p-7"><div class="badge badge-green">KEY CREATED</div><h2 class="text-2xl font-bold mt-3">License đã phát hành</h2><p class="mt-2 text-sm text-slate-400">Đây là lần duy nhất key gốc được hiển thị. Hãy sao chép và gửi an toàn cho khách.</p><div id="created-key" class="mt-5 p-4 rounded-xl border border-amber-200/20 bg-black/30 text-amber-100 font-mono text-sm break-all select-all"></div><div class="mt-4 flex flex-wrap gap-2"><button id="copy-key" class="btn-primary flex-1">Sao chép key</button><button data-close="key-modal" class="btn-muted flex-1">Đã lưu key</button></div><p class="text-[11px] text-slate-600 mt-4">Database chỉ lưu hash của key; không thể khôi phục key gốc nếu bị mất.</p></div></div>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-[60] max-w-sm translate-y-4 opacity-0 pointer-events-none transition-all duration-200 rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm shadow-xl"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  let licenses = [];
+  let currentKey = '';
+  let skinRows = [];
+  const presets = [
+    ['kiemkhitram','Kiếm Khí Trảm'], ['tockiem','Tốc Kiếm'], ['thiensat','Thiên Sát'],
+    ['linhhoacau','Linh Hỏa Cầu'], ['dongbang','Đóng Băng'], ['phaptran','Pháp Trận'],
+    ['linhduoc','Linh Dược'], ['phuhotran','Phù Hộ Trận'], ['giaido','Giải Độc'],
+    ['manhdoctan','Mãnh Độc Tán'], ['amsatkiem','Ám Sát Kiếm'], ['doctran','Độc Trận']
+  ];
+  const token = () => sessionStorage.getItem('tt-license-admin-token') || '';
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const fmtDate = value => value ? new Date(value).toLocaleString('vi-VN', { dateStyle:'medium', timeStyle:'short' }) : 'Chưa kích hoạt';
+  const activeStatus = lic => lic.status === 'active' && (!lic.expiresAt || new Date(lic.expiresAt).getTime() > Date.now());
+  const statusBadge = status => {
+    if (status === 'active') return '<span class="badge badge-green">● ACTIVE</span>';
+    if (status === 'new') return '<span class="badge badge-muted">○ NEW</span>';
+    if (status === 'expired') return '<span class="badge badge-gold">◷ EXPIRED</span>';
+    return '<span class="badge badge-red">× REVOKED</span>';
+  };
+  let toastTimer;
+  function toast(message, error=false) {
+    const el = $('toast'); el.textContent = message;
+    el.className = 'fixed bottom-5 right-5 z-[60] max-w-sm transition-all duration-200 rounded-xl border px-4 py-3 text-sm shadow-xl ' + (error ? 'border-rose-400/30 bg-rose-950 text-rose-100' : 'border-slate-700 bg-slate-900 text-slate-100');
+    el.style.transform = 'translateY(0)'; el.style.opacity = '1'; el.style.pointerEvents = 'auto';
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.style.transform = 'translateY(1rem)'; el.style.opacity = '0'; el.style.pointerEvents = 'none'; }, 3200);
+  }
+  async function api(path, opts={}) {
+    const response = await fetch(path, { ...opts, headers: { 'Content-Type':'application/json', ...(opts.headers||{}), ...(token() ? { Authorization:'Bearer ' + token() } : {}) } });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok || body.ok === false) throw new Error(body.message || ('HTTP ' + response.status));
+    return body;
+  }
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hide'));
+    $('tab-' + tab).classList.remove('hide');
+    document.querySelectorAll('[data-tab]').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+    const labels = { overview:['Control center / overview','Toàn cảnh license'], licenses:['Workspace / license inventory','Quản lý license keys'], skins:['Premium studio / cosmetics','Tùy chỉnh skill skins'] };
+    $('eyebrow').textContent = labels[tab][0]; $('page-title').textContent = labels[tab][1];
+    if (tab === 'licenses') renderTable();
+    if (tab === 'skins') renderSkins();
+  }
+  async function health() {
+    try { const result = await fetch('/api/health').then(r => r.json()); $('api-status').textContent = result.ok ? 'ONLINE' : 'ERROR'; $('api-status').className = result.ok ? 'text-emerald-300' : 'text-rose-300'; }
+    catch { $('api-status').textContent = 'OFFLINE'; $('api-status').className = 'text-rose-300'; }
+  }
+  async function loadLicenses() {
+    try {
+      const result = await api('/api/admin/licenses'); licenses = result.licenses || [];
+      renderStats(); renderRecent(); renderTable(); $('nav-count').textContent = String(licenses.length);
+      await health();
+    } catch (err) {
+      if (/token|unauthorized/i.test(err.message)) $('login-modal').classList.remove('hide');
+      toast(err.message, true);
+    }
+  }
+  function renderStats() {
+    const total = licenses.length, active = licenses.filter(activeStatus).length, free = licenses.filter(x=>x.plan==='FREE').length, premium = licenses.filter(x=>x.plan==='PREMIUM').length;
+    $('metric-total').textContent = total; $('metric-active').textContent = active; $('metric-free').textContent = free; $('metric-premium').textContent = premium;
+    [['bar-total',total],['bar-active',active],['bar-free',free],['bar-premium',premium]].forEach(([id,n]) => $(id).style.width = (total ? Math.min(100,n/total*100) : 0) + '%');
+  }
+  function renderRecent() {
+    const list = $('recent-licenses');
+    if (!licenses.length) { list.innerHTML = '<div class="rounded-xl border border-dashed border-slate-700 p-6 text-center text-sm text-slate-500">Chưa có license. Tạo key đầu tiên để bắt đầu.</div>'; return; }
+    list.innerHTML = licenses.slice(0,5).map(lic => `<div class="flex items-center gap-3 py-2"><div class="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center ${lic.plan==='PREMIUM'?'bg-amber-200/10 text-amber-200':'bg-sky-300/10 text-sky-200'}">${lic.plan==='PREMIUM'?'✦':'◇'}</div><div class="min-w-0 flex-1"><div class="text-sm font-medium truncate">${escapeHtml(lic.owner || 'Không ghi owner')}</div><div class="text-[11px] text-slate-500 mt-1">${escapeHtml(lic.keyHint || '••••')} · ${escapeHtml(fmtDate(lic.createdAt))}</div></div><div>${statusBadge(lic.status)}</div></div>`).join('');
+  }
+  function renderTable() {
+    const tbody = $('license-table'); if (!tbody) return;
+    const q = ($('license-search')?.value || '').toLowerCase().trim(); const filter = $('license-filter')?.value || 'all';
+    const rows = licenses.filter(lic => {
+      const hay = [lic.owner,lic.note,lic.boundIp,lic.keyHint,lic.serverName,lic.plan].join(' ').toLowerCase();
+      return (!q || hay.includes(q)) && (filter === 'all' || lic.status === filter);
+    });
+    $('table-count').textContent = `${rows.length} / ${licenses.length} licenses`;
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-sm text-slate-500">Không có license phù hợp.</td></tr>'; return; }
+    tbody.innerHTML = rows.map(lic => {
+      const plan = lic.plan === 'PREMIUM' ? '<span class="badge badge-gold">✦ PREMIUM</span>' : '<span class="badge badge-muted">◇ FREE</span>';
+      const end = lic.plan === 'FREE' ? 'Vĩnh viễn' : (lic.expiresAt ? fmtDate(lic.expiresAt) : (lic.activatedAt ? 'Vĩnh viễn' : (lic.durationDays === 0 ? 'Vĩnh viễn sau activate' : `${lic.durationDays} ngày sau activate`)));
+      const binding = lic.boundIp ? `<div class="font-mono text-xs text-slate-200">${escapeHtml(lic.boundIp)}</div><div class="text-[10px] text-slate-600 mt-1 truncate max-w-[150px]">${escapeHtml(lic.serverName || lic.instanceId || '')}</div>` : '<span class="text-xs text-slate-600">Chưa bind host</span>';
+      const actions = lic.status === 'revoked' ? '<span class="text-xs text-slate-600">Không có thao tác</span>' : `<div class="flex justify-end gap-1"><button data-action="unbind" data-id="${escapeHtml(lic.id)}" class="btn-muted !px-2 !py-1.5 text-[10px]" title="Gỡ binding IP/máy">↻ Unbind</button><button data-action="revoke" data-id="${escapeHtml(lic.id)}" class="rounded-lg border border-rose-500/20 bg-rose-500/5 px-2 py-1.5 text-[10px] text-rose-300 hover:bg-rose-500/10">Thu hồi</button></div>`;
+      return `<tr class="table-row"><td class="px-5 py-4"><div class="font-medium text-sm">${escapeHtml(lic.owner || 'Không ghi owner')}</div><div class="text-[10px] text-slate-500 mt-1">${escapeHtml(lic.keyHint || 'key ẩn')} · ${escapeHtml(lic.note || '')}</div><div class="text-[10px] text-slate-600 mt-1">ID ${escapeHtml(lic.id.slice(0,8))}</div></td><td class="px-4 py-4">${plan}</td><td class="px-4 py-4">${binding}</td><td class="px-4 py-4"><div class="text-xs">${escapeHtml(end)}</div><div class="text-[10px] text-slate-600 mt-1">Tạo ${escapeHtml(fmtDate(lic.createdAt))}</div></td><td class="px-4 py-4">${statusBadge(lic.status)}</td><td class="px-5 py-4 text-right">${actions}</td></tr>`;
+    }).join('');
+  }
+  function openCreate() { $('create-modal').classList.remove('hide'); $('create-modal').classList.add('flex'); }
+  function closeModal(id) { $(id).classList.add('hide'); $(id).classList.remove('flex'); }
+  function renderSkins() {
+    const container = $('skins-list');
+    if (!skinRows.length) skinRows = presets.map(([id,name]) => ({id,name,skin:''}));
+    container.innerHTML = skinRows.map((row,i) => `<div class="skin-row rounded-xl bg-slate-900/50 border border-slate-800 p-3" data-index="${i}"><div><label class="text-[10px] text-slate-500 block mb-1.5">Skill ID / tên</label><div class="flex gap-2"><input data-field="id" class="field !py-2 !text-xs font-mono" value="${escapeHtml(row.id)}" placeholder="tockiem" maxlength="64"><input data-field="name" class="field !py-2 !text-xs" value="${escapeHtml(row.name)}" placeholder="Tên hiển thị" maxlength="80"></div></div><div><label class="text-[10px] text-slate-500 block mb-1.5">ItemsAdder Custom Entity ID</label><input data-field="skin" class="field !py-2 !text-xs font-mono" value="${escapeHtml(row.skin)}" placeholder="tutien:vfx_toc_kiem" maxlength="100"></div><button data-remove-skin="${i}" class="remove-skin rounded-xl border border-slate-700 w-10 h-10 text-slate-500 hover:text-rose-300 hover:border-rose-500/30" title="Xóa skill">×</button></div>`).join('');
+    updateSkinRowsFromInputs(false); updateSkinPreview();
+  }
+  function updateSkinRowsFromInputs(rerender=true) {
+    if (rerender) {
+      document.querySelectorAll('.skin-row').forEach(row => {
+        const i = Number(row.dataset.index); if (!skinRows[i]) return;
+        skinRows[i].id = row.querySelector('[data-field="id"]').value.trim();
+        skinRows[i].name = row.querySelector('[data-field="name"]').value.trim();
+        skinRows[i].skin = row.querySelector('[data-field="skin"]').value.trim();
+      });
+    }
+    updateSkinPreview();
+  }
+  function isSafeSkillId(value) { return /^[A-Za-z0-9_-]{1,64}$/.test(value); }
+  function isSafeEntityId(value) { return /^[A-Za-z0-9_-]{1,48}:[A-Za-z0-9_-]{1,48}$/.test(value); }
+  function updateSkinPreview() {
+    const mapRows = skinRows.filter(row => isSafeSkillId(row.id) && isSafeEntityId(row.skin))
+      .map(row => `      skill-${row.id}: "${row.skin}"`);
+    const invalid = skinRows.filter(row => (row.id || row.skin) && (!isSafeSkillId(row.id) || !isSafeEntityId(row.skin))).length;
+    $('skin-preview').textContent = 'effects:\n  itemsadder:\n    enabled: true\n    map:' + (mapRows.length ? '\n' + mapRows.join('\n') : ' {}')
+      + (invalid ? `\n\n# Cảnh báo: ${invalid} dòng không hợp lệ đã bị bỏ qua. Skill ID chỉ dùng chữ/số/_/-, ItemsAdder ID phải có dạng namespace:entity_id.` : '');
+  }
+  function downloadFile(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type:'text/yaml;charset=utf-8' }));
+    const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
+  $('goto-licenses').addEventListener('click', () => switchTab('licenses'));
+  $('view-all').addEventListener('click', () => switchTab('licenses'));
+  $('open-create-top').addEventListener('click', openCreate); $('open-create-hero').addEventListener('click', openCreate);
+  document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeModal(button.dataset.close)));
+  $('logout').addEventListener('click', () => { sessionStorage.removeItem('tt-license-admin-token'); $('login-modal').classList.remove('hide'); $('admin-token').value=''; });
+  $('login-form').addEventListener('submit', async event => {
+    event.preventDefault(); const entered = $('admin-token').value.trim();
+    try {
+      const response = await fetch('/api/admin/licenses',{headers:{Authorization:'Bearer '+entered}});
+      const body = await response.json(); if (!response.ok || !body.ok) throw new Error(body.message || 'Token không hợp lệ.');
+      sessionStorage.setItem('tt-license-admin-token',entered); licenses = body.licenses || []; $('login-modal').classList.add('hide'); $('login-error').textContent=''; renderStats();renderRecent();renderTable();toast('Đăng nhập thành công.'); await health();
+    } catch (err) { $('login-error').textContent = err.message; }
+  });
+  $('create-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    const plan = $('new-plan').value; const durationDays = Number($('new-duration').value);
+    try {
+      const result = await api('/api/admin/licenses',{method:'POST',body:JSON.stringify({plan,durationDays,owner:$('new-owner').value,note:$('new-note').value})});
+      currentKey = result.key; $('created-key').textContent = currentKey; closeModal('create-modal'); $('key-modal').classList.remove('hide'); $('key-modal').classList.add('flex');
+      $('create-form').reset(); $('new-duration').disabled = true; await loadLicenses(); switchTab('licenses'); toast('Đã tạo license. Hãy lưu key gốc ngay.');
+    } catch(err) { toast(err.message,true); }
+  });
+  $('copy-key').addEventListener('click', async () => { try { await navigator.clipboard.writeText(currentKey); toast('Đã sao chép license key.'); } catch { toast('Trình duyệt chặn clipboard; hãy chọn và sao chép key thủ công.',true); } });
+  $('new-plan').addEventListener('change', () => { $('new-duration').disabled = $('new-plan').value !== 'PREMIUM'; });
+  $('license-search').addEventListener('input',renderTable); $('license-filter').addEventListener('change',renderTable);
+  $('refresh-licenses').addEventListener('click',loadLicenses);
+  $('license-table').addEventListener('click', async event => {
+    const button = event.target.closest('[data-action]'); if (!button) return;
+    const id = button.dataset.id; const action = button.dataset.action;
+    if (action === 'revoke' && !confirm('Thu hồi license này? Máy chủ đang dùng key sẽ bị từ chối ở lần validate kế tiếp.')) return;
+    if (action === 'unbind' && !confirm('Gỡ IP + installation binding? Người giữ key có thể activate trên host khác. Chỉ tiếp tục khi đây là yêu cầu hợp lệ.')) return;
+    try { await api(`/api/admin/licenses/${encodeURIComponent(id)}/${action}`,{method:'POST',body:'{}'}); await loadLicenses(); toast(action==='revoke'?'Đã thu hồi license.':'Đã gỡ host binding.'); }
+    catch(err) { toast(err.message,true); }
+  });
+  $('add-skin').addEventListener('click', () => { updateSkinRowsFromInputs(); skinRows.push({id:'',name:'Skill mới',skin:''}); renderSkins(); });
+  $('skins-list').addEventListener('input', () => updateSkinRowsFromInputs());
+  $('skins-list').addEventListener('click', event => { const button = event.target.closest('[data-remove-skin]'); if (!button) return; updateSkinRowsFromInputs(); skinRows.splice(Number(button.dataset.removeSkin),1); renderSkins(); });
+  $('save-skins').addEventListener('click', () => { updateSkinRowsFromInputs(); localStorage.setItem('tt-skill-skin-draft',JSON.stringify(skinRows)); toast('Đã lưu nháp skin trên trình duyệt này.'); });
+  $('export-skins').addEventListener('click', () => { updateSkinRowsFromInputs(); const mapRows=skinRows.filter(row=>row.id && row.skin); if (!mapRows.length) return toast('Hãy nhập ít nhất một ItemsAdder ID.',true); const lines=['# Merge this block into plugins/TuTienPlugin/config.yml','effects:','  itemsadder:','    enabled: true','    map:']; mapRows.forEach(row => lines.push(`      skill-${row.id}: "${row.skin.replace(/\\/g,'\\\\').replace(/"/g,'\\"')}"`)); downloadFile('tutien-skill-skins.yml',lines.join('\n')+'\n'); toast('Đã xuất file YAML skin mapping.'); });
+
+  try { const saved=JSON.parse(localStorage.getItem('tt-skill-skin-draft')||'null'); if(Array.isArray(saved)) skinRows=saved; } catch {}
+  $('login-modal').classList.remove('hide');
+  health();
+  if (token()) {
+    api('/api/admin/licenses').then(result => { licenses=result.licenses||[]; $('login-modal').classList.add('hide'); renderStats();renderRecent();renderTable();health(); }).catch(() => { $('login-modal').classList.remove('hide'); });
+  }
+})();
+</script>
+</body>
+</html>

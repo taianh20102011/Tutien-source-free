@@ -1,0 +1,53 @@
+# Custom Cultivation Techniques. ID: lowercase a-z, 0-9, _ or -; restart or /congphap reload.
+# Supported active-type: NONE, DAMAGE, AOE_DAMAGE, MARK, DETONATE_MARK, HEAL, BUFF
+# Multipliers are clamped server-side to prevent extreme values.
+# For active-type MARK (Huyết Ngục Ấn): /congphap thi-trien 1 marks the nearest target; 2/3 detonate all marked targets from this caster in range.
+techniques:
+  lac_van_kiem_quyet:
+    enabled: true
+    display-name: "Lạc Vân Kiếm Quyết"
+    description: "Kiếm ý như mây, tăng công kích và phóng kiếm khí."
+    minimum-stage: LUYEN_KHI
+    minimum-rank: 1
+    learn-cost: 1000
+    attack-multiplier: 1.15
+    defense-multiplier: 1.0
+    linh-khi-multiplier: 1.05
+    cooldown-seconds: 12
+    active-type: DAMAGE
+    active-damage: 12.0
+    radius: 8.0
+    duration-ticks: 60
+    effect-id: ""
+  u_minh_chuong:
+    enabled: true
+    display-name: "U Minh Chưởng"
+    description: "Chưởng lực âm hàn, gây sát thương quanh người."
+    minimum-stage: TRUC_CO
+    minimum-rank: 1
+    learn-cost: 5000
+    attack-multiplier: 1.10
+    defense-multiplier: 1.08
+    linh-khi-multiplier: 1.0
+    cooldown-seconds: 20
+    active-type: AOE_DAMAGE
+    active-damage: 8.0
+    radius: 5.0
+    duration-ticks: 80
+    effect-id: ""
+  huyet_nguc_an:
+    enabled: true
+    display-name: "Huyết Ngục Ấn"
+    description: "Thức 1 đóng Huyết Ấn; thức 2 kích nổ diện rộng ×1.8; thức 3 kích nổ mạnh ×2.8 trên tất cả mục tiêu còn dấu ấn trong phạm vi."
+    minimum-stage: KET_DAN
+    minimum-rank: 1
+    learn-cost: 12000
+    attack-multiplier: 1.12
+    defense-multiplier: 1.0
+    linh-khi-multiplier: 1.0
+    cooldown-seconds: 18
+    active-type: MARK
+    active-damage: 10.0
+    radius: 10.0
+    duration-ticks: 200
+    effect-id: ""

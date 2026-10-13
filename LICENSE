@@ -1,0 +1,75 @@
+# TU TIEN PLUGIN — GIẤY PHÉP SỬ DỤNG PHẦN MỀM VÀ THÔNG BÁO BẢN QUYỀN
+
+**Tên sản phẩm:** TuTienPlugin — phiên bản FREE và PREMIUM, bao gồm các phiên bản cập nhật/phái sinh do Chủ Sở Hữu phát hành chính thức.  
+**Chủ sở hữu quyền tác giả:** [ĐIỀN TÊN TÁC GIẢ/CÁ NHÂN HOẶC TỔ CHỨC SỞ HỮU]  
+**Ngày có hiệu lực:** [ĐIỀN NGÀY CÔNG BỐ]  
+**Liên hệ về bản quyền/cấp phép:** [ĐIỀN EMAIL HOẶC ĐƯỜNG DẪN LIÊN HỆ]
+
+> **QUAN TRỌNG:** Đây là giấy phép độc quyền, không phải giấy phép mã nguồn mở. Việc tải hoặc được cấp một bản TuTienPlugin chỉ cho phép sử dụng trong phạm vi nêu dưới đây; không đồng nghĩa với việc nhận quyền sở hữu mã nguồn hay quyền phát hành lại phần mềm.
+
+## 1. Đối tượng được bảo vệ
+
+Trong phạm vi thuộc quyền sở hữu hợp pháp của Chủ Sở Hữu, “Phần Mềm” bao gồm mã nguồn, mã biên dịch/JAR, cấu trúc và cách tổ chức mã, tài liệu, tệp cấu hình mẫu, giao diện/menu, nội dung hiển thị, hình ảnh/tài nguyên đi kèm, tên sản phẩm và các thành phần sáng tạo khác được phân phối cùng TuTienPlugin. Quyền đối với từng thành phần chỉ được tuyên bố trong phạm vi thành phần đó do Chủ Sở Hữu tạo ra hoặc được chuyển giao/cấp phép hợp pháp cho Chủ Sở Hữu.
+
+## 2. Quyền tác giả và quyền sở hữu
+
+1. Quyền tác giả và các quyền sở hữu trí tuệ hợp pháp đối với Phần Mềm vẫn thuộc về tác giả/chủ sở hữu tương ứng. Mọi quyền không được cấp rõ ràng trong giấy phép này đều được bảo lưu.
+2. Người sử dụng không được tự nhận là tác giả, chủ sở hữu hoặc nhà phát hành chính thức của TuTienPlugin; không được xóa, sửa hoặc che giấu thông báo bản quyền, thông tin tác giả hay thông tin giấy phép.
+3. Việc cấp quyền sử dụng không phải là việc chuyển nhượng quyền tác giả, chuyển giao quyền sở hữu mã nguồn hay cho phép sử dụng nhãn hiệu/tên thương mại ngoài phạm vi cần thiết để nhận diện Phần Mềm.
+
+## 3. Quyền sử dụng được cấp
+
+Khi nhận Phần Mềm hợp pháp và tuân thủ giấy phép này, người dùng được cấp quyền **có giới hạn, không độc quyền, không chuyển nhượng và không được cấp phép lại** để:
+
+- Cài đặt và chạy đúng phiên bản/edition đã nhận trên máy chủ Minecraft của mình, trong giới hạn số máy chủ, thời hạn và điều kiện thể hiện trên giấy phép, đơn hàng hoặc cổng cấp phép chính thức (nếu có).
+- Tạo bản sao lưu cần thiết để khôi phục hệ thống của chính mình.
+- Chỉnh sửa tệp cấu hình và dữ liệu máy chủ thông qua các phương thức cấu hình được cung cấp.
+- Vận hành máy chủ Minecraft có sử dụng Phần Mềm, kể cả máy chủ công khai hoặc có hoạt động thương mại thông thường; quyền này **không** bao gồm quyền bán lại, cho thuê hoặc phân phối chính Phần Mềm.
+
+Đối với bản FREE được phát hành dưới dạng giấy phép trọn đời, thời hạn sử dụng không hết hạn chỉ vì thời gian trôi qua, nhưng vẫn phải tuân thủ các điều khoản sử dụng hợp lệ và các điều kiện cụ thể công bố cho bản đó. Đối với bản PREMIUM, thời hạn, số máy chủ được kích hoạt và các quyền lợi đi kèm được xác định bởi thông tin đơn hàng/giấy phép chính thức. Không được tự ý mở rộng số lượt kích hoạt hoặc chuyển giấy phép cho người khác.
+
+## 4. Hành vi không được phép
+
+Trừ khi được Chủ Sở Hữu chấp thuận trước bằng văn bản hoặc pháp luật bắt buộc cho phép, người dùng không được:
+
+1. Đăng tải, chia sẻ, mirror, phát tán, bán, cho thuê, cấp phép lại hoặc phân phối mã nguồn/JAR của TuTienPlugin, toàn bộ hoặc một phần, dưới dạng nguyên bản hoặc đã chỉnh sửa.
+2. Đưa mã nguồn hoặc bản build lên GitHub, GitLab, diễn đàn, website tải plugin, kho lưu trữ công khai hoặc dịch vụ chia sẻ tệp để người khác tải xuống.
+3. Tạo hoặc phân phối bản sửa đổi, bản fork, bản đóng gói lại hay sản phẩm phái sinh từ Phần Mềm.
+4. Vô hiệu hóa, né tránh hoặc can thiệp trái phép vào cơ chế kiểm tra giấy phép, giới hạn edition, xác thực hoặc biện pháp bảo vệ kỹ thuật.
+5. Dịch ngược, tháo rời hoặc phân tích mã nhằm tái tạo/phát hành phần mềm cạnh tranh, trừ phạm vi ngoại lệ không thể loại trừ theo pháp luật áp dụng.
+6. Xóa hoặc thay đổi thông báo bản quyền, dấu nhận diện tác giả, metadata hoặc thông tin nguồn gốc nhằm gây nhầm lẫn về tác giả hay nhà phát hành.
+7. Tuyên bố TuTienPlugin là sản phẩm chính thức của mình, hoặc sử dụng tên/logo để khiến người khác hiểu nhầm rằng Chủ Sở Hữu bảo trợ, chứng nhận hay liên kết với sản phẩm khác.
+
+Việc được cấp quyền sửa cấu hình hoặc nhận mã nguồn để triển khai không tạo ra quyền phân phối lại mã nguồn, bản build hay bản sửa đổi.
+
+## 5. Thành phần bên thứ ba
+
+TuTienPlugin có thể tích hợp hoặc phụ thuộc vào Paper/Bukkit, Vault, LuckPerms, ViaVersion hoặc thư viện và plugin khác. Các thành phần đó thuộc quyền của chủ sở hữu tương ứng và chịu điều khoản riêng của chúng. Giấy phép này không thay thế, thu hẹp hay cấp lại quyền đối với giấy phép bên thứ ba. Nếu một thành phần bên thứ ba yêu cầu thông báo hoặc điều khoản riêng, các nghĩa vụ đó vẫn được áp dụng cho thành phần ấy.
+
+## 6. Vi phạm và chấm dứt quyền sử dụng
+
+Nếu người dùng vi phạm trọng yếu giấy phép này, Chủ Sở Hữu có thể gửi yêu cầu chấm dứt hành vi vi phạm, thu hồi quyền sử dụng trong phạm vi pháp luật và điều kiện cấp phép cho phép, hoặc sử dụng các biện pháp pháp lý phù hợp. Khi quyền sử dụng chấm dứt hợp lệ, người dùng phải ngừng sử dụng và xóa các bản sao mà mình không còn quyền lưu giữ, trừ dữ liệu/bản sao phải giữ theo quy định pháp luật.
+
+## 7. Tuyên bố miễn trừ và giới hạn trách nhiệm
+
+Phần Mềm được cung cấp theo hiện trạng, trong phạm vi pháp luật cho phép. Chủ Sở Hữu không cam kết Phần Mềm sẽ không có lỗi, không gián đoạn hoặc tương thích với mọi cấu hình máy chủ, plugin, phiên bản Minecraft hay môi trường lưu trữ. Người quản trị có trách nhiệm sao lưu dữ liệu và thử nghiệm trong môi trường phù hợp trước khi triển khai trên máy chủ chính. Điều khoản này không loại trừ trách nhiệm hoặc quyền của người dùng mà pháp luật áp dụng không cho phép loại trừ.
+
+## 8. Luật áp dụng và liên hệ
+
+Giấy phép này được diễn giải theo pháp luật Việt Nam và các quy định bắt buộc khác có thể áp dụng. Tranh chấp sẽ được giải quyết theo cơ chế và cơ quan có thẩm quyền theo quy định pháp luật hiện hành.
+
+Để xin quyền phân phối lại, sử dụng thương mại đối với chính Phần Mềm, phát triển bản phái sinh để phát hành hoặc xử lý vấn đề bản quyền, hãy liên hệ: **[ĐIỀN EMAIL/ĐƯỜNG DẪN LIÊN HỆ]**. Chỉ sự chấp thuận rõ ràng bằng văn bản từ người có thẩm quyền mới được xem là ngoại lệ đối với giấy phép này.
+
+---
+
+## Dòng thông báo bản quyền khuyến nghị
+
+Dùng trong README, trang tải xuống hoặc tài liệu:
+
+`Copyright © [NĂM] [TÊN TÁC GIẢ/CHỦ SỞ HỮU]. TuTienPlugin. All rights reserved.`
+
+Dùng ở đầu mã nguồn do bạn sở hữu:
+
+`Copyright (c) [NĂM] [TÊN TÁC GIẢ/CHỦ SỞ HỮU]. All rights reserved.`
+
+**Không dùng thông báo này để tuyên bố sở hữu mã nguồn, thư viện, hình ảnh hoặc tài nguyên của bên thứ ba.**

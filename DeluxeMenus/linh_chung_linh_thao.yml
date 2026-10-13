@@ -1,0 +1,92 @@
+# AUTO GENERATED FROM herbs.types: linh_thao
+menu_title: '&8☘ &5&lLinh Thảo'
+open_command:
+  - linhchung_linh_thao
+size: 27
+
+items:
+  frame:
+    material: BLACK_STAINED_GLASS_PANE
+    slots: [0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24,25,26]
+    display_name: ' '
+
+  seed:
+    material: WHEAT_SEEDS
+    slot: 10
+    display_name: '&a&l☘ Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8linh_thao'
+      - '&fCảnh giới yêu cầu: &eLuyện Khí'
+      - '&fGiá Linh Chủng: &65 Linh Thạch'
+      - '&7'
+      - '&a✓ Có thể gieo trong Vườn Tiên Thảo'
+
+  buy:
+    material: EMERALD
+    slot: 12
+    display_name: '&6&l💰 MUA LINH CHỦNG'
+    lore:
+      - '&7'
+      - '&fGiá cấu hình: &65 Linh Thạch'
+      - '&7'
+      - '&e▸ &fMua 1 Linh Chủng'
+    left_click_commands:
+      - '[console] linhchungshop buy linh_thao 1'
+
+  buy_16:
+    material: EMERALD_BLOCK
+    slot: 13
+    display_name: '&6&l💰 MUA ×16'
+    lore:
+      - '&7'
+      - '&fTổng: &680 Linh Thạch'
+    left_click_commands:
+      - '[console] linhchungshop buy linh_thao 16'
+
+  sell:
+    material: GOLD_INGOT
+    slot: 14
+    display_name: '&e&l💸 BÁN LINH CHỦNG'
+    lore:
+      - '&7'
+      - '&fGiá cấu hình: &65 Linh Thạch / hạt'
+      - '&7'
+      - '&e▸ &fBán 1 Linh Chủng'
+    left_click_commands:
+      - '[console] linhchungshop sell linh_thao 1'
+
+  sell_16:
+    material: GOLD_BLOCK
+    slot: 15
+    display_name: '&e&l💸 BÁN ×16'
+    lore:
+      - '&7'
+      - '&fTổng: &680 Linh Thạch'
+    left_click_commands:
+      - '[console] linhchungshop sell linh_thao 16'
+
+  sow:
+    material: FARMER'S_HOE
+    slot: 16
+    display_name: '&a&l🌱 GIEO LINH CHỦNG'
+    lore:
+      - '&7'
+      - '&fCầm Linh Chủng và đến Vườn Tiên Thảo.'
+      - '&fChuột phải đất đã cày để gieo.'
+      - '&7'
+      - '&8ID: linh_thao'
+
+  back:
+    material: ARROW
+    slot: 22
+    display_name: '&c&l↩ Quay Lại'
+    left_click_commands:
+      - '[openguimenu] linhchung'
+
+  close:
+    material: BARRIER
+    slot: 24
+    display_name: '&c&l✕ Đóng'
+    left_click_commands:
+      - '[close]'

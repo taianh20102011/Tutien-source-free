@@ -1,0 +1,23 @@
+# Pháp Bảo visual overrides. Keys under items must match PhaBaoType enum IDs.
+# ItemsAdder ID should look like namespace:item_id and requires ItemsAdder installed.
+items:
+  LINH_KIEM:
+    enabled: true
+    drop-weight: 1.0
+    display-name: "Linh Kiếm"
+    color: "§c"
+    material: DIAMOND_SWORD
+    description: "Kiếm linh khí: ATK cao nhất vũ khí phổ thông"
+    ability-description: "Phóng kiếm khí trước mặt, gây sát thương AoE"
+    itemsadder-id: ""
+    custom-model-data: 0
+  THIEN_TRUONG:
+    enabled: true
+    drop-weight: 1.0
+    itemsadder-id: ""
+    custom-model-data: 0
+# drop-weight controls random-drop chance relative to other enabled artifacts. 0 = never randomly drops.
+# Copy an entry above and use a real enum ID to customize more artifacts.
+
+  # Set enabled: false to exclude an artifact from random drops.
+  # Set drop-weight: 0 to disable random drops without disabling existing items.

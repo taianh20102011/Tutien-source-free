@@ -1,0 +1,40 @@
+# ItemAdder-ready GUI icons. Empty itemsadder-id uses the vanilla material fallback.
+# Keys: bag.close, bag.skills, bag.currency, bag.phabao, bag.alchemy, bag.guide
+hubs:
+  items:
+    bag.close:
+      material: BARRIER
+      display-name: "§c✘ Đóng"
+      lore: ["§7Đóng túi đồ"]
+      itemsadder-id: ""
+      custom-model-data: 0
+    bag.skills:
+      material: NETHER_STAR
+      display-name: "§a⚔ Lấy Skill"
+      lore: ["§7Đặt lại 4 skill + Sách LK vào hotbar"]
+      itemsadder-id: ""
+      custom-model-data: 0
+    bag.currency:
+      material: GOLD_NUGGET
+      display-name: "§6✦ Tiền"
+      lore: ["§7Xem số dư", "§7Shift+click: nạp tất cả"]
+      itemsadder-id: ""
+      custom-model-data: 0
+    bag.phabao:
+      material: DIAMOND
+      display-name: "§d◉ Pháp Bảo"
+      lore: ["§7Nhận pháp bảo miễn phí (lần đầu)"]
+      itemsadder-id: ""
+      custom-model-data: 0
+    bag.alchemy:
+      material: BLAZE_ROD
+      display-name: "§e⚗ Luyện Đan"
+      lore: ["§7Xem công thức luyện đan"]
+      itemsadder-id: ""
+      custom-model-data: 0
+    bag.guide:
+      material: BOOK
+      display-name: "§b? Hướng Dẫn"
+      lore: ["§7/guide — Hướng dẫn toàn bộ"]
+      itemsadder-id: ""
+      custom-model-data: 0

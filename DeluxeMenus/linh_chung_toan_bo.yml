@@ -1,0 +1,515 @@
+# ============================================================
+# LINH CHUNG / DAO THAO DUOC - AUTO GENERATED FROM herbs.types
+# Source: config.yml -> herbs.types
+# ============================================================
+menu_title: '&8☘ &5&lĐẠO THẢO DƯỢC &8☘'
+open_command:
+  - linhchung
+  - thaoduoc
+size: 54
+
+items:
+  frame:
+    material: BLACK_STAINED_GLASS_PANE
+    slots: [0,1,2,3,4,5,6,7,8,45,46,47,48,49,50,51,52,53]
+    display_name: ' '
+
+  title:
+    material: NETHER_STAR
+    slot: 4
+    display_name: '&d&l☘ ĐẠO THẢO DƯỢC ☘'
+    lore:
+      - '&7'
+      - '&fToàn bộ Thảo Dược được đọc trực tiếp'
+      - '&ftừ &eherbs.types &ftrong config.yml.'
+      - '&7'
+      - '&e✦ &fLinh Chủng có thể gieo: &aMua/Bán'
+      - '&c✦ &fThảo Dược chưa gieo được: &8🔒 Phong Ấn'
+      - '&7'
+
+  herb_linh_thao:
+    material: WHEAT_SEEDS
+    slot: 9
+    display_name: '&a&l☘ Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8linh_thao'
+      - '&fYêu cầu: &eLuyện Khí'
+      - '&fGiá trị: &65 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_linh_thao'
+
+  herb_hoa_thao:
+    material: POPPY
+    slot: 10
+    display_name: '&8&l🔒 Hoa Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8hoa_thao'
+      - '&fYêu cầu: &eLuyện Khí'
+      - '&fGiá trị: &68 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fHoa Thảo &7yêu cầu &eLuyện Khí &7trở lên.'
+
+  herb_tuyet_thao:
+    material: LILY_OF_THE_VALLEY
+    slot: 11
+    display_name: '&8&l🔒 Tuyết Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8tuyet_thao'
+      - '&fYêu cầu: &eKết Đan'
+      - '&fGiá trị: &612 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fTuyết Thảo &7yêu cầu &eKết Đan &7trở lên.'
+
+  herb_am_thao:
+    material: DEAD_BUSH
+    slot: 12
+    display_name: '&8&l🔒 Âm Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8am_thao'
+      - '&fYêu cầu: &eNguyên Anh'
+      - '&fGiá trị: &615 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fÂm Thảo &7yêu cầu &eNguyên Anh &7trở lên.'
+
+  herb_duong_thao:
+    material: SUNFLOWER
+    slot: 13
+    display_name: '&8&l🔒 Dương Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8duong_thao'
+      - '&fYêu cầu: &eHóa Thần'
+      - '&fGiá trị: &618 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fDương Thảo &7yêu cầu &eHóa Thần &7trở lên.'
+
+  herb_moc_linh:
+    material: WHEAT_SEEDS
+    slot: 14
+    display_name: '&2&l☘ Mộc Linh'
+    lore:
+      - '&7'
+      - '&fID: &8moc_linh'
+      - '&fYêu cầu: &eTrúc Cơ'
+      - '&fGiá trị: &610 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_moc_linh'
+
+  herb_hoa_linh:
+    material: WHEAT_SEEDS
+    slot: 15
+    display_name: '&6&l☘ Hỏa Linh'
+    lore:
+      - '&7'
+      - '&fID: &8hoa_linh'
+      - '&fYêu cầu: &eĐế Tu'
+      - '&fGiá trị: &625 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_hoa_linh'
+
+  herb_thuy_linh:
+    material: BLUE_ORCHID
+    slot: 16
+    display_name: '&8&l🔒 Thủy Linh'
+    lore:
+      - '&7'
+      - '&fID: &8thuy_linh'
+      - '&fYêu cầu: &eĐế Hậu'
+      - '&fGiá trị: &628 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fThủy Linh &7yêu cầu &eĐế Hậu &7trở lên.'
+
+  herb_kim_linh:
+    material: WHEAT_SEEDS
+    slot: 17
+    display_name: '&e&l&l☘ Kim Linh'
+    lore:
+      - '&7'
+      - '&fID: &8kim_linh'
+      - '&fYêu cầu: &eĐế Vương'
+      - '&fGiá trị: &640 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_kim_linh'
+
+  herb_u_linh_thao:
+    material: LARGE_FERN
+    slot: 18
+    display_name: '&8&l🔒 U Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8u_linh_thao'
+      - '&fYêu cầu: &eĐế Tôn'
+      - '&fGiá trị: &655 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fU Linh Thảo &7yêu cầu &eĐế Tôn &7trở lên.'
+
+  herb_phong_linh:
+    material: WHITE_TULIP
+    slot: 19
+    display_name: '&8&l🔒 Phong Linh'
+    lore:
+      - '&7'
+      - '&fID: &8phong_linh'
+      - '&fYêu cầu: &eĐế Chủ'
+      - '&fGiá trị: &660 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fPhong Linh &7yêu cầu &eĐế Chủ &7trở lên.'
+
+  herb_thien_moc_thao:
+    material: WHEAT_SEEDS
+    slot: 20
+    display_name: '&a&l&l☘ Thiên Mộc Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8thien_moc_thao'
+      - '&fYêu cầu: &eBán Thánh'
+      - '&fGiá trị: &675 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_thien_moc_thao'
+
+  herb_loi_linh_thao:
+    material: CORNFLOWER
+    slot: 21
+    display_name: '&8&l🔒 Lôi Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8loi_linh_thao'
+      - '&fYêu cầu: &eChuẩn Thánh'
+      - '&fGiá trị: &690 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fLôi Linh Thảo &7yêu cầu &eChuẩn Thánh &7trở lên.'
+
+  herb_bang_phach_thao:
+    material: AZURE_BLUET
+    slot: 22
+    display_name: '&8&l🔒 Băng Phách Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8bang_phach_thao'
+      - '&fYêu cầu: &eĐại Thánh'
+      - '&fGiá trị: &6110 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fBăng Phách Thảo &7yêu cầu &eĐại Thánh &7trở lên.'
+
+  herb_quang_linh_thao:
+    material: GLOW_LICHEN
+    slot: 23
+    display_name: '&8&l🔒 Quang Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8quang_linh_thao'
+      - '&fYêu cầu: &eThánh Tôn'
+      - '&fGiá trị: &6130 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fQuang Linh Thảo &7yêu cầu &eThánh Tôn &7trở lên.'
+
+  herb_huyet_linh_thao:
+    material: RED_TULIP
+    slot: 24
+    display_name: '&8&l🔒 Huyết Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8huyet_linh_thao'
+      - '&fYêu cầu: &eThánh Đế'
+      - '&fGiá trị: &6160 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fHuyết Linh Thảo &7yêu cầu &eThánh Đế &7trở lên.'
+
+  herb_ngoc_linh_thao:
+    material: WHEAT_SEEDS
+    slot: 25
+    display_name: '&b&l☘ Ngọc Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8ngoc_linh_thao'
+      - '&fYêu cầu: &eBán Thánh'
+      - '&fGiá trị: &6145 Linh Thạch'
+      - '&aTrạng thái: ✓ Có thể gieo'
+      - '&7'
+      - '&e▸ &fNhấn để xem / mua / bán'
+    left_click_commands:
+      - '[openguimenu] linh_chung_ngoc_linh_thao'
+
+  herb_dia_linh_thao:
+    material: BROWN_MUSHROOM
+    slot: 26
+    display_name: '&8&l🔒 Địa Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8dia_linh_thao'
+      - '&fYêu cầu: &eChân Tiên'
+      - '&fGiá trị: &6180 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fĐịa Linh Thảo &7yêu cầu &eChân Tiên &7trở lên.'
+
+  herb_tinh_than_thao:
+    material: SPORE_BLOSSOM
+    slot: 27
+    display_name: '&8&l🔒 Tinh Thần Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8tinh_than_thao'
+      - '&fYêu cầu: &eKim Tiên'
+      - '&fGiá trị: &6220 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fTinh Thần Thảo &7yêu cầu &eKim Tiên &7trở lên.'
+
+  herb_cuu_am_thao:
+    material: SCULK
+    slot: 28
+    display_name: '&8&l🔒 Cửu Âm Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8cuu_am_thao'
+      - '&fYêu cầu: &eThái Ất'
+      - '&fGiá trị: &6260 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fCửu Âm Thảo &7yêu cầu &eThái Ất &7trở lên.'
+
+  herb_cuu_duong_thao:
+    material: RED_MUSHROOM
+    slot: 29
+    display_name: '&8&l🔒 Cửu Dương Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8cuu_duong_thao'
+      - '&fYêu cầu: &eĐại La'
+      - '&fGiá trị: &6300 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fCửu Dương Thảo &7yêu cầu &eĐại La &7trở lên.'
+
+  herb_thanh_lien_thao:
+    material: LILY_PAD
+    slot: 30
+    display_name: '&8&l🔒 Thanh Liên Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8thanh_lien_thao'
+      - '&fYêu cầu: &eTiên Đế'
+      - '&fGiá trị: &6350 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fThanh Liên Thảo &7yêu cầu &eTiên Đế &7trở lên.'
+
+  herb_tien_linh_thao:
+    material: TORCHFLOWER
+    slot: 31
+    display_name: '&8&l🔒 Tiên Linh Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8tien_linh_thao'
+      - '&fYêu cầu: &eThiên Tôn'
+      - '&fGiá trị: &6450 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fTiên Linh Thảo &7yêu cầu &eThiên Tôn &7trở lên.'
+
+  herb_kim_tien_thao:
+    material: PITCHER_PLANT
+    slot: 32
+    display_name: '&8&l🔒 Kim Tiên Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8kim_tien_thao'
+      - '&fYêu cầu: &eThiên Tôn'
+      - '&fGiá trị: &6550 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fKim Tiên Thảo &7yêu cầu &eThiên Tôn &7trở lên.'
+
+  herb_thai_at_thao:
+    material: CRIMSON_FUNGUS
+    slot: 33
+    display_name: '&8&l🔒 Thái Ất Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8thai_at_thao'
+      - '&fYêu cầu: &eThiên Đạo'
+      - '&fGiá trị: &6700 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fThái Ất Thảo &7yêu cầu &eThiên Đạo &7trở lên.'
+
+  herb_dai_la_thao:
+    material: WARPED_FUNGUS
+    slot: 34
+    display_name: '&8&l🔒 Đại La Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8dai_la_thao'
+      - '&fYêu cầu: &eThiên Đế'
+      - '&fGiá trị: &6900 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fĐại La Thảo &7yêu cầu &eThiên Đế &7trở lên.'
+
+  herb_tien_de_thao:
+    material: CHORUS_FLOWER
+    slot: 35
+    display_name: '&8&l🔒 Tiên Đế Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8tien_de_thao'
+      - '&fYêu cầu: &eHỗn Nguyên'
+      - '&fGiá trị: &61200 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fTiên Đế Thảo &7yêu cầu &eHỗn Nguyên &7trở lên.'
+
+  herb_thien_ton_thao:
+    material: PEONY
+    slot: 36
+    display_name: '&8&l🔒 Thiên Tôn Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8thien_ton_thao'
+      - '&fYêu cầu: &eThiên Tôn'
+      - '&fGiá trị: &61600 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fThiên Tôn Thảo &7yêu cầu &eThiên Tôn &7trở lên.'
+
+  herb_thien_dao_thao:
+    material: END_ROD
+    slot: 37
+    display_name: '&8&l🔒 Thiên Đạo Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8thien_dao_thao'
+      - '&fYêu cầu: &eThiên Đạo'
+      - '&fGiá trị: &62200 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fThiên Đạo Thảo &7yêu cầu &eThiên Đạo &7trở lên.'
+
+  herb_hon_nguyen_thao:
+    material: WITHER_ROSE
+    slot: 38
+    display_name: '&8&l🔒 Hỗn Nguyên Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8hon_nguyen_thao'
+      - '&fYêu cầu: &eThiên Đế'
+      - '&fGiá trị: &63500 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fHỗn Nguyên Thảo &7yêu cầu &eThiên Đế &7trở lên.'
+
+  herb_vo_thuong_thao:
+    material: WEEPING_VINES
+    slot: 39
+    display_name: '&8&l🔒 Vô Thượng Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8vo_thuong_thao'
+      - '&fYêu cầu: &eVô Thượng Chí Tôn'
+      - '&fGiá trị: &66000 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fVô Thượng Thảo &7yêu cầu &eVô Thượng Chí Tôn &7trở lên.'
+
+  herb_to_khai_thien_thao:
+    material: TWISTING_VINES
+    slot: 40
+    display_name: '&8&l🔒 Tổ Khai Thiên Thảo'
+    lore:
+      - '&7'
+      - '&fID: &8to_khai_thien_thao'
+      - '&fYêu cầu: &eVô Thượng Chí Tôn'
+      - '&fGiá trị: &612000 Linh Thạch'
+      - '&cTrạng thái: 🔒 Chưa mở'
+      - '&7'
+      - '&8Tiếp tục tu luyện để khám phá.'
+    left_click_commands:
+      - '[message] &8[&5Tiên Thảo&8] &fTổ Khai Thiên Thảo &7yêu cầu &eVô Thượng Chí Tôn &7trở lên.'
+
+  close:
+    material: BARRIER
+    slot: 49
+    display_name: '&c&l✕ Đóng'
+    left_click_commands:
+      - '[close]'

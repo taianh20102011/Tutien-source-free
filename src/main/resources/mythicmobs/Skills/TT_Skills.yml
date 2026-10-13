@@ -1,0 +1,696 @@
+# ═══════════════════════════════════════════════════════════
+#   TuTiên Plugin — MythicMobs Skills
+#   VERSION: FREE / MythicMobs 4.x Compatible
+#   Copy vào: plugins/MythicMobs/Skills/TT_Skills.yml
+# ═══════════════════════════════════════════════════════════
+# Không dùng: effect:beam, projectile phức tạp, phase inline skills
+# Tương thích: MythicMobs FREE 4.x - 5.x Free Tier
+# ═══════════════════════════════════════════════════════════
+
+TT_BossRoar:
+  Skills:
+    - particles{p=LARGE_SMOKE;a=30;hs=2;vs=2} @self
+    - sound{s=entity_wither_spawn;v=1.5;p=0.5} @self
+    - message{m="&c&lBoss xuất hiện!"} @NearestPlayer{r=30}
+    - potion{type=WEAKNESS;d=40;l=0} @NearestPlayer{r=10}
+  Cooldown: 0
+
+TT_ShadowStrike:
+  Skills:
+    - damage{a=8}
+    - particles{p=CRIT;a=12;hs=0.5;vs=0.5} @target
+    - potion{type=WITHER;d=60;l=1} @target
+    - sound{s=entity_wither_skeleton_hurt;v=1;p=1.5} @target
+  Cooldown: 3
+
+TT_WitherBones_Free:
+  Skills:
+    - projectile{oType=WITHER_SKULL;v=1.2;onHit=TT_BoneDmg}
+    - particles{p=SMOKE_LARGE;a=15;hs=0.8;vs=0.5} @self
+  Cooldown: 5
+
+TT_BoneDmg:
+  Skills:
+    - damage{a=15;nokb=true}
+    - potion{type=WITHER;d=80;l=1} @target
+
+TT_WitherBlast_Free:
+  Skills:
+    - particles{p=EXPLOSION_LARGE;a=3;hs=2;vs=2} @target
+    - damage{a=25}
+    - potion{type=WITHER;d=100;l=2} @PlayersInRadius{r=5}
+    - sound{s=entity_wither_shoot;v=1.5;p=0.8} @self
+  Cooldown: 5
+
+TT_WitherExplosion_Free:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=5;hs=2;vs=2} @self
+    - damage{a=30} @PlayersInRadius{r=8}
+    - potion{type=WITHER;d=200;l=2} @PlayersInRadius{r=8}
+    - sound{s=entity_generic_explode;v=2;p=0.5} @self
+  Cooldown: 0
+
+TT_WardenSonic_Free:
+  Skills:
+    - particles{p=SOUL;a=15;hs=2;vs=1.5} @self
+    - damage{a=30;nokb=true} @NearestPlayer{r=20}
+    - potion{type=DARKNESS;d=80;l=1} @NearestPlayer{r=20}
+    - sound{s=entity_warden_sonic_boom;v=2;p=0.9} @self
+  Cooldown: 5
+
+TT_WardenSmash:
+  Skills:
+    - damage{a=28}
+    - potion{type=SLOWNESS;d=60;l=3} @target
+    - particles{p=BLOCK_CRACK;a=25;hs=1;vs=0.5} @target
+    - sound{s=entity_warden_attack_impact;v=1.5;p=1.0} @self
+  Cooldown: 2
+
+TT_WardenDarkness:
+  Skills:
+    - potion{type=DARKNESS;d=120;l=1} @PlayersInRadius{r=15}
+    - particles{p=SOUL;a=10;hs=3;vs=0.5} @self
+    - sound{s=entity_warden_ambient;v=1.5;p=0.7} @self
+  Cooldown: 5
+
+TT_WardenDeath_Free:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=5;hs=3;vs=3} @self
+    - damage{a=40} @PlayersInRadius{r=6}
+    - sound{s=entity_warden_death;v=2;p=0.6} @self
+  Cooldown: 0
+
+TT_TwinCombo:
+  Skills:
+    - damage{a=20} @NearestPlayer{r=8}
+    - delay 8
+    - damage{a=20} @NearestPlayer{r=8}
+    - delay 8
+    - damage{a=25} @NearestPlayer{r=8}
+    - particles{p=CRIT;a=20;hs=1;vs=1} @NearestPlayer{r=8}
+  Cooldown: 6
+
+TT_LightningBarrage:
+  Skills:
+    - lightning @NearestPlayer{r=15}
+    - delay 6
+    - lightning @NearestPlayer{r=15}
+    - delay 6
+    - lightning @NearestPlayer{r=15}
+    - particles{p=ENCHANTED_HIT;a=15;hs=1.5;vs=1.5} @NearestPlayer{r=15}
+    - sound{s=entity_lightning_bolt_thunder;v=1.5;p=0.6} @self
+  Cooldown: 7
+
+TT_UltraRage:
+  Skills:
+    - potion{type=SPEED;d=300;l=3} @self
+    - potion{type=STRENGTH;d=300;l=3} @self
+    - potion{type=RESISTANCE;d=300;l=2} @self
+    - particles{p=TOTEM;a=25;hs=2;vs=2.5} @self
+    - sound{s=entity_warden_roar;v=2;p=0.6} @self
+    - message{m="&c&lBoss vào giai đoạn CUỒNG NỘ!"} @NearestPlayer{r=30}
+  Cooldown: 0
+
+TT_UltraDeath:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=8;hs=3;vs=3} @self
+    - particles{p=TOTEM;a=15;hs=2.5;vs=2.5} @self
+    - damage{a=55} @PlayersInRadius{r=10}
+    - potion{type=WITHER;d=180;l=2} @PlayersInRadius{r=10}
+    - lightning @PlayersInRadius{r=8}
+    - sound{s=entity_warden_death;v=2;p=0.5} @self
+  Cooldown: 0
+
+TT_TuyetDinhSlam:
+  Skills:
+    - delay 5
+    - damage{a=50} @PlayersInRadius{r=8}
+    - potion{type=SLOWNESS;d=80;l=4} @PlayersInRadius{r=8}
+    - potion{type=WITHER;d=100;l=2} @PlayersInRadius{r=8}
+    - particles{p=EXPLOSION_HUGE;a=6;hs=2.5;vs=2} @self
+    - sound{s=entity_generic_explode;v=2;p=0.4} @self
+  Cooldown: 7
+
+TT_TuyetDinhDeath:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=12;hs=4;vs=4} @self
+    - damage{a=70} @PlayersInRadius{r=12}
+    - lightning @PlayersInRadius{r=10}
+    - sound{s=entity_ender_dragon_death;v=2;p=0.3} @self
+    - sound{s=entity_wither_death;v=2;p=1.5} @self
+  Cooldown: 0
+
+TT_OmegaExplosion:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=8;hs=3.5;vs=3.5} @NearestPlayer{r=15}
+    - damage{a=75} @PlayersInRadius{r=10}
+    - potion{type=WITHER;d=200;l=3} @PlayersInRadius{r=10}
+    - lightning @PlayersInRadius{r=8}
+    - sound{s=entity_generic_explode;v=2;p=0.3} @self
+  Cooldown: 5
+
+TT_OmegaStrike:
+  Skills:
+    - damage{a=50;nokb=true}
+    - potion{type=WEAKNESS;d=100;l=2} @target
+    - particles{p=CRIT_MAGIC;a=18;hs=1;vs=1} @target
+    - sound{s=entity_warden_attack_impact;v=1.5;p=0.7} @self
+  Cooldown: 2
+
+TT_OmegaDeath:
+  Skills:
+    - particles{p=EXPLOSION_HUGE;a=15;hs=5;vs=5} @self
+    - damage{a=90} @PlayersInRadius{r=15}
+    - lightning @PlayersInRadius{r=12}
+    - lightning @PlayersInRadius{r=12}
+    - sound{s=entity_ender_dragon_death;v=2;p=0.25} @self
+    - sound{s=entity_wither_death;v=2;p=0.6} @self
+  Cooldown: 0
+
+TT_FinalJudgement:
+  Skills:
+    - message{m="&c&lPHÁN XÉT CUỐI CÙNG!"} @NearestPlayer{r=50}
+    - delay 20
+    - lightning @PlayersInRadius{r=20}
+    - delay 3
+    - lightning @PlayersInRadius{r=20}
+    - delay 3
+    - lightning @PlayersInRadius{r=20}
+    - delay 3
+    - damage{a=180} @PlayersInRadius{r=20}
+    - sound{s=entity_ender_dragon_death;v=3;p=0.2} @self
+  Cooldown: 20
+
+TT_ThuyTinhDeath:
+  Skills:
+    - message{m="&6&lThủy Tinh Vĩnh Hằng đã bị đánh bại!"} @NearestPlayer{r=100}
+    - particles{p=EXPLOSION_HUGE;a=20;hs=6;vs=6} @self
+    - lightning @PlayersInRadius{r=15}
+    - lightning @PlayersInRadius{r=15}
+    - lightning @PlayersInRadius{r=15}
+    - sound{s=entity_ender_dragon_death;v=3;p=0.2} @self
+    - sound{s=entity_wither_death;v=2;p=0.3} @self
+  Cooldown: 0
+
+TT_DeathSmoke_Free:
+  Skills:
+    - particles{p=LARGE_SMOKE;a=15;hs=1.5;vs=2} @self
+    - particles{p=EXPLOSION_NORMAL;a=8;hs=1.5;vs=1.5} @self
+
+# ── REALM AURAS (simplified for Free) ──────────────────────
+
+TT_Aura_Nhan:
+  Skills:
+    - particles{p=TOWN_AURA;a=5;hs=0.8;vs=1.2} @self
+  Cooldown: 0
+
+TT_Aura_Linh:
+  Skills:
+    - particles{p=VILLAGER_HAPPY;a=4;hs=0.8;vs=1.2} @self
+    - particles{p=ENCHANTED_HIT;a=3;hs=0.5;vs=1.0} @self
+  Cooldown: 0
+
+TT_Aura_De:
+  Skills:
+    - particles{p=FLAME;a=5;hs=0.7;vs=1.2} @self
+    - particles{p=CRIT;a=4;hs=0.5;vs=1.0} @self
+  Cooldown: 0
+
+TT_Aura_Thanh:
+  Skills:
+    - particles{p=SNOWFLAKE;a=6;hs=0.8;vs=1.3} @self
+    - particles{p=ENCHANTED_HIT;a=4;hs=0.5;vs=1.0} @self
+  Cooldown: 0
+
+TT_Aura_Tien:
+  Skills:
+    - particles{p=ENCHANTED_HIT;a=7;hs=1.0;vs=1.5} @self
+    - particles{p=PORTAL;a=4;hs=0.5;vs=1.2} @self
+  Cooldown: 0
+
+TT_Aura_Thien:
+  Skills:
+    - particles{p=TOTEM;a=8;hs=1.2;vs=1.8} @self
+    - particles{p=ENCHANTED_HIT;a=6;hs=0.8;vs=1.4} @self
+  Cooldown: 0
+
+TT_Aura_ThienTienDe:
+  Skills:
+    - particles{p=TOTEM;a=10;hs=1.5;vs=2.0} @self
+    - particles{p=END_ROD;a=6;hs=1.0;vs=1.5} @self
+  Cooldown: 0
+
+TT_Aura_SieuCap:
+  Skills:
+    - particles{p=SOUL_FIRE_FLAME;a=6;hs=1.0;vs=1.8} @self
+    - particles{p=DRAGON_BREATH;a=7;hs=1.0;vs=1.5} @self
+    - particles{p=END_ROD;a=5;hs=0.8;vs=1.5} @self
+  Cooldown: 0
+
+TT_Aura_TuThuong:
+  Skills:
+    - particles{p=SOUL_FIRE_FLAME;a=10;hs=1.5;vs=2.5} @self
+    - particles{p=DRAGON_BREATH;a=12;hs=1.5;vs=2.0} @self
+    - particles{p=TOTEM;a=8;hs=1.2;vs=1.8} @self
+    - particles{p=END_ROD;a=7;hs=1.0;vs=2.0} @self
+  Cooldown: 0
+
+TT_Aura_Base:
+  Skills:
+    - particles{p=SPELL_WITCH;a=3;hs=0.5;vs=1} @self
+  Cooldown: 0
+
+# ────────────────────────────────────────────────────────
+#  FUN CLASS SKILLS — Sĩ Vương & Lọ Vương
+# ────────────────────────────────────────────────────────
+
+TT_Aura_SiVuong:
+  Skills:
+    - particles{p=ENCHANTED_HIT;a=8;hs=1.2;vs=2;y=0.5} @self
+    - particles{p=CRIT_MAGIC;a=4;hs=0.8;vs=1.5} @self
+    - particles{p=VILLAGER_HAPPY;a=3;hs=0.5;vs=1.0} @self
+    - particles{p=END_ROD;a=2;hs=0.3;vs=0.8} @self
+  Cooldown: 0
+
+TT_Aura_LoVuong:
+  Skills:
+    - particles{p=SPELL_WITCH;a=6;hs=1.0;vs=1.5} @self
+    - particles{p=PORTAL;a=4;hs=0.8;vs=1.2} @self
+    - particles{p=SMOKE_LARGE;a=2;hs=0.5;vs=0.8} @self
+  Cooldown: 0
+
+TT_Effect_SiVuong:
+  Skills:
+    - particles{p=ENCHANTED_HIT;a=40;hs=2.5;vs=4} @self
+    - particles{p=CRIT_MAGIC;a=30;hs=2;vs=3} @self
+    - particles{p=FIREWORKS_SPARK;a=20;hs=2;vs=3} @self
+    - sound{s=entity.player.levelup;v=1.5;p=1.8} @self
+    - sound{s=block.book_put.place;v=1;p=2.0} @self
+    - potion{type=LUCK;d=600;l=5} @self
+    - message{m="§e§l📖 SĨ VƯƠNG KHAI THỨC! §7Ta đọc sách ngàn năm..."} @self
+
+TT_Effect_LoVuong:
+  Skills:
+    - particles{p=SPELL_WITCH;a=40;hs=2.5;vs=4} @self
+    - particles{p=PORTAL;a=30;hs=2;vs=3} @self
+    - particles{p=SMOKE_LARGE;a=15;hs=2;vs=2.5} @self
+    - sound{s=entity.item.pickup;v=1.5;p=0.3} @self
+    - sound{s=block.barrel.open;v=1;p=0.5} @self
+    - potion{type=RESISTANCE;d=600;l=4} @self
+    - potion{type=ABSORPTION;d=600;l=8} @self
+    - message{m="§5§l🏺 LỌ VƯƠNG XUẤT HIỆN! §7Lọ là đạo, đạo là lọ..."} @self
+
+# Passive Lọ Vương: tự kích hoạt khi HP thấp (gọi từ TuTienPlugin)
+TT_LoVuong_BatTu:
+  Skills:
+    - particles{p=SMOKE_LARGE;a=20;hs=1.5;vs=2} @self
+    - particles{p=SPELL_WITCH;a=15;hs=1;vs=1.5} @self
+    - sound{s=block.barrel.close;v=1;p=0.4} @self
+    - message{m="§5🏺 Chui vào lọ bất tử 3 giây!"} @self
+    # Note: invincibility xử lý bởi TuTienPlugin Java code
+
+# Passive Sĩ Vương: buff khi ngồi yên (gọi từ MeditationSystem)
+TT_SiVuong_Thiendinh:
+  Skills:
+    - particles{p=ENCHANTED_HIT;a=10;hs=0.8;vs=1.5} @self
+    - particles{p=END_ROD;a=5;hs=0.5;vs=1.0} @self
+    - sound{s=block.beacon.ambient;v=0.5;p=1.5} @self
+    - message{m="§e📖 Sĩ Vương Thiền Định — LK hấp thụ §ax5§e!"} @self
+
+
+# ===== PET SKILLS 7.2.8 =====
+
+TT_Pet_LUYEN_KHI_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=9;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=6;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.77} @self
+  Cooldown: 8
+
+TT_Pet_LUYEN_KHI_Defend:
+  Skills:
+    - particles{p=TOTEM;a=9;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=5;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.48} @self
+  Cooldown: 12
+
+
+TT_Pet_TRUC_CO_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=10;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=7;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.74} @self
+  Cooldown: 8
+
+TT_Pet_TRUC_CO_Defend:
+  Skills:
+    - particles{p=TOTEM;a=10;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=6;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.46} @self
+  Cooldown: 12
+
+
+TT_Pet_KET_DAN_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=11;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=8;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.71} @self
+  Cooldown: 7
+
+TT_Pet_KET_DAN_Defend:
+  Skills:
+    - particles{p=TOTEM;a=11;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=7;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.44} @self
+  Cooldown: 11
+
+
+TT_Pet_NGUYEN_ANH_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=12;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=9;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.68} @self
+  Cooldown: 7
+
+TT_Pet_NGUYEN_ANH_Defend:
+  Skills:
+    - particles{p=TOTEM;a=12;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=8;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.42} @self
+  Cooldown: 10
+
+
+TT_Pet_HOA_THAN_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=13;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=10;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.65} @self
+  Cooldown: 7
+
+TT_Pet_HOA_THAN_Defend:
+  Skills:
+    - particles{p=TOTEM;a=13;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=9;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.40} @self
+  Cooldown: 10
+
+
+TT_Pet_DE_TU_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=14;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=11;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.62} @self
+  Cooldown: 7
+
+TT_Pet_DE_TU_Defend:
+  Skills:
+    - particles{p=TOTEM;a=14;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=10;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.38} @self
+  Cooldown: 10
+
+
+TT_Pet_DE_HAU_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=15;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=12;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.59} @self
+  Cooldown: 6
+
+TT_Pet_DE_HAU_Defend:
+  Skills:
+    - particles{p=TOTEM;a=15;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=11;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.36} @self
+  Cooldown: 9
+
+
+TT_Pet_DE_VUONG_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=16;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=13;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.56} @self
+  Cooldown: 6
+
+TT_Pet_DE_VUONG_Defend:
+  Skills:
+    - particles{p=TOTEM;a=16;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=12;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.34} @self
+  Cooldown: 9
+
+
+TT_Pet_DE_TON_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=17;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=14;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.53} @self
+  Cooldown: 6
+
+TT_Pet_DE_TON_Defend:
+  Skills:
+    - particles{p=TOTEM;a=17;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=13;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.32} @self
+  Cooldown: 9
+
+
+TT_Pet_DE_CHU_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=18;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=15;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.50} @self
+  Cooldown: 5
+
+TT_Pet_DE_CHU_Defend:
+  Skills:
+    - particles{p=TOTEM;a=18;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.30} @self
+  Cooldown: 8
+
+
+TT_Pet_BAN_THANH_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=19;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=16;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.47} @self
+  Cooldown: 5
+
+TT_Pet_BAN_THANH_Defend:
+  Skills:
+    - particles{p=TOTEM;a=19;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.28} @self
+  Cooldown: 8
+
+
+TT_Pet_CHUAN_THANH_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=20;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=17;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.44} @self
+  Cooldown: 5
+
+TT_Pet_CHUAN_THANH_Defend:
+  Skills:
+    - particles{p=TOTEM;a=20;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.26} @self
+  Cooldown: 8
+
+
+TT_Pet_DAI_THANH_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=21;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=18;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.41} @self
+  Cooldown: 5
+
+TT_Pet_DAI_THANH_Defend:
+  Skills:
+    - particles{p=TOTEM;a=21;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.24} @self
+  Cooldown: 7
+
+
+TT_Pet_THANH_TON_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=22;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=19;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.38} @self
+  Cooldown: 5
+
+TT_Pet_THANH_TON_Defend:
+  Skills:
+    - particles{p=TOTEM;a=22;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.22} @self
+  Cooldown: 7
+
+
+TT_Pet_THANH_DE_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=23;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.35} @self
+  Cooldown: 4
+
+TT_Pet_THANH_DE_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.20} @self
+  Cooldown: 7
+
+
+TT_Pet_CHAN_TIEN_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=24;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.32} @self
+  Cooldown: 4
+
+TT_Pet_CHAN_TIEN_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.18} @self
+  Cooldown: 7
+
+
+TT_Pet_KIM_TIEN_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=25;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.29} @self
+  Cooldown: 4
+
+TT_Pet_KIM_TIEN_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.16} @self
+  Cooldown: 7
+
+
+TT_Pet_THAI_AT_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=26;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.26} @self
+  Cooldown: 4
+
+TT_Pet_THAI_AT_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.14} @self
+  Cooldown: 6
+
+
+TT_Pet_DAI_LA_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=27;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.23} @self
+  Cooldown: 4
+
+TT_Pet_DAI_LA_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.12} @self
+  Cooldown: 6
+
+
+TT_Pet_TIEN_DE_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.20} @self
+  Cooldown: 3
+
+TT_Pet_TIEN_DE_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.10} @self
+  Cooldown: 6
+
+
+TT_Pet_THIEN_TON_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.17} @self
+  Cooldown: 3
+
+TT_Pet_THIEN_TON_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.08} @self
+  Cooldown: 6
+
+
+TT_Pet_THIEN_DAO_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.14} @self
+  Cooldown: 3
+
+TT_Pet_THIEN_DAO_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.06} @self
+  Cooldown: 5
+
+
+TT_Pet_THIEN_DE_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.11} @self
+  Cooldown: 3
+
+TT_Pet_THIEN_DE_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.04} @self
+  Cooldown: 5
+
+
+TT_Pet_HON_NGUYEN_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.08} @self
+  Cooldown: 2
+
+TT_Pet_HON_NGUYEN_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.02} @self
+  Cooldown: 5
+
+
+TT_Pet_VO_THUONG_CHI_TON_Attack:
+  Skills:
+    - particles{p=CRIT_MAGIC;a=28;hs=0.7;vs=0.9} @self
+    - particles{p=ENCHANTED_HIT;a=20;hs=0.5;vs=0.7} @self
+    - sound{s=entity.player.attack.strong;v=0.7;p=1.05} @self
+  Cooldown: 2
+
+TT_Pet_VO_THUONG_CHI_TON_Defend:
+  Skills:
+    - particles{p=TOTEM;a=23;hs=0.9;vs=1.2} @self
+    - particles{p=END_ROD;a=14;hs=0.6;vs=1.0} @self
+    - sound{s=item.totem.use;v=0.8;p=1.00} @self
+  Cooldown: 4
+

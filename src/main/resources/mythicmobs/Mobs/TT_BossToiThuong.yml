@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════
+#   TuTiên Plugin — BOSS TỐI THƯỢNG (World Boss tự động)
+#   Copy vào: plugins/MythicMobs/Mobs/TT_BossToiThuong.yml
+#
+#   Boss này được WorldBossManager (Java) triệu hồi TỰ ĐỘNG theo lịch
+#   (xem config.yml mục world-boss) — không cần lệnh thủ công. ID mob
+#   PHẢI khớp đúng với world-boss.mob-id trong config.yml.
+#
+#   Mượn lại các skill đã có sẵn trong TT_Skills.yml (đã dùng ổn định
+#   cho các boss Vượt Kiếp) thay vì viết skill mới — dễ bảo trì, và các
+#   skill này đã được cân bằng qua thực tế.
+#
+#   HP/damage cố tình đặt CAO HƠN boss Vượt Kiếp mạnh nhất (TT_TuTuyetDinh,
+#   90,000 HP) vì đây là world boss đánh HỘI (nhiều người cùng lúc), không
+#   phải solo — cần đủ "trâu" để trận đấu có ý nghĩa nhóm, không bị 1-2
+#   người diệt trong vài giây. Chỉnh Health/LevelModifiers.Health bên dưới
+#   theo quy mô server bạn (số người chơi thường xuyên tham gia).
+# ═══════════════════════════════════════════════════════════
+
+TT_BossToiThuong:
+  Type: WARDEN
+  Display: '&4&l☠ BOSS TỐI THƯỢNG ☠ &c[&f{level}&c]'
+  Health: 300000
+  Damage: 220
+  Armor: 40
+  Options:
+    PreventOtherDrops: true
+    PreventSunburn: true
+    MovementSpeed: 0.45
+    KnockbackResistance: 1.0
+    AlwaysShowName: true
+    Despawn: false          # KHONG tu despawn khi khong co nguoi choi gan - day la world boss co lich trinh
+  LevelModifiers:
+    Health: 15000
+    Damage: 15
+    Armor: 1
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WardenSonic_Free} ~onTimer:20
+    - skill{s=TT_LightningBarrage} ~onTimer:25
+    - skill{s=TT_OmegaExplosion} ~onTimer:40
+    - skill{s=TT_OmegaStrike} ~onAttack
+    - skill{s=TT_FinalJudgement} ~onTimer:180
+    - skill{s=TT_OmegaDeath} ~onDeath
+  Equipment:
+    - NETHERITE_SWORD MAINHAND
+  DamageMods:
+    Fire: -50
+    Fallback: 0
+  Drops:
+    - NETHERITE_INGOT 1-2 0.4
+    - DIAMOND 4-8 0.6

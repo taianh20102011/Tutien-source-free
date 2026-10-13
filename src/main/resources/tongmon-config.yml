@@ -1,0 +1,15 @@
+# Settings for rented sect territories. This file is separate from tongmon.yml persistence data.
+land:
+  enabled: true
+  rent-cost: 50000
+  renew-cost: 25000
+  duration-days: 30
+  max-side: 64
+  max-height: 128
+  # Rent creates one native provider per land (never overlapping WG+GP claims simultaneously).
+  # AUTO: WorldGuard first, then GriefPrevention, then TuTien-only protection.
+  # Explicit options: AUTO, WORLDGUARD, GRIEFPREVENTION, TUTIEN.
+  claim-provider: AUTO
+  # Do not rent over existing foreign regions/claims.
+  respect-worldguard: true
+  respect-griefprevention: true

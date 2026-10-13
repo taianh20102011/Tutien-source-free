@@ -1,0 +1,255 @@
+name: TuTienPlugin
+version: '${project.version}'
+main: com.tutien.TuTienPlugin
+api-version: '1.21'
+description: "Tu Tien Plugin v7 - He thong tu luyen day du + MythicLib/MythicMobs Hook"
+authors: [TuTienDev]
+depend: []
+softdepend: [LuckPerms, Vault, WorldEdit, WorldGuard, GriefPrevention, PlaceholderAPI, BetterHud, MythicLib, MythicMobs, SimplePets, ItemsAdder, Citizens]
+
+commands:
+  # ======= LENH CHINH =======
+  tutien:
+    description: "Lenh chinh Tu Tien (chon class, dao, xem info...)"
+    usage: "/tutien <chon|dao|info|skill|layky|items|phabao|reroll|reroll_toc|top>"
+    aliases: [tt, tx]
+
+  vuottamma:
+    description: "Vuot Tam Ma - Buoc 1 truoc khi dot pha (tu Thanh Gioi tro len)"
+    usage: "/vuottamma"
+    aliases: [vtm]
+
+  dotpha:
+    description: "Bat dau Thien Kiep dot pha"
+    usage: "/dotpha"
+    aliases: [dp]
+
+  boqua:
+    description: "Bo qua thong bao dot pha"
+    usage: "/boqua"
+    aliases: [bq]
+
+  linhkhi:
+    description: "Xem thanh Linh Khi"
+    usage: "/linhkhi"
+    aliases: [lk]
+
+  # ======= TUI DO =======
+  tuitutien:
+    description: "Mo Tui Do Tu Tien (GUI 54 slot)"
+    usage: "/tuitutien"
+    aliases: [ttbag, tuidotutien]
+
+  ttbag:
+    description: "Mo Tui Do Tu Tien"
+    usage: "/ttbag"
+
+  skill:
+    description: "Lenh skill (alias cua tutien)"
+    usage: "/skill"
+
+  # ======= NHAN VAT =======
+  toc:
+    description: "Xem Toc (giong loai) cua ban"
+    usage: "/toc"
+
+  aura:
+    description: "Bat/Tat vong Tu Vi phat sang"
+    usage: "/aura [on|off]"
+    aliases: [tuvi]
+
+  # ======= LUYEN CHE =======
+  luyen:
+    description: "Luyen Dan Duoc (32 cong thuc)"
+    usage: "/luyen [ten_dan|danh_sach]"
+    aliases: [luyendan, ld]
+
+  renduc:
+    description: "Ren Duc nang cap Phap Bao len tier cao hon"
+    usage: "/renduc"
+    aliases: [rd, forge]
+
+  cuonghoa:
+    description: "Cuong Hoa Phap Bao +1 -> +10 (giu nguyen tier, tang % chi so)"
+    usage: "/cuonghoa"
+    aliases: [chpb, enhance]
+
+  khamnam:
+    description: "Kham Nam Ngoc thuoc tinh (Lua/Bang/Loi) vao Phap Bao"
+    usage: "/khamnam"
+    aliases: [kn, socket]
+
+  dunghop:
+    description: "Dung Hop 2 Phap Bao cung loai: gop dong an + co hoi thang pham"
+    usage: "/dunghop"
+    aliases: [dh, fusion]
+
+  linhthuc:
+    description: "Gan Linh Thuc (ky nang tu dong theo ngu canh) len Phap Bao dang cam"
+    usage: "/linhthuc"
+    aliases: [lt]
+
+  khilinh:
+    description: "Cho Phap Bao an do rac de tich diem Linh Tinh (Khi Linh)"
+    usage: "/khilinh"
+    aliases: [kl, phapbaopet]
+
+  # ======= TINH NANG MOI =======
+  thiendinh:
+    description: "Thien Dinh - ngoi tu luyen lay LK tu dong"
+    usage: "/thiendinh [bat|tat]"
+    aliases: [td, meditate]
+
+  trieukiem:
+    description: "Trieu hoi Kiem Bay (Kiem Tu, Ban Thanh+)"
+    usage: "/trieukiem [mode]"
+    aliases: [tk, kiemdao]
+
+  trieuthu:
+    description: "Trieu hoi Linh Thu dong hanh (moi class)"
+    usage: "/trieuthu"
+    aliases: [ls, linhthu, pet]
+
+  hocbidong:
+    description: "Hoc 1 bi kip bi dong tu sach dang cam tren tay (toi da 3)"
+    usage: "/hocbidong <atk|hp|def|speed|luck|regen>"
+    aliases: [hoc, learnpassive]
+
+  bidong:
+    description: "Xem cac bi kip bi dong da hoc"
+    usage: "/bidong"
+    aliases: [passives, passive]
+
+  doiky:
+    description: "Doi sub-skill dang active trong 1 slot cua Linh Khi Kiem (item ghep)"
+    usage: "/doiky <a|b|c|d>"
+    aliases: [changeskill, doikinang]
+
+  ngukiem:
+    description: "Ngu Kiem Phi Hanh - dung tren Phi Kiem khi bay (Kiem Tu, Ban Thanh+)"
+    usage: "/ngukiem"
+    aliases: [nk, phikiem]
+
+
+  linhchungshop:
+    description: "Mua/Ban Linh Chung, co khoa canh gioi server-side"
+    usage: "/linhchungshop <buy|sell> <herbId> [soLuong]"
+    aliases: [lcshop]
+
+  thao:
+    description: "Xem thong tin Tien Thao hien co"
+    usage: "/thao"
+    aliases: [thaodoc, herb]
+
+  addlinhzone:
+    description: "Them vung Linh Mach tang LK (Admin)"
+    usage: "/addlinhzone <ten> [ban_kinh]"
+    permission: tutien.admin
+    aliases: [alz]
+
+  # ======= TONG MON =======
+  tongmon:
+    description: "He thong Tong Mon / Bang Hoi"
+    usage: "/tongmon <tao|info|moi|kick|roi|rank|kho>"
+    aliases: [tm, sect]
+
+  # ======= CUSTOM CULTIVATION TECHNIQUES =======
+  congphap:
+    description: "Hệ thống công pháp do server tùy chỉnh qua congphap.yml"
+    usage: "/congphap <list|info|hoc|trangbi|thi-trien|bo>"
+    aliases: [congphapcustom, technique]
+
+  # ======= TONG MON RECRUITMENT SHORTCUT =======
+  mochieumo:
+    description: "Mở/đóng chiêu mộ công khai của Tông Môn (Môn Chủ)"
+    usage: "/mochieumo"
+    aliases: [mcm]
+
+  kinang:
+    description: "Mở giao diện tùy chọn các hệ thống kỹ năng"
+    usage: "/kinang"
+
+  # ======= HUONG DAN =======
+  guide:
+    description: "Huong dan chi tiet tat ca tinh nang"
+    usage: "/guide [batdau|class|canh_gioi|dotpha|skill|linh_dan|phap_bao|linh_thach|tong_mon|linh_can|dao|cong_phap|toc|meo|lenh]"
+
+  # ======= ADMIN =======
+  ttadmin:
+    description: "Admin commands cho TuTien"
+    usage: "/ttadmin <lenh>"
+    permission: tutien.admin
+    aliases: [tta]
+
+  debug:
+    description: "Bat/tat che do Debug TuTien (Admin)"
+    usage: "/debug [on|off]"
+    permission: tutien.admin
+    aliases: [ttdebug]
+
+  # ======= KARMA & QUEST =======
+  karma:
+    description: "Xem Cong Duc va Nghiep Luc"
+    usage: "/karma"
+    aliases: [congduc]
+
+  quest:
+    description: "Xem nhiem vu Daily/Weekly"
+    usage: "/quest"
+    aliases: [nhiemvu, nv]
+
+  party:
+    description: Nhom cung tu tien
+    usage: /party <create|invite|accept|leave|kick|disband|info>
+    aliases: [nhom]
+
+  group:
+    description: Quan ly nhom tu tien (Alias cua Party)
+    usage: /group <create|invite|accept|leave|kick|disband|info>
+    aliases: [grp]
+
+  bloodmoon:
+    description: Quan ly su kien Huyet Nguyet
+    usage: /bloodmoon <start|stop|status>
+    permission: tutien.admin
+    aliases: [huyetnguyet, hn]
+
+  binhxl:
+    description: Dung Binh Huyet Nguyet (cong/farm/heal)
+    usage: /binhxl <cong|farm|heal>
+    aliases: [binh, binhhuyet]
+
+  trade:
+    description: Giao dich vat pham voi nguoi khac
+    usage: /trade <player>
+    aliases: [giaodich, gd]
+
+  tang:
+    description: Tang item tren tay cho nguoi khac
+    usage: /tang <player>
+    aliases: [gift, cho]
+
+  # ======= SU DO (Master-Disciple) =======
+  suphu:
+    description: "Nhan mot nguoi choi lam de tu"
+    usage: "/suphu <player>"
+
+  dedoan:
+    description: "Sư đồ người chơi và NPC follower có dữ liệu độc lập"
+    usage: "/dedoan [roi|kick <player>|npc <tao|list|stats|randomskip|thechat|linhcan|tuchat|xoa> ...]"
+
+  # ======= UY AP TOGGLE =======
+  uyap:
+    description: "Bật/tắt hiệu ứng Uy Áp cảnh giới lên bản thân"
+    usage: "/uyap [on|off|bat|tat|status]"
+
+permissions:
+  tutien.admin:
+    description: "Quyen Admin cao nhat cua TuTienPlugin"
+    default: op
+  group.admin:
+    description: "Quyen Admin quan ly tat ca cac Nhom/Party"
+    default: op
+  tutien.user:
+    description: "Quyen su dung cac lenh co ban cua TuTienPlugin"
+    default: true

@@ -1,0 +1,60 @@
+# TuTienPlugin - Dao paths. Changes are loaded on server startup; restart after editing.
+paths:
+  CHINH_DAO:
+    enabled: true
+    display-name: "Chính Đạo"
+    color: "§b"
+    icon: "☯"
+    description: "Con đường chính đạo, cân bằng và ổn định."
+    break-difficulty-multiplier: 0.85
+    defense-multiplier: 1.10
+    healing-multiplier: 1.05
+    attack-multiplier: 1.00
+    linh-khi-multiplier: 1.0
+  MA_DAO:
+    enabled: true
+    display-name: "Ma Đạo"
+    color: "§4"
+    icon: "☠"
+    description: "Sát thương cao, rủi ro đột phá lớn."
+    break-difficulty-multiplier: 1.20
+    defense-multiplier: 0.90
+    healing-multiplier: 0.85
+    attack-multiplier: 1.35
+    linh-khi-multiplier: 1.2
+  SI_VUONG:
+    enabled: true
+    display-name: "Sĩ Vương"
+    color: "§e"
+    icon: "📖"
+    description: "Tu thiền, học đạo và tích lũy Linh Khí."
+    break-difficulty-multiplier: 0.60
+    defense-multiplier: 1.00
+    healing-multiplier: 1.20
+    attack-multiplier: 0.60
+    linh-khi-multiplier: 2.0
+  LO_VUONG:
+    enabled: true
+    display-name: "Lọ Vương"
+    color: "§5"
+    icon: "🏺"
+    description: "Phòng thủ cao, thiên về chống chịu."
+    break-difficulty-multiplier: 1.00
+    defense-multiplier: 1.60
+    healing-multiplier: 1.10
+    attack-multiplier: 0.80
+    linh-khi-multiplier: 0.85
+custom-paths:
+  # Example custom Dao. Rename or remove this block to suit your server.
+  THIEN_DAO_CUSTOM:
+    enabled: false
+    display-name: "Thiên Đạo"
+    color: "§d"
+    icon: "✦"
+    description: "Đạo tùy chỉnh do server định nghĩa."
+    break-difficulty-multiplier: 1.0
+    defense-multiplier: 1.1
+    healing-multiplier: 1.1
+    attack-multiplier: 1.1
+    linh-khi-multiplier: 1.1
+    lore-display: "§dThiên Đạo tùy chỉnh"

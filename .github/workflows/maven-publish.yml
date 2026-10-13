@@ -39,7 +39,7 @@ jobs:
         with:
           tag_name: v${{ steps.ver.outputs.v }}
           name: OmniPets ${{ steps.ver.outputs.v }}
-          files: target/OmniPets-*.jar
+          files: target/TuTienPlugin-*.jar
 
       - name: Publish Package (chỉ khi đẩy tag)
         if: startsWith(github.ref, 'refs/tags/v')

@@ -125,17 +125,6 @@ PlaceholderAPI (nếu đã cài):
 %tutien_npc_disciple_1_tuchat%
 ```
 
-## 6. Tạo JAR
-
-Dùng JDK 21 và Maven. Chạy trong thư mục chứa `pom.xml` của từng edition:
-
-```powershell
-mvn clean package -Pfree
-mvn clean package -Ppremium
-```
-
-Bản FREE build ra `target/TuTienPlugin-free-7.7.1.jar`, PREMIUM ra `target/TuTienPlugin-premium-7.7.1.jar`. Không build cùng một thư mục giữa hai edition; dùng thư mục riêng cho mỗi bản.
-
-## 7. Giới hạn kiểm thử
+## 6. Giới hạn kiểm thử
 
 Source đã qua kiểm tra tĩnh: 103 file Java/edition được quét cân bằng delimiter và lexical state, 13 resource YAML/edition parse được, `pom.xml` hợp lệ, và file gameplay chung giữa FREE/PREMIUM đã được đối chiếu. Môi trường đóng gói không có Maven/dependency cache nên chưa chạy Maven compiler/build và chưa test trên Paper server thật. Trước khi dùng production, hãy thử WorldGuard/GriefPrevention theo đúng version server, Citizens follower, claim cleanup và skill trên một server staging.

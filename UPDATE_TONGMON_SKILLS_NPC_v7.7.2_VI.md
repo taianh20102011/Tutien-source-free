@@ -31,17 +31,6 @@ Bản cập nhật source cho cả FREE và PREMIUM, dựa trên v7.7.1. Bản n
 - Native claim API phải được thử bằng đúng phiên bản plugin đang dùng. Nếu API không tương thích, việc thuê/gia hạn được từ chối thay vì âm thầm tạo claim không an toàn.
 - Piston chạm vào vùng được bảo vệ bị chặn vì sự kiện piston không có actor rõ ràng đáng tin để phân biệt người kích hoạt; điều này có thể hạn chế piston tự động trong khu vực thuê.
 
-## 5. Build
-
-Yêu cầu JDK 21 + Maven. Chạy trong thư mục của từng edition:
-
-```powershell
-mvn clean package -Pfree
-mvn clean package -Ppremium
-```
-
-JAR dự kiến: `target/TuTienPlugin-free-7.7.2.jar` và `target/TuTienPlugin-premium-7.7.2.jar`.
-
-## 6. Trạng thái kiểm thử
+## 5. Trạng thái kiểm thử
 
 Đã kiểm tra tĩnh 103 file Java mỗi edition, 13 YAML mỗi edition, `pom.xml`, cấu hình, đăng ký lệnh, handler bảo vệ lãnh địa và đường dẫn enforcement PvP liên minh. Máy đóng gói không có Maven và không có dependency Paper/WorldGuard/GriefPrevention/Citizens trong cache; do đó chưa xác nhận Maven compile hoặc runtime server. Hãy test trên server staging trước production.

@@ -1,0 +1,6 @@
+target/
+dist/
+license-platform/data/
+license-platform/node_modules/
+license-platform/desktop/node_modules/
+*.log

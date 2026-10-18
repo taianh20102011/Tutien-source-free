@@ -1,0 +1,253 @@
+# ═══════════════════════════════════════════════════════════
+#   TuTiên Plugin — MythicMobs Boss Definitions
+#   VERSION: FREE / MythicMobs 4.x Compatible
+#   Copy vào: plugins/MythicMobs/Mobs/TT_Bosses.yml
+# ═══════════════════════════════════════════════════════════
+
+TT_KiepNan_WitherSkeleton:
+  Type: WITHER_SKELETON
+  Display: '&c&lKIẾP NẠN VỆ BINH [&f{level}&c]'
+  Health: 500
+  Damage: 12
+  Armor: 5
+  Options:
+    PreventOtherDrops: true
+    PreventSunburn: true
+    MovementSpeed: 0.38
+    KnockbackResistance: 0.5
+  LevelModifiers:
+    Health: 120
+    Damage: 5
+    Armor: 1.5
+  Skills:
+    - skill{s=TT_ShadowStrike} ~onAttack
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_DeathSmoke_Free} ~onDeath
+    - skill{s=TT_WitherBones_Free} ~onTimer:80
+  Equipment:
+    - IRON_SWORD MAINHAND
+  DamageMods:
+    Fire: -100
+  Drops:
+    - BONE 1-3 0.7
+    - COAL 1-2 0.5
+
+TT_KiepNan_Wither:
+  Type: WITHER
+  Display: '&4&lTHIÊN KIẾP CHI LINH [&e{level}&4]'
+  Health: 900
+  Damage: 20
+  Options:
+    PreventOtherDrops: true
+    MovementSpeed: 0.20
+    KnockbackResistance: 0.8
+  LevelModifiers:
+    Health: 200
+    Damage: 8
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WitherBlast_Free} ~onTimer:80
+    - skill{s=TT_WitherExplosion_Free} ~onDeath
+  Drops:
+    - NETHER_STAR 1 0.3
+    - EXPERIENCE_BOTTLE 3-8 1.0
+
+TT_VeThan_Warden:
+  Type: WARDEN
+  Display: '&4&lVỆ THẦN [&e{level}&4]'
+  Health: 1500
+  Damage: 30
+  Armor: 8
+  Options:
+    PreventOtherDrops: true
+    MovementSpeed: 0.30
+    KnockbackResistance: 1.0
+  LevelModifiers:
+    Health: 350
+    Damage: 12
+    Armor: 2
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WardenSonic_Free} ~onTimer:100
+    - skill{s=TT_WardenSmash} ~onAttack
+    - skill{s=TT_WardenDarkness} ~onTimer:60
+    - skill{s=TT_WardenDeath_Free} ~onDeath
+  DamageMods:
+    Projectile: -80
+  Drops:
+    - ECHO_SHARD 1-2 0.4
+    - AMETHYST_SHARD 2-5 0.6
+
+TT_SongVeThan:
+  Type: WARDEN
+  Display: '&4&lSONG VỆ THẦN [&e{level}&4]'
+  Health: 2000
+  Damage: 35
+  Armor: 10
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.32
+  LevelModifiers:
+    Health: 400
+    Damage: 14
+    Armor: 2.5
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WardenSonic_Free} ~onTimer:80
+    - skill{s=TT_WardenSmash} ~onAttack
+    - skill{s=TT_WardenDarkness} ~onTimer:50
+    - skill{s=TT_TwinCombo} ~onTimer:120
+    - skill{s=TT_WardenDeath_Free} ~onDeath
+
+TT_UltraVeThan:
+  Type: WARDEN
+  Display: '&4&lKIẾP VỆ THẦN [&e{level}&4]'
+  Health: 4000
+  Damage: 45
+  Armor: 15
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.35
+  LevelModifiers:
+    Health: 800
+    Damage: 18
+    Armor: 3
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WardenSonic_Free} ~onTimer:60
+    - skill{s=TT_WardenSmash} ~onAttack
+    - skill{s=TT_UltraRage} ~onTimer:100
+    - skill{s=TT_WardenDarkness} ~onTimer:40
+    - skill{s=TT_LightningBarrage} ~onTimer:80
+    - skill{s=TT_UltraDeath} ~onDeath
+
+TT_TuyetDinh_Boss:
+  Type: WARDEN
+  Display: '&c&lTUYỆT ĐỈNH VÔ THƯỢNG CHI THẦN'
+  Health: 10000
+  Damage: 60
+  Armor: 20
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.40
+  LevelModifiers:
+    Health: 2500
+    Damage: 25
+    Armor: 3
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_WardenSonic_Free} ~onTimer:50
+    - skill{s=TT_WardenSmash} ~onAttack
+    - skill{s=TT_TuyetDinhSlam} ~onTimer:70
+    - skill{s=TT_LightningBarrage} ~onTimer:60
+    - skill{s=TT_WardenDarkness} ~onTimer:35
+    - skill{s=TT_TuyetDinhDeath} ~onDeath
+
+TT_Omega_DualBoss:
+  Type: WARDEN
+  Display: '&5&lOMEGA VỆ THẦN [&e{level}&5]'
+  Health: 22000
+  Damage: 75
+  Armor: 22
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.42
+  LevelModifiers:
+    Health: 3000
+    Damage: 30
+    Armor: 2
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_OmegaExplosion} ~onTimer:60
+    - skill{s=TT_WardenSonic_Free} ~onTimer:40
+    - skill{s=TT_LightningBarrage} ~onTimer:50
+    - skill{s=TT_OmegaDeath} ~onDeath
+
+TT_Omega_Boss:
+  Type: WARDEN
+  Display: '&5&lOMEGA THẦN [&e{level}&5]'
+  Health: 30000
+  Damage: 90
+  Armor: 25
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.44
+  LevelModifiers:
+    Health: 4000
+    Damage: 35
+    Armor: 2.5
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_OmegaExplosion} ~onTimer:55
+    - skill{s=TT_WardenSonic_Free} ~onTimer:35
+    - skill{s=TT_OmegaStrike} ~onAttack
+    - skill{s=TT_OmegaDeath} ~onDeath
+
+TT_SongOmega:
+  Type: WARDEN
+  Display: '&5&lSONG OMEGA [&e{level}&5]'
+  Health: 45000
+  Damage: 110
+  Armor: 27
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.46
+  LevelModifiers:
+    Health: 5000
+    Damage: 40
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_OmegaExplosion} ~onTimer:45
+    - skill{s=TT_WardenSonic_Free} ~onTimer:35
+    - skill{s=TT_OmegaStrike} ~onAttack
+    - skill{s=TT_LightningBarrage} ~onTimer:40
+    - skill{s=TT_OmegaDeath} ~onDeath
+
+TT_TamOmega:
+  Type: WARDEN
+  Display: '&5&lTAM OMEGA [&e{level}&5]'
+  Health: 65000
+  Damage: 135
+  Armor: 28
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.47
+  LevelModifiers:
+    Health: 6500
+    Damage: 45
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_OmegaExplosion} ~onTimer:40
+    - skill{s=TT_WardenSonic_Free} ~onTimer:30
+    - skill{s=TT_OmegaStrike} ~onAttack
+    - skill{s=TT_OmegaDeath} ~onDeath
+
+TT_TuTuyetDinh:
+  Type: WARDEN
+  Display: '&c&lTHUY TINH VINH HANG KIEP THAN'
+  Health: 90000
+  Damage: 160
+  Armor: 30
+  Options:
+    PreventOtherDrops: true
+    KnockbackResistance: 1.0
+    MovementSpeed: 0.50
+  LevelModifiers:
+    Health: 8000
+    Damage: 50
+    Armor: 1
+  Skills:
+    - skill{s=TT_BossRoar} ~onSpawn
+    - skill{s=TT_OmegaExplosion} ~onTimer:35
+    - skill{s=TT_WardenSonic_Free} ~onTimer:25
+    - skill{s=TT_OmegaStrike} ~onAttack
+    - skill{s=TT_LightningBarrage} ~onTimer:30
+    - skill{s=TT_FinalJudgement} ~onTimer:200
+    - skill{s=TT_ThuyTinhDeath} ~onDeath

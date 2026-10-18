@@ -1,0 +1,209 @@
+# TuTien FREE - tuỳ biến 25 slot cảnh giới có sẵn.
+# Chỉnh các trường bên dưới rồi dùng /ttadmin reload (hoặc khởi động lại server).
+# ID (LUYEN_KHI, TRUC_CO, ...) là khoá nội bộ cố định; không tự thêm ID mới.
+# Hiện tại file cho phép đổi tên/màu/cấp tu luyện/ngưỡng LK của 25 slot,
+# chưa hỗ trợ thêm số slot cảnh giới mới vì lõi gameplay lưu stage bằng enum.
+# Màu dùng mã legacy Minecraft: &f, &a, &6, &l...
+# max-rank: từ 1 đến 6. breakthrough-difficulty tuỳ chọn, giá trị > 0 và <= 1.
+# can-fly / can-use-all-skills tuỳ chọn; bỏ dòng để dùng quy tắc mặc định.
+
+stages:
+  LUYEN_KHI:
+    name: "Luyện Khí"
+    color: "&f"
+    base-linh-khi: 2000
+    max-rank: 3
+    realm: "Linh Giới"
+    realm-color: "&a"
+
+  TRUC_CO:
+    name: "Trúc Cơ"
+    color: "&a"
+    base-linh-khi: 20000
+    max-rank: 3
+    realm: "Linh Giới"
+    realm-color: "&a"
+
+  KET_DAN:
+    name: "Kết Đan"
+    color: "&e"
+    base-linh-khi: 200000
+    max-rank: 3
+    realm: "Linh Giới"
+    realm-color: "&a"
+
+  NGUYEN_ANH:
+    name: "Nguyên Anh"
+    color: "&b"
+    base-linh-khi: 2000000
+    max-rank: 3
+    realm: "Linh Giới"
+    realm-color: "&a"
+
+  HOA_THAN:
+    name: "Hóa Thần"
+    color: "&d"
+    base-linh-khi: 20000000
+    max-rank: 3
+    realm: "Linh Giới"
+    realm-color: "&a"
+
+  DE_TU:
+    name: "Đế Tu"
+    color: "&c"
+    base-linh-khi: 200000000
+    max-rank: 4
+    realm: "Đế Giới"
+    realm-color: "&c"
+
+  DE_HAU:
+    name: "Đế Hậu"
+    color: "&c"
+    base-linh-khi: 1000000000
+    max-rank: 4
+    realm: "Đế Giới"
+    realm-color: "&c"
+
+  DE_VUONG:
+    name: "Đế Vương"
+    color: "&c&l"
+    base-linh-khi: 5000000000
+    max-rank: 4
+    realm: "Đế Giới"
+    realm-color: "&c"
+
+  DE_TON:
+    name: "Đế Tôn"
+    color: "&4&l"
+    base-linh-khi: 20000000000
+    max-rank: 4
+    realm: "Đế Giới"
+    realm-color: "&c"
+
+  DE_CHU:
+    name: "Đế Chủ"
+    color: "&4&l"
+    base-linh-khi: 80000000000
+    max-rank: 4
+    realm: "Đế Giới"
+    realm-color: "&c"
+
+  BAN_THANH:
+    name: "Bán Thánh"
+    color: "&f"
+    base-linh-khi: 300000000000
+    max-rank: 5
+    realm: "Thánh Giới"
+    realm-color: "&f"
+
+  CHUAN_THANH:
+    name: "Chuẩn Thánh"
+    color: "&f&l"
+    base-linh-khi: 1000000000000
+    max-rank: 5
+    realm: "Thánh Giới"
+    realm-color: "&f"
+
+  DAI_THANH:
+    name: "Đại Thánh"
+    color: "&b&l"
+    base-linh-khi: 4000000000000
+    max-rank: 5
+    realm: "Thánh Giới"
+    realm-color: "&f"
+
+  THANH_TON:
+    name: "Thánh Tôn"
+    color: "&6&l"
+    base-linh-khi: 15000000000000
+    max-rank: 5
+    realm: "Thánh Giới"
+    realm-color: "&6"
+
+  THANH_DE:
+    name: "Thánh Đế"
+    color: "&6&l"
+    base-linh-khi: 50000000000000
+    max-rank: 5
+    realm: "Thánh Giới"
+    realm-color: "&6"
+
+  CHAN_TIEN:
+    name: "Chân Tiên"
+    color: "&9"
+    base-linh-khi: 200000000000000
+    max-rank: 6
+    realm: "Tiên Giới"
+    realm-color: "&b"
+
+  KIM_TIEN:
+    name: "Kim Tiên"
+    color: "&e"
+    base-linh-khi: 800000000000000
+    max-rank: 6
+    realm: "Tiên Giới"
+    realm-color: "&b"
+
+  THAI_AT:
+    name: "Thái Ất"
+    color: "&b"
+    base-linh-khi: 3000000000000000
+    max-rank: 6
+    realm: "Tiên Giới"
+    realm-color: "&b"
+
+  DAI_LA:
+    name: "Đại La"
+    color: "&d"
+    base-linh-khi: 12000000000000000
+    max-rank: 6
+    realm: "Tiên Giới"
+    realm-color: "&b"
+
+  TIEN_DE:
+    name: "Tiên Đế"
+    color: "&c&l"
+    base-linh-khi: 50000000000000000
+    max-rank: 6
+    realm: "Tiên Giới"
+    realm-color: "&c"
+
+  THIEN_TON:
+    name: "Thiên Tôn"
+    color: "&f&l"
+    base-linh-khi: 200000000000000000
+    max-rank: 6
+    realm: "Thiên Giới"
+    realm-color: "&f"
+
+  THIEN_DAO:
+    name: "Thiên Đạo"
+    color: "&b&l"
+    base-linh-khi: 461168601842738790
+    max-rank: 6
+    realm: "Thiên Giới"
+    realm-color: "&f"
+
+  THIEN_DE:
+    name: "Thiên Đế"
+    color: "&6&l"
+    base-linh-khi: 1152921504606846975
+    max-rank: 6
+    realm: "Thiên Giới"
+    realm-color: "&6"
+
+  HON_NGUYEN:
+    name: "Hỗn Nguyên"
+    color: "&c&l"
+    base-linh-khi: 3074457345618258602
+    max-rank: 6
+    realm: "Thiên Giới"
+    realm-color: "&c"
+
+  VO_THUONG_CHI_TON:
+    name: "Vô Thượng Chí Tôn"
+    color: "&6&l"
+    base-linh-khi: 9223372036854775807
+    max-rank: 1
+    realm: "Thiên Giới"
+    realm-color: "&6&l"

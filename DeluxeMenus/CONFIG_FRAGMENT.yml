@@ -1,0 +1,15 @@
+# Add these under gui_menus: in DeluxeMenus/config.yml
+  linh_chung_toan_bo:
+    file: linh_chung_toan_bo.yml
+  linh_chung_linh_thao:
+    file: linh_chung_linh_thao.yml
+  linh_chung_moc_linh:
+    file: linh_chung_moc_linh.yml
+  linh_chung_hoa_linh:
+    file: linh_chung_hoa_linh.yml
+  linh_chung_kim_linh:
+    file: linh_chung_kim_linh.yml
+  linh_chung_thien_moc_thao:
+    file: linh_chung_thien_moc_thao.yml
+  linh_chung_ngoc_linh_thao:
+    file: linh_chung_ngoc_linh_thao.yml

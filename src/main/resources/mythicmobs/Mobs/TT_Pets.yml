@@ -1,0 +1,452 @@
+# TuTiên 7.2.8 — 25 Linh Thú theo 25 cảnh giới.
+# Có thể thêm ModelEngine: Model: <id> trong Options của từng mob.
+TT_Pet_LuyenKhi:
+  Type: WOLF
+  Display: '&d✦ Thanh Vũ Lang'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: luyen_khi_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_TrucCo:
+  Type: CAT
+  Display: '&d✦ Linh Mộc Miêu'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: truc_co_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_KetDan:
+  Type: OCELOT
+  Display: '&d✦ Kim Giáp Hổ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: ket_dan_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_NguyenAnh:
+  Type: FOX
+  Display: '&d✦ Huyền Băng Hồ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: nguyen_anh_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_HoaThan:
+  Type: WOLF
+  Display: '&d✦ Xích Viêm Lang'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: hoa_than_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DeTu:
+  Type: SPIDER
+  Display: '&d✦ Cửu U Xà'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: de_tu_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DeHau:
+  Type: OCELOT
+  Display: '&d✦ Ngọc Lân Miêu'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: de_hau_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DeVuong:
+  Type: RAVAGER
+  Display: '&d✦ Thiên Lôi Hổ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: de_vuong_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DeTon:
+  Type: TURTLE
+  Display: '&d✦ Huyền Minh Quy'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: de_ton_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DeChu:
+  Type: PHANTOM
+  Display: '&d✦ Cửu Thiên Bằng'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: de_chu_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_BanThanh:
+  Type: FOX
+  Display: '&d✦ Thánh Quang Hồ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: ban_thanh_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ChuanThanh:
+  Type: HORSE
+  Display: '&d✦ Thánh Viêm Kỳ Lân'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: chuan_thanh_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DaiThanh:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Thánh Vực Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: dai_thanh_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThanhTon:
+  Type: PARROT
+  Display: '&d✦ Tinh Hà Phượng'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thanh_ton_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThanhDe:
+  Type: HORSE
+  Display: '&d✦ Thánh Thiên Kỳ Lân'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thanh_de_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ChanTien:
+  Type: FOX
+  Display: '&d✦ Cửu Thiên Tiên Hồ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: chan_tien_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_KimTien:
+  Type: HORSE
+  Display: '&d✦ Kim Diệu Tiên Lộc'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: kim_tien_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThaiAt:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Thái Ất Linh Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thai_at_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_DaiLa:
+  Type: PARROT
+  Display: '&d✦ Đại La Thiên Phượng'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: dai_la_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_TienDe:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Tiên Đế Thần Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: tien_de_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThienTon:
+  Type: WARDEN
+  Display: '&d✦ Thiên Tôn Huyền Vũ'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thien_ton_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThienDao:
+  Type: WARDEN
+  Display: '&d✦ Thiên Đạo Thần Kỳ Lân'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thien_dao_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_ThienDe:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Thiên Đế Kim Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: thien_de_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_HonNguyen:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Hỗn Nguyên Thánh Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: hon_nguyen_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+
+TT_Pet_VoThuongChiTon:
+  Type: ENDER_DRAGON
+  Display: '&d✦ Vô Thượng Tổ Long'
+  Health: 9999
+  Damage: 0
+  Options:
+    MovementSpeed: 0
+    PreventOtherDrops: true
+    PreventItemPickup: true
+    PreventMobKillDrops: true
+    PreventSunburn: true
+    Silent: false
+    # Model: vo_thuong_chi_ton_pet
+  AIGoalSelectors:
+    - none
+  AITargetSelectors:
+    - none
+

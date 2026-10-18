@@ -1,0 +1,2220 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║          TU TIÊN PLUGIN v7.7.0 — CẤU HÌNH ĐẦY ĐỦ                   ║
+# ║    Sau khi chỉnh sửa: /ttadmin reload để áp dụng thay đổi      ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+messages:
+  prefix: "&8[&6⚡&eTu Tiên&8] &r"
+  no-class: "&cBạn chưa chọn class! Dùng /tutien chon"
+  skill-cooldown: "&eSkill {skill} còn &c{time}s cooldown!"
+  level-up: "&6&l✦ ĐỘT PHÁ! &eBạn đã đạt &a{stage} {rank}!"
+  not-enough-lk: "&cChưa đủ Linh Khí! Tiếp tục tu luyện."
+  not-enough-lt: "&cKhông đủ Linh Thạch!"
+  boss-spawn: "&4☠ Boss Kiếp Nạn xuất hiện! Hãy chuẩn bị!"
+  boss-defeated: "&6✦ Boss bị tiêu diệt! Đột phá thành công!"
+  breakthrough-fail: "&c✗ Đột phá thất bại! Tụt 1 cấp rank."
+
+cultivation:
+  linh-khi-per-mob: 80
+  linh-khi-per-player-kill: 500
+  # Mau toi thieu de 1 quai co ten rieng (name tag) duoc tinh la "boss"
+  # (thuong x10 linh khi). TRUOC DAY chi can co ten la tinh boss -> nguoi
+  # choi co the dat ten cho quai thuong (vd con ga) de cay linh khi/boss-
+  # kill gia mao. Boss that (Vuot Kiep >=400hp, Huyet Cot Ma Vuong 250-
+  # 500hp) deu cao hon nguong nay rat nhieu; mob vanilla manh nhat (Iron
+  # Golem/Ravager) chi ~100hp - nen 150 la nguong an toan, khong anh
+  # huong toi cac boss that.
+  boss-min-health: 150.0
+
+  # CAC MUC DUOI DAY TRUOC DAY BI THUT NHAM VAO "world-boss:" (loi YAML
+  # indentation, khong lien quan gi toi Boss Toi Thuong) — da chuyen ve
+  # dung cho tai day. Doc ky ghi chu tren tung dong: mot vai gia tri VAN
+  # CHUA duoc code doc toi (con "chet"), da ghi ro de tranh nham lan.
+  # CHUA duoc code doc toi o dau ca — Kill Boss van dung cong thuc
+  # "linh-khi-per-mob" x10 (xem CombatListener), khong dung so rieng nay.
+  linh-khi-per-boss-kill: 2000
+  # CHUA duoc code doc toi — LK tu thao duoc dung "lk-percent" rieng cua
+  # tung loai trong "herbs.types.*", khong dung so gop nay.
+  linh-khi-per-herb: 150
+  # CHUA co tinh nang AFK regen nao trong code doc gia tri nay ca.
+  linh-khi-afk-rate: 8
+  # CHUA duoc code doc toi o dau ca.
+  stage-lk-rate-nerf: 0.99
+  meditation:
+    # CHUA duoc code doc toi — MeditationSystem tinh LK/giay theo % LK toi
+    # da (0.5%-3% tuy canh gioi), khong dung so LK/giay co dinh nay.
+    lk-per-second: 28
+    # CHUA duoc code doc toi — vung Linh Mach hien dang nhan x2.0 (hardcode
+    # trong MeditationSystem), khong dung so 3.5 nay.
+    linh-mach-multiplier: 3.5
+    # CHUA duoc code doc toi — chua co co che rieng cho Si Vuong trong vong
+    # lap thien dinh.
+    si-vuong-multiplier: 6.0
+  breakthrough:
+    # CHUA duoc code doc toi — ti le thanh cong Thien Kiep hien tinh theo
+    # bang rieng CultivationStage#getBreakthroughDifficulty() cho tung canh
+    # gioi (+ dieu chinh theo Linh Can/Dao/Toc), khong dung 1 so chung nay.
+    base-success-rate: 0.88
+    # DA duoc code doc (xem PlayerData#failBreakthrough) — dot pha that
+    # bai se tut dung so cap nay (mac dinh 1 neu bo dong nay).
+    fail-rank-loss: 1
+    # DA duoc code doc (xem BreakthroughManager#runTrial) — khoang cach
+    # giua 2 song Thien Kiep lien tiep.
+    wave-interval-seconds: 2
+    # DA duoc code doc (xem BreakthroughManager#runTrial) — chinh DO KHO
+    # Thien Kiep THEO TUNG KHOANG CANH GIOI ma khong can sua code/build lai.
+    # Sat thuong 1 song = maxHP * (dmg-base cua khoang canh gioi tuong ung)
+    # * (0.8 -> 1.2 ngau nhien). "-start" la sat thuong o canh gioi DAU
+    # khoang, "-step" la muc tang THEM cho MOI canh gioi trong khoang do.
+    # "vo-thuong" la so co dinh cho canh gioi cuoi cung (khong co step).
+    #
+    # Vi du khoang Linh+De (ordinal 0-9, 10 canh gioi): dmg = linh-de-start
+    # + ordinal * linh-de-step -> voi mac dinh o duoi: canh gioi dau (ord 0)
+    # = 11%, canh gioi cuoi khoang (ord 9) = 11% + 9*0.8% = 18.2% moi song.
+    trial:
+      dmg-base:
+        linh-de-start: 0.11   # ordinal 0-9   (truoc: 0.07)
+        linh-de-step: 0.008   # (truoc: 0.005)
+        thanh-start: 0.18     # ordinal 10-14 (truoc: 0.12)
+        thanh-step: 0.015     # (truoc: 0.01)
+        tien-start: 0.28      # ordinal 15-19 (truoc: 0.18)
+        tien-step: 0.04       # (truoc: 0.03)
+        thien-start: 0.50     # ordinal 20-23 (truoc: 0.35)
+        thien-step: 0.13      # (truoc: 0.10)
+        vo-thuong: 0.95       # ordinal 24 - Vo Thuong Chi Ton (truoc: 0.85)
+      # % maxHP hoi lai sau MOI song. Day la ly do chinh khien Thien Kiep
+      # qua de o ban cu (0.26 = hoi gan het sat thuong vua nhan) -> GIAM
+      # xuong con 0.12 de sat thuong tich luy that su qua tung song.
+      heal-per-wave: 0.12   # (truoc: 0.26)
+      # Hoi phuc khong bao gio vuot qua % maxHP nay (ke ca cong don nhieu song).
+      heal-cap-percent: 0.75   # (truoc: 0.85)
+      # Khi HP < 15% maxHP sau 1 song, co them 1 lan roi xac suat that bai =
+      # (1 - do-de-cua-canh-gioi) * so nay. So cang cao = cang de chet khi
+      # mau thap. "Do de" xem CultivationStage#getBreakthroughDifficulty().
+      low-hp-fail-chance-multiplier: 0.65   # (truoc: 0.5)
+    boss-arena:
+      # LUU Y QUAN TRONG: toan bo he thong Boss Arena (TribulationBossArena)
+      # da duoc code day du (xay tuong barrier, spawn boss theo cap do 1-48,
+      # timeout...) NHUNG hien KHONG duoc goi o dau trong luong dot pha ca
+      # (BreakthroughManager#successTrial hoan tat dot pha thang, khong goi
+      # TribulationBossArena#startBossChallenge). Toan bo muc "boss-arena"
+      # nay (ke ca "enabled") CHUA CO TAC DUNG GI trong game cho toi khi
+      # tinh nang duoc noi lai vao luong dot pha.
+      enabled: true
+      radius: 9
+      height: 5
+      timeout-minutes: 15
+      boss-hp-multiplier: 0.75
+      boss-dmg-multiplier: 0.75
+
+# ─────────────────────────────────────────────────────────────
+# BOSS TỐI THƯỢNG — world boss tự động (can MythicMobs, xem
+# mythicmobs/Mobs/TT_BossToiThuong.yml). Xuat hien theo lich, nhieu
+# nguoi choi cung danh chung; ai dong gop du % sat thuong deu duoc tinh
+# cong (khong chi rieng nguoi ra don cuoi).
+# ─────────────────────────────────────────────────────────────
+world-boss:
+  enabled: true
+  mob-id: "TT_BossToiThuong"
+  mob-level: 5
+
+  # CHE DO XUAT HIEN:
+  #  "interval"    -> xuat hien lai sau moi X gio (tinh tu lan spawn truoc,
+  #                    kể cả qua restart server - luu trong worldboss_state.yml)
+  #  "fixed-times" -> xuat hien dung vao cac gio co dinh trong ngay (gio server)
+  spawn-mode: "interval"
+  interval-hours: 6
+  fixed-times: ["12:00", "20:00"]   # Chi dung khi spawn-mode: fixed-times
+
+  world: "world"
+  x: 0.5
+  y: 100
+  z: 0.5
+  # Tu dong do xuong tim mat dat trong gan toa do tren, tranh spawn ket
+  # trong khoi/lo lung giua khong khi.
+  find-safe-ground: true
+
+  # Bao truoc bao nhieu giay (broadcast + am thanh) truoc khi boss thuc
+  # su xuat hien, de nguoi choi kip tap hop. 0 = xuat hien ngay khong bao.
+  warning-seconds-before: 60
+
+  # Tu huy (khong thuong) neu khong ai ha duoc trong X phut.
+  timeout-minutes: 45
+
+  # Ty le % TOI THIEU tren tong sat thuong ca tran de duoc tinh "co cong"
+  # giet boss (nhan Boss Toi Thuong kill + thuong). 0.02 = 2%.
+  min-damage-percent-for-credit: 0.02
+
+  linh-khi-reward: 5000
+  tien-reward: 20000
+
+economy:
+  # === TIỀN — chỉnh ở đây để custom toàn bộ tốc độ kiếm/tiêu Tiền ===
+  tien-ten-hien-thi: "Tiền"                 # Tên hiển thị cho đơn vị tiền tệ
+  tien-per-mob-base: 2                      # Tiền cơ bản/mob giết được, nhân theo (cảnh giới+1)
+  tien-per-mob-cap: 50                      # Trần tiền cơ bản/mob (trước khi nhân hệ số loại quái)
+  tien-mob-multiplier-thuong: 1.0           # Zombie, Skeleton, Spider...
+  tien-mob-multiplier-kha: 1.3              # Creeper, Cave Spider
+  tien-mob-multiplier-nguy-hiem: 1.8        # Witch, Pillager, Vindicator
+  tien-mob-multiplier-cao: 2.5              # Blaze, Ghast
+  tien-mob-multiplier-am: 2.0               # Enderman, Drowned
+  tien-mob-multiplier-tinh-anh: 3.0         # Piglin Brute
+  tien-mob-multiplier-boss: 6.0             # Ravager, Warden
+  tien-mob-boss-ten-rieng-multiplier: 5.0   # Mob có tên riêng (boss custom) nhân thêm
+  tien-ma-dao-bonus: 1.2                    # Hệ số cộng thêm cho Ma Đạo
+  tien-breakthrough-base-multiplier: 1.0    # Nhân toàn bộ bảng thưởng đột phá (xem BreakthroughManager)
+  tien-per-player-kill: 50
+  tien-daily-login: 100
+  reroll-linh-can-cost: 500
+  reroll-toc-cost: 2000
+  shop-hoi-mau-cost: 50
+  shop-reset-cd-cost: 200
+  renduc-tier1-cost: 300
+  renduc-tier2-cost: 800
+  renduc-tier3-cost: 2000
+  renduc-tier4-cost: 8000
+  tong-mon-create-cost: 1000
+
+
+# ─────────────────────────────────────────────────────────────
+# LICENSE / EDITION
+# Dev build ignores remote licensing. Release builds (-Pfree/-Ppremium)
+# enforce licensing from the packaged edition.properties; this config cannot
+# turn release enforcement off. FREE licenses are perpetual and bind to the
+# public egress IP + per-install UUID seen by the license service.
+licensing:
+  api-url: "http://127.0.0.1:8787"
+  key: ""
+  offline-grace-hours: 72
+
+
+skills:
+  cooldown-multiplier: 1.0
+  damage-multiplier: 1.0
+  mana-cost-multiplier: 1.0
+  enabled:
+    kiem-khi-tran: true
+    toc-kiem: true
+    thien-sat: true
+    linh-hoa-cau: true
+    dong-bang: true
+    phap-tran: true
+    linh-duoc: true
+    phu-ho-tran: true
+    giai-doc: true
+    manh-doc-tan: true
+    am-sat-kiem: true
+    doc-tran: true
+
+phabao:
+  drop-rate-multiplier: 1.0
+  max-phabao-per-player: 6
+  # Trong so RIENG cho tung loai Phap Bao khi random roi (mac dinh 1.0 = nhu
+  # nhau cho MOI loai neu khong khai bao o day). So cang NHO = cang HIEM; 0
+  # = loai han khoi vong random (khong bao gio roi). Ten loai lay tu enum
+  # trong PhaBaoType.java (vd TRAN_THIEN_GIAP, LINH_KIEM...).
+  #
+  # TRAN_THIEN_GIAP: 0.02 nghia la so voi 1 loai thuong (trong so 1.0), no
+  # HIEM HON KHOANG 50 LAN -> ti le roi coi nhu bang khong (theo yeu cau),
+  # nhung van con 1 co hoi cuc nho thay vi bi xoa han khoi game.
+  type-weight:
+    TRAN_THIEN_GIAP: 0.02
+  # =====================================================
+  #   CUONG HOA (+1 -> +10) - lenh /cuonghoa
+  # =====================================================
+  # Moi cap CONG THEM % ATK/DEF/HP + sat thuong ky nang cua chinh Phap Bao
+  # do (cong don theo cap, KHONG doi tier/loai). Dung /cuonghoa dabaoho de
+  # (admin) phat Da Bao Ho cho nguoi choi test hoac lam phan thuong.
+  enhance:
+    max-level: 10
+    bonus-per-level: 0.03       # +3%/cap -> +10 la +30%
+    cost-tien-base: 500
+    cost-tien-per-level: 300    # phi = base + per-level * cap_dich
+    protection-stone-material: "AMETHYST_SHARD"
+    # Ti le THANH CONG khi cuong hoa LEN cap nay (tu cap-1 -> cap). Cang cao
+    # cang kho. Neu khong khai bao 1 cap nao do, dung gia tri mac dinh trong
+    # code (95%/90%/85%/75%/65%/55%/45%/35%/25%/15%).
+    success-rate:
+      1: 0.95
+      2: 0.90
+      3: 0.85
+      4: 0.75
+      5: 0.65
+      6: 0.55
+      7: 0.45
+      8: 0.35
+      9: 0.25
+      10: 0.15
+    # That bai MA KHONG CO Da Bao Ho: xac suat CHI rot 1 cap thay vi vo do
+    # hoan toan. So cang cao = cang "hien" (it vo do), cang thap = cang de
+    # mat trang Phap Bao vinh vien.
+    fail-downgrade-chance: 0.7
+  # =====================================================
+  #   KHAM NAM (Socketing) - lenh /khamnam
+  # =====================================================
+  # So o kham TOI DA theo tung tier (co the sua tung dong rieng, VD
+  # "max-sockets.TIEN_PHAM: 4"). Neu khong khai bao 1 tier nao do, dung
+  # mac dinh trong code: Dia/Ha=1, Trung/Thuong=2, De/Tien=3.
+  socket:
+    max-sockets:
+      DIA_PHAM: 1
+      HA_PHAM: 1
+      TRUNG_PHAM: 2
+      THUONG_PHAM: 2
+      DE_PHAM: 3
+      TIEN_PHAM: 3
+    # % cong VINH VIEN cho MOI vien Ngoc kham vao (cong don neu kham nhieu
+    # vien CUNG loai). Ngoc Hoa->ATK, Ngoc Bang->DEF, Ngoc Loi->HP.
+    bonus-per-gem: 0.05
+  renduc-success-rate:
+    ha-to-trung: 0.90
+    trung-to-thuong: 0.75
+    thuong-to-de: 0.50
+    de-to-tien: 0.25
+
+  # =====================================================
+  #   DUNG HOP (Fusion) - lenh /dunghop
+  # =====================================================
+  # Ghep 2 Phap Bao CUNG LOAI: 1 "goc" (giu lai, co the len tier) + 1
+  # "nguyen lieu" (luon bi tieu hao). Dong an (xem "affix" ben duoi) LUON
+  # duoc gop lai (khong random) - chi viec THANG PHAM la random.
+  fusion:
+    cost-tien-base: 1000
+    cost-tien-per-tier: 500
+    # So dong an toi da 1 Phap Bao co the mang cung luc sau khi gop.
+    max-affix: 2
+    # Ti le 1 Phap Bao MOI (khi roi ra) duoc cong san 1 dong an ngau nhien.
+    roll-affix-chance: 0.15
+    # Ti le THANG 1 BAC khi Dung Hop, theo tier HIEN TAI cua Phap Bao "goc".
+    upgrade-chance:
+      DIA_PHAM: 0.80
+      HA_PHAM: 0.65
+      TRUNG_PHAM: 0.50
+      THUONG_PHAM: 0.35
+      DE_PHAM: 0.20
+      # TIEN_PHAM: da toi da, khong the thang them (chi con gop dong an).
+
+  # Ti le proc (kich hoat khi danh trung don thuong) + do manh cua tung
+  # "dong an" (hidden affix). Bo qua dong nao neu muon dung mac dinh trong
+  # code (xem PhaBaoAffix.java).
+  affix:
+    HUT_MAU:
+      chance: 0.20
+      value: 0.12    # % sat thuong hoi mau
+    DOT_CHAY:
+      chance: 0.25
+      value: 4.0     # so giay dot
+    BANG_GIA:
+      chance: 0.25
+      value: 0.35
+    CHOANG_VANG:
+      chance: 0.15
+      value: 2.0     # so giay choang
+    CHI_MANG:
+      chance: 0.15
+      value: 0.50    # % sat thuong cong them
+    THAN_TOC:
+      chance: 0.20
+      value: 3.0     # so giay Toc Do
+
+  # =====================================================
+  #   LINH THUC / SKILL NGU CANH - lenh /linhthuc
+  # =====================================================
+  linhthuc:
+    cost-tien: 2000
+    hothe:
+      hp-percent: 0.20        # kich hoat khi HP con lai < 20% sau don danh
+      reduce-percent: 0.5     # giam 50% sat thuong don do
+      cooldown-ms: 30000
+    phankich:
+      cooldown-ms: 20000
+      reflect-percent: 0.6    # phan lai 60% sat thuong vua nhan
+      max-dot: -0.3           # cang am cang can "bi danh tu phia sau" ro rang moi tinh la backstab
+    hoacanh:
+      buff-percent: 0.30      # +30% sat thuong khi du dieu kien (xem PhaBaoLinhThucManager)
+
+  # =====================================================
+  #   KHI LINH (Phap Bao nuoi nhu Pet) - lenh /khilinh
+  # =====================================================
+  khilinh:
+    # Danh sach Material duoc xem la "do rac" co the cho an. De trong =
+    # dung danh sach mac dinh trong code.
+    junk-items:
+      - ROTTEN_FLESH
+      - STRING
+      - BONE
+      - GUNPOWDER
+      - SPIDER_EYE
+      - RABBIT_HIDE
+      - FEATHER
+      - INK_SAC
+    points-per-item: 2
+    tier1-points: 100   # hao quang hat
+    tier2-points: 300   # tu dong nhat do roi gan do
+    tier3-points: 600   # tu dong ho tro danh quai gan nhat
+    pickup-radius: 4.0
+    assist-radius: 6.0
+    assist-damage: 1.0
+
+  # =====================================================
+  #   DOAT BAO PVP (Nhat Dich Tich Huyet) - tu dong, khong lenh
+  # =====================================================
+  doatbao:
+    enabled: true
+    chance: 0.15                  # ti le MOI Phap Bao (khong tinh Ban Menh) bi anh huong khi chet PVP
+    max-items-per-death: 1
+    linhtinh-penalty-percent: 0.30
+    # Neu de TRONG: dung co PVP cua the gioi (world.getPVP()) de xac dinh
+    # "vung PVP". Neu khai bao tu khoa (vd "PVP", "Chien Truong"), CHI ap
+    # dung khi vi tri chet nam trong 1 Zone (xem ZoneManager) co TEN chua
+    # 1 trong cac tu khoa do (khong phan biet hoa/thuong).
+    pvp-zone-keywords: []
+
+# Chỉnh tay số liệu riêng cho TỪNG kỹ năng Pháp Bảo (id lấy từ PhaBaoType.java,
+# vd "loiphu"). Kỹ năng NÀO không khai báo ở đây thì vẫn dùng số cứng có sẵn
+# trong code (không lỗi, không cần khai báo hết mọi kỹ năng cùng lúc).
+phabao-abilities:
+  loiphu:
+    # Sát thương MỖI LẦN sét đánh trúng (còn nhân thêm dmgMult của người dùng
+    # — cảnh giới/đạo/linh căn... — nên số cuối cùng in-game sẽ cao hơn số này).
+    # ĐÃ GIẢM từ 8.0 -> 5.0 theo yêu cầu "giảm sức mạnh Lôi Phù".
+    damage-per-strike: 5.0
+    # Cứ bao nhiêu tick kiểm tra trúng đòn 1 lần (20 tick = 1 giây). Số càng
+    # lớn = bẫy đánh thưa hơn = yếu hơn (tổng sát thương ít lần hơn trong
+    # cùng thời gian tồn tại).
+    strike-interval-ticks: 10
+    # Bẫy tồn tại bao nhiêu tick trước khi tự biến mất (20 tick = 1 giây,
+    # nên 160 tick = 8 giây — ĐÚNG NHƯ SỐ NÀY GHI).
+    #
+    # ĐÃ SỬA 1 LỖI TÍNH TICK Ở ĐÂY khi thêm config này: bản gốc chạy task mỗi
+    # 10 tick nhưng lại đếm "160" theo SỐ LẦN CHẠY chứ không phải theo tick
+    # thật, nên bẫy thực tế tồn tại 160×10 = 1600 tick = 80 giây (gấp 10 lần
+    # số 8 giây mà comment cũ ghi) — đây là một phần lý do Lôi Phù quá mạnh.
+    # Giờ "duration-ticks" đã phản ánh đúng số tick thật (160 = 8 giây thật).
+    # Nếu thấy 8 giây quá ngắn so với trước, tăng số này lên (VD 400 = 20 giây).
+    duration-ticks: 160
+
+alchemy:
+  # 7.2.8: 32 công thức. Mọi thứ ở đây đều dễ custom, không cần sửa Java.
+  # materials: MATERIAL:so_luong
+  # herbs: herb_id:so_luong
+  # success-rate: 0.0 -> 1.0 | effects: TYPE:amplifier:seconds hoặc HEAL:0.25
+  recipes:
+    linh_khi_dan:
+      name: "Linh Khí Đan"
+      color: "§a"
+      description: "Tụ linh khí cơ bản."
+      difficulty: "Hạ Phẩm"
+      min-stage: 0
+      success-rate: 0.950
+      craft-time-seconds: 5
+      lt-cost: 0
+      lk-bonus: 250
+      materials:
+        - "WHEAT:1"
+        - "NETHER_WART:1"
+      herbs:
+        - "linh_thao:3"
+      effect-lines:
+        - "Hồi phục nhẹ trong 20 giây."
+      effects:
+        - "REGENERATION:0:20"
+    hoi_linh_dan:
+      name: "Hồi Linh Đan"
+      color: "§b"
+      description: "Hồi phục sinh lực và linh khí."
+      difficulty: "Hạ Phẩm"
+      min-stage: 0
+      success-rate: 0.920
+      craft-time-seconds: 6
+      lt-cost: 0
+      lk-bonus: 350
+      materials:
+        - "GHAST_TEAR:1"
+        - "SUGAR:2"
+      herbs:
+        - "linh_thao:4"
+      effect-lines:
+        - "Hồi 30% HP."
+        - "Regeneration II 15 giây."
+      effects:
+        - "HEAL:0.30"
+        - "REGENERATION:1:15"
+    thanh_tam_dan:
+      name: "Thanh Tâm Đan"
+      color: "§f"
+      description: "Thanh lọc cơ thể, chống hiệu ứng xấu."
+      difficulty: "Hạ Phẩm"
+      min-stage: 1
+      success-rate: 0.900
+      craft-time-seconds: 7
+      lt-cost: 0
+      lk-bonus: 450
+      materials:
+        - "FERMENTED_SPIDER_EYE:1"
+        - "SUGAR:2"
+      herbs:
+        - "hoa_thao:3"
+      effect-lines:
+        - "Kháng thương nhẹ 20 giây."
+      effects:
+        - "RESISTANCE:0:20"
+    tuc_linh_dan:
+      name: "Tụ Linh Đan"
+      color: "§3"
+      description: "Tăng khả năng hồi phục khi chiến đấu."
+      difficulty: "Hạ Phẩm"
+      min-stage: 2
+      success-rate: 0.880
+      craft-time-seconds: 8
+      lt-cost: 0
+      lk-bonus: 600
+      materials:
+        - "GLOWSTONE_DUST:2"
+        - "NETHER_WART:2"
+      herbs:
+        - "linh_thao:4"
+        - "moc_linh:1"
+      effect-lines:
+        - "Regeneration II 25 giây."
+      effects:
+        - "REGENERATION:1:25"
+    ngoc_linh_dan:
+      name: "Ngọc Linh Đan"
+      color: "§d"
+      description: "Đan dược ổn định linh lực."
+      difficulty: "Hạ Phẩm"
+      min-stage: 3
+      success-rate: 0.860
+      craft-time-seconds: 8
+      lt-cost: 0
+      lk-bonus: 750
+      materials:
+        - "AMETHYST_SHARD:2"
+        - "LAPIS_LAZULI:2"
+      herbs:
+        - "hoa_thao:3"
+        - "thuy_linh:1"
+      effect-lines:
+        - "Luck II 45 giây."
+      effects:
+        - "LUCK:1:45"
+    kim_than_dan:
+      name: "Kim Thân Đan"
+      color: "§e"
+      description: "Tăng sức bền thân thể."
+      difficulty: "Trung Phẩm"
+      min-stage: 4
+      success-rate: 0.820
+      craft-time-seconds: 10
+      lt-cost: 1
+      lk-bonus: 1000
+      materials:
+        - "IRON_INGOT:3"
+        - "GOLD_NUGGET:8"
+      herbs:
+        - "kim_linh:2"
+        - "linh_thao:5"
+      effect-lines:
+        - "Kháng thương 45 giây."
+      effects:
+        - "RESISTANCE:0:45"
+    xich_viem_dan:
+      name: "Xích Viêm Đan"
+      color: "§c"
+      description: "Kích phát hỏa lực."
+      difficulty: "Trung Phẩm"
+      min-stage: 5
+      success-rate: 0.800
+      craft-time-seconds: 12
+      lt-cost: 1
+      lk-bonus: 1300
+      materials:
+        - "BLAZE_POWDER:3"
+        - "MAGMA_CREAM:1"
+      herbs:
+        - "hoa_linh:2"
+        - "hoa_thao:4"
+      effect-lines:
+        - "Strength II 40 giây."
+      effects:
+        - "STRENGTH:1:40"
+    han_ngoc_dan:
+      name: "Hàn Ngọc Đan"
+      color: "§b"
+      description: "Hàn khí đóng băng đối thủ."
+      difficulty: "Trung Phẩm"
+      min-stage: 6
+      success-rate: 0.780
+      craft-time-seconds: 12
+      lt-cost: 1
+      lk-bonus: 1500
+      materials:
+        - "PACKED_ICE:4"
+        - "AMETHYST_SHARD:2"
+      herbs:
+        - "tuyet_thao:3"
+        - "thuy_linh:2"
+      effect-lines:
+        - "Kháng thương II 30 giây."
+      effects:
+        - "RESISTANCE:1:30"
+    duong_huyet_dan:
+      name: "Dương Huyết Đan"
+      color: "§6"
+      description: "Khí huyết dồi dào."
+      difficulty: "Trung Phẩm"
+      min-stage: 7
+      success-rate: 0.760
+      craft-time-seconds: 14
+      lt-cost: 1
+      lk-bonus: 1800
+      materials:
+        - "GOLD_INGOT:2"
+        - "REDSTONE:3"
+      herbs:
+        - "duong_thao:3"
+        - "hoa_linh:1"
+      effect-lines:
+        - "Hồi 45% HP."
+        - "Strength I 35 giây."
+      effects:
+        - "HEAL:0.45"
+        - "STRENGTH:0:35"
+    am_hon_dan:
+      name: "Âm Hồn Đan"
+      color: "§5"
+      description: "Tăng sức mạnh trong bóng tối."
+      difficulty: "Trung Phẩm"
+      min-stage: 8
+      success-rate: 0.740
+      craft-time-seconds: 15
+      lt-cost: 1
+      lk-bonus: 2200
+      materials:
+        - "ENDER_PEARL:2"
+        - "SOUL_SAND:3"
+      herbs:
+        - "am_thao:3"
+        - "u_linh_thao:1"
+      effect-lines:
+        - "Nhìn đêm 120 giây."
+        - "Speed I 45 giây."
+      effects:
+        - "NIGHT_VISION:0:120"
+        - "SPEED:0:45"
+    phong_hanh_dan:
+      name: "Phong Hành Đan"
+      color: "§7"
+      description: "Thân pháp nhẹ như gió."
+      difficulty: "Trung Phẩm"
+      min-stage: 9
+      success-rate: 0.720
+      craft-time-seconds: 16
+      lt-cost: 1
+      lk-bonus: 2500
+      materials:
+        - "FEATHER:5"
+        - "PHANTOM_MEMBRANE:1"
+      herbs:
+        - "phong_linh:3"
+        - "moc_linh:2"
+      effect-lines:
+        - "Speed II 60 giây."
+        - "Jump Boost II 45 giây."
+      effects:
+        - "SPEED:1:60"
+        - "JUMP_BOOST:1:45"
+    thien_moc_dan:
+      name: "Thiên Mộc Đan"
+      color: "§2"
+      description: "Sinh lực mộc hệ mạnh."
+      difficulty: "Thượng Phẩm"
+      min-stage: 10
+      success-rate: 0.680
+      craft-time-seconds: 18
+      lt-cost: 2
+      lk-bonus: 3000
+      materials:
+        - "OAK_SAPLING:3"
+        - "BONE_MEAL:8"
+      herbs:
+        - "thien_moc_thao:3"
+        - "moc_linh:2"
+      effect-lines:
+        - "Regeneration III 45 giây."
+      effects:
+        - "REGENERATION:2:45"
+    loi_dinh_dan:
+      name: "Lôi Đình Đan"
+      color: "§9"
+      description: "Kích phát lôi lực."
+      difficulty: "Thượng Phẩm"
+      min-stage: 11
+      success-rate: 0.650
+      craft-time-seconds: 20
+      lt-cost: 2
+      lk-bonus: 3500
+      materials:
+        - "LIGHTNING_ROD:1"
+        - "GLOWSTONE_DUST:5"
+      herbs:
+        - "loi_linh_thao:3"
+        - "kim_linh:1"
+      effect-lines:
+        - "Strength III 35 giây."
+      effects:
+        - "STRENGTH:2:35"
+    bang_phach_dan:
+      name: "Băng Phách Đan"
+      color: "§b"
+      description: "Hàn lực hộ thể."
+      difficulty: "Thượng Phẩm"
+      min-stage: 12
+      success-rate: 0.620
+      craft-time-seconds: 22
+      lt-cost: 2
+      lk-bonus: 4000
+      materials:
+        - "BLUE_ICE:3"
+        - "SNOW_BLOCK:5"
+      herbs:
+        - "bang_phach_thao:3"
+        - "tuyet_thao:3"
+      effect-lines:
+        - "Kháng thương II 70 giây."
+      effects:
+        - "RESISTANCE:1:70"
+    quang_linh_dan:
+      name: "Quang Linh Đan"
+      color: "§e"
+      description: "Ánh sáng xua tan bóng tối."
+      difficulty: "Thượng Phẩm"
+      min-stage: 13
+      success-rate: 0.590
+      craft-time-seconds: 24
+      lt-cost: 2
+      lk-bonus: 4500
+      materials:
+        - "GLOWSTONE:8"
+        - "SEA_LANTERN:2"
+      herbs:
+        - "quang_linh_thao:3"
+        - "ngoc_linh_thao:2"
+      effect-lines:
+        - "Nhìn đêm 180 giây."
+      effects:
+        - "NIGHT_VISION:0:180"
+        - "REGENERATION:1:30"
+    huyet_linh_dan:
+      name: "Huyết Linh Đan"
+      color: "§4"
+      description: "Đốt sinh lực đổi lấy sức mạnh."
+      difficulty: "Thượng Phẩm"
+      min-stage: 14
+      success-rate: 0.560
+      craft-time-seconds: 26
+      lt-cost: 2
+      lk-bonus: 5000
+      materials:
+        - "REDSTONE_BLOCK:2"
+        - "BLAZE_ROD:2"
+      herbs:
+        - "huyet_linh_thao:3"
+        - "hoa_linh:2"
+      effect-lines:
+        - "Strength III 50 giây."
+        - "Hồi 20% HP."
+      effects:
+        - "STRENGTH:2:50"
+        - "HEAL:0.20"
+    canh_gioi_dan:
+      name: "Cảnh Giới Đan"
+      color: "§6"
+      description: "Đan hỗ trợ tu sĩ cao cấp."
+      difficulty: "Địa Phẩm"
+      min-stage: 15
+      success-rate: 0.500
+      craft-time-seconds: 30
+      lt-cost: 3
+      lk-bonus: 6500
+      materials:
+        - "DIAMOND:2"
+        - "GOLD_BLOCK:1"
+      herbs:
+        - "dia_linh_thao:3"
+        - "thien_moc_thao:2"
+        - "kim_linh:2"
+      effect-lines:
+        - "Kháng thương III 60 giây."
+      effects:
+        - "RESISTANCE:2:60"
+        - "REGENERATION:2:40"
+    tinh_than_dan:
+      name: "Tinh Thần Đan"
+      color: "§d"
+      description: "Tăng tốc độ và tinh thần."
+      difficulty: "Địa Phẩm"
+      min-stage: 16
+      success-rate: 0.460
+      craft-time-seconds: 32
+      lt-cost: 3
+      lk-bonus: 7500
+      materials:
+        - "ENDER_EYE:2"
+        - "AMETHYST_BLOCK:2"
+      herbs:
+        - "tinh_than_thao:4"
+        - "quang_linh_thao:2"
+      effect-lines:
+        - "Speed III 90 giây."
+        - "Luck III 90 giây."
+      effects:
+        - "SPEED:2:90"
+        - "LUCK:2:90"
+    cuu_am_dan:
+      name: "Cửu Âm Đan"
+      color: "§5"
+      description: "Âm lực thâm sâu."
+      difficulty: "Địa Phẩm"
+      min-stage: 17
+      success-rate: 0.420
+      craft-time-seconds: 35
+      lt-cost: 3
+      lk-bonus: 8500
+      materials:
+        - "SCULK:4"
+        - "ECHO_SHARD:1"
+      herbs:
+        - "cuu_am_thao:3"
+        - "am_thao:3"
+      effect-lines:
+        - "Nhìn đêm 240 giây."
+      effects:
+        - "NIGHT_VISION:0:240"
+        - "RESISTANCE:1:90"
+    cuu_duong_dan:
+      name: "Cửu Dương Đan"
+      color: "§c"
+      description: "Dương lực bùng nổ."
+      difficulty: "Địa Phẩm"
+      min-stage: 18
+      success-rate: 0.380
+      craft-time-seconds: 38
+      lt-cost: 3
+      lk-bonus: 9500
+      materials:
+        - "BLAZE_ROD:4"
+        - "GOLD_INGOT:4"
+      herbs:
+        - "cuu_duong_thao:3"
+        - "duong_thao:3"
+      effect-lines:
+        - "Strength IV 60 giây."
+      effects:
+        - "STRENGTH:3:60"
+        - "REGENERATION:1:60"
+    thanh_lien_dan:
+      name: "Thanh Liên Đan"
+      color: "§a"
+      description: "Đan sen thanh tịnh."
+      difficulty: "Địa Phẩm"
+      min-stage: 19
+      success-rate: 0.340
+      craft-time-seconds: 42
+      lt-cost: 3
+      lk-bonus: 11000
+      materials:
+        - "PRISMARINE_CRYSTALS:5"
+        - "LILY_OF_THE_VALLEY:2"
+      herbs:
+        - "thanh_lien_thao:3"
+        - "quang_linh_thao:2"
+        - "tuyet_thao:2"
+      effect-lines:
+        - "Kháng thương III 100 giây."
+        - "Hồi 50% HP."
+      effects:
+        - "RESISTANCE:2:100"
+        - "HEAL:0.50"
+    tien_linh_dan:
+      name: "Tiên Linh Đan"
+      color: "§b§l"
+      description: "Chạm tới linh lực Tiên giới."
+      difficulty: "Tiên Phẩm"
+      min-stage: 20
+      success-rate: 0.280
+      craft-time-seconds: 50
+      lt-cost: 4
+      lk-bonus: 15000
+      materials:
+        - "NETHER_STAR:1"
+        - "DIAMOND_BLOCK:2"
+      herbs:
+        - "tien_linh_thao:4"
+        - "thien_moc_thao:3"
+        - "kim_linh:3"
+      effect-lines:
+        - "Regeneration IV 90 giây."
+      effects:
+        - "REGENERATION:3:90"
+        - "STRENGTH:2:90"
+    kim_tien_dan:
+      name: "Kim Tiên Đan"
+      color: "§e§l"
+      description: "Đan lực Kim Tiên."
+      difficulty: "Tiên Phẩm"
+      min-stage: 20
+      success-rate: 0.240
+      craft-time-seconds: 55
+      lt-cost: 4
+      lk-bonus: 18000
+      materials:
+        - "GOLD_BLOCK:3"
+        - "NETHERITE_SCRAP:2"
+      herbs:
+        - "kim_tien_thao:4"
+        - "kim_linh:3"
+        - "quang_linh_thao:2"
+      effect-lines:
+        - "Kháng thương IV 120 giây."
+      effects:
+        - "RESISTANCE:3:120"
+        - "LUCK:3:120"
+    thai_at_dan:
+      name: "Thái Ất Đan"
+      color: "§d§l"
+      description: "Linh lực Thái Ất."
+      difficulty: "Tiên Phẩm"
+      min-stage: 21
+      success-rate: 0.200
+      craft-time-seconds: 60
+      lt-cost: 4
+      lk-bonus: 22000
+      materials:
+        - "NETHERITE_INGOT:1"
+        - "ENDER_EYE:3"
+      herbs:
+        - "thai_at_thao:4"
+        - "tinh_than_thao:3"
+        - "loi_linh_thao:2"
+      effect-lines:
+        - "Strength IV 100 giây."
+      effects:
+        - "STRENGTH:3:100"
+        - "SPEED:2:100"
+    dai_la_dan:
+      name: "Đại La Đan"
+      color: "§5§l"
+      description: "Cảnh giới Đại La cô đọng."
+      difficulty: "Tiên Phẩm"
+      min-stage: 22
+      success-rate: 0.160
+      craft-time-seconds: 70
+      lt-cost: 4
+      lk-bonus: 28000
+      materials:
+        - "NETHERITE_BLOCK:1"
+        - "NETHER_STAR:1"
+      herbs:
+        - "dai_la_thao:4"
+        - "cuu_duong_thao:2"
+        - "cuu_am_thao:2"
+      effect-lines:
+        - "Kháng thương IV 150 giây."
+      effects:
+        - "RESISTANCE:3:150"
+        - "REGENERATION:3:120"
+    tien_anh_dan:
+      name: "Tiên Ảnh Đan"
+      color: "§9§l"
+      description: "Đan thân pháp Tiên giới, tăng tốc độ và vận khí."
+      difficulty: "Tiên Phẩm"
+      min-stage: 23
+      success-rate: 0.140
+      craft-time-seconds: 75
+      lt-cost: 5
+      lk-bonus: 32000
+      materials:
+        - "NETHER_STAR:1"
+        - "PHANTOM_MEMBRANE:4"
+      herbs:
+        - "tien_linh_thao:4"
+        - "quang_linh_thao:3"
+        - "phong_linh:3"
+      effect-lines:
+        - "Speed IV 140 giây."
+        - "Luck IV 140 giây."
+      effects:
+        - "SPEED:3:140"
+        - "LUCK:3:140"
+    tien_de_dan:
+      name: "Tiên Đế Đan"
+      color: "§c§l"
+      description: "Đan lực cấp Tiên Đế."
+      difficulty: "Tiên Phẩm"
+      min-stage: 23
+      success-rate: 0.120
+      craft-time-seconds: 80
+      lt-cost: 5
+      lk-bonus: 35000
+      materials:
+        - "NETHER_STAR:2"
+        - "DRAGON_BREATH:4"
+      herbs:
+        - "tien_de_thao:5"
+        - "tien_linh_thao:3"
+        - "kim_tien_thao:2"
+      effect-lines:
+        - "Strength V 120 giây."
+      effects:
+        - "STRENGTH:4:120"
+        - "RESISTANCE:4:120"
+    thien_ton_dan:
+      name: "Thiên Tôn Đan"
+      color: "§f§l"
+      description: "Đan dược Thiên Tôn."
+      difficulty: "Thiên Phẩm"
+      min-stage: 20
+      success-rate: 0.100
+      craft-time-seconds: 90
+      lt-cost: 5
+      lk-bonus: 45000
+      materials:
+        - "NETHER_STAR:2"
+        - "BEACON:1"
+      herbs:
+        - "thien_ton_thao:5"
+        - "tien_de_thao:2"
+        - "cuu_duong_thao:3"
+      effect-lines:
+        - "Sinh lực cực mạnh."
+      effects:
+        - "REGENERATION:4:120"
+        - "RESISTANCE:4:120"
+    thien_dao_dan:
+      name: "Thiên Đạo Đan"
+      color: "§b§l"
+      description: "Đan chứa một tia Thiên Đạo."
+      difficulty: "Thiên Phẩm"
+      min-stage: 21
+      success-rate: 0.080
+      craft-time-seconds: 100
+      lt-cost: 5
+      lk-bonus: 55000
+      materials:
+        - "BEACON:1"
+        - "NETHERITE_BLOCK:2"
+      herbs:
+        - "thien_dao_thao:5"
+        - "thien_ton_thao:3"
+        - "loi_linh_thao:3"
+      effect-lines:
+        - "Sức mạnh và vận khí cực cao."
+      effects:
+        - "STRENGTH:4:150"
+        - "LUCK:4:150"
+    hon_nguyen_dan:
+      name: "Hỗn Nguyên Đan"
+      color: "§5§l"
+      description: "Dung hợp âm dương, ngũ hành và hư không."
+      difficulty: "Thiên Phẩm"
+      min-stage: 22
+      success-rate: 0.060
+      craft-time-seconds: 120
+      lt-cost: 5
+      lk-bonus: 70000
+      materials:
+        - "NETHER_STAR:3"
+        - "DRAGON_BREATH:8"
+        - "NETHERITE_INGOT:2"
+      herbs:
+        - "hon_nguyen_thao:6"
+        - "thien_dao_thao:3"
+        - "tien_de_thao:2"
+      effect-lines:
+        - "Ba đại buff cấp cao."
+      effects:
+        - "RESISTANCE:4:180"
+        - "REGENERATION:4:180"
+        - "STRENGTH:4:180"
+    vo_thuong_dan:
+      name: "Vô Thượng Đan"
+      color: "§6§l"
+      description: "Cực hạn luyện đan của phàm giới."
+      difficulty: "Vô Thượng"
+      min-stage: 24
+      success-rate: 0.050
+      craft-time-seconds: 150
+      lt-cost: 6
+      lk-bonus: 100000
+      materials:
+        - "DRAGON_EGG:1"
+        - "NETHER_STAR:5"
+        - "NETHERITE_BLOCK:4"
+      herbs:
+        - "vo_thuong_thao:8"
+        - "hon_nguyen_thao:4"
+        - "thien_dao_thao:4"
+      effect-lines:
+        - "Đan dược tối thượng; tỉ lệ chỉ 5%."
+      effects:
+        - "RESISTANCE:5:240"
+        - "REGENERATION:5:240"
+        - "STRENGTH:5:240"
+        - "SPEED:3:240"
+    to_khai_thien_dan:
+      name: "Tổ Khai Thiên Đan"
+      color: "§c§l"
+      description: "Đan cuối cùng, chỉ dành cho Vô Thượng Chí Tôn."
+      difficulty: "Cấm Phẩm"
+      min-stage: 24
+      success-rate: 0.020
+      craft-time-seconds: 180
+      lt-cost: 8
+      lk-bonus: 150000
+      materials:
+        - "DRAGON_EGG:2"
+        - "NETHER_STAR:8"
+        - "NETHERITE_BLOCK:8"
+      herbs:
+        - "to_khai_thien_thao:10"
+        - "vo_thuong_thao:5"
+        - "hon_nguyen_thao:5"
+      effect-lines:
+        - "Cấm phẩm: thất bại sẽ mất toàn bộ nguyên liệu."
+      effects:
+        - "RESISTANCE:6:300"
+        - "REGENERATION:6:300"
+        - "STRENGTH:6:300"
+
+# Vườn Tiên Thảo 7.2.8 — chỉ thu được trong vùng do /ttadmin vuon tao tạo.
+# drop-chance là tỉ lệ mỗi lần thu hoạch một node. min-stage là ordinal của CultivationStage.
+herb-garden:
+  enabled: true
+  require-garden: true
+  harvest:
+    node-respawn-seconds: 30
+    min-amount: 1
+    max-amount: 2
+    drop-multiplier: 1.0
+    give-linh-khi: false
+  # Trồng linh chủng (v7.3): gieo hạt trên farmland trong vườn, cây lớn dần theo cơ
+  # chế Ageable của Minecraft (tự lớn theo thời gian như cây trồng thật), hoặc lén
+  # (sneak) + tay không + chuột phải vào cây để tưới linh khí bản thân, đẩy nhanh
+  # sinh trưởng. Thu hoạch (phá cây khi đã lớn hết cỡ) cho nhiều & tốt hơn hái node.
+  plant:
+    enabled: true
+    water-linh-khi-cost-percent: 5.0
+    water-age-boost: 1
+    water-cooldown-seconds: 120
+    min-amount: 2
+    max-amount: 4
+    wild-seed-chance: 0.08
+  regions: {}
+
+herbs:
+  types:
+    linh_thao:
+      name: "Linh Thảo"
+      color: "§a"
+      block: SHORT_GRASS
+      min-stage: 0
+      drop-chance: 0.55
+      lt-value: 5
+      lk-percent: 0.002
+      plantable: true
+      seed-block: WHEAT
+      grow-yield-multiplier: 2.0
+      premium-chance: 0.1
+    hoa_thao:
+      name: "Hoa Thảo"
+      color: "§c"
+      block: POPPY
+      min-stage: 0
+      drop-chance: 0.45
+      lt-value: 8
+      lk-percent: 0.003
+      plantable: true
+      seed-block: SWEET_BERRY_BUSH
+      grow-yield-multiplier: 2.0
+      premium-chance: 0.1
+    tuyet_thao:
+      name: "Tuyết Thảo"
+      color: "§f"
+      block: LILY_OF_THE_VALLEY
+      min-stage: 2
+      drop-chance: 0.35
+      lt-value: 12
+      lk-percent: 0.004
+    am_thao:
+      name: "Âm Thảo"
+      color: "§5"
+      block: DEAD_BUSH
+      min-stage: 3
+      drop-chance: 0.3
+      lt-value: 15
+      lk-percent: 0.005
+      plantable: true
+      seed-block: NETHER_WART
+      grow-yield-multiplier: 2.0
+      premium-chance: 0.1
+    duong_thao:
+      name: "Dương Thảo"
+      color: "§e"
+      block: SUNFLOWER
+      min-stage: 4
+      drop-chance: 0.28
+      lt-value: 18
+      lk-percent: 0.006
+    moc_linh:
+      name: "Mộc Linh"
+      color: "§2"
+      block: FERN
+      min-stage: 1
+      drop-chance: 0.42
+      lt-value: 10
+      lk-percent: 0.003
+      plantable: true
+      seed-block: CARROTS
+      grow-yield-multiplier: 2.0
+      premium-chance: 0.1
+    hoa_linh:
+      name: "Hỏa Linh"
+      color: "§6"
+      block: ORANGE_TULIP
+      min-stage: 5
+      drop-chance: 0.25
+      lt-value: 25
+      lk-percent: 0.007
+      plantable: true
+      seed-block: POTATOES
+      grow-yield-multiplier: 2.2
+      premium-chance: 0.12
+    thuy_linh:
+      name: "Thủy Linh"
+      color: "§9"
+      block: BLUE_ORCHID
+      min-stage: 6
+      drop-chance: 0.22
+      lt-value: 28
+      lk-percent: 0.008
+    kim_linh:
+      name: "Kim Linh"
+      color: "§e§l"
+      block: ALLIUM
+      min-stage: 7
+      drop-chance: 0.18
+      lt-value: 40
+      lk-percent: 0.01
+      plantable: true
+      seed-block: BEETROOTS
+      grow-yield-multiplier: 2.5
+      premium-chance: 0.15
+    u_linh_thao:
+      name: "U Linh Thảo"
+      color: "§8"
+      block: LARGE_FERN
+      min-stage: 8
+      drop-chance: 0.16
+      lt-value: 55
+      lk-percent: 0.012
+    phong_linh:
+      name: "Phong Linh"
+      color: "§f"
+      block: WHITE_TULIP
+      min-stage: 9
+      drop-chance: 0.16
+      lt-value: 60
+      lk-percent: 0.012
+    thien_moc_thao:
+      name: "Thiên Mộc Thảo"
+      color: "§a§l"
+      block: BIG_DRIPLEAF
+      min-stage: 10
+      drop-chance: 0.14
+      lt-value: 75
+      lk-percent: 0.014
+      plantable: true
+      seed-block: TORCHFLOWER_CROP
+      grow-yield-multiplier: 2.8
+      premium-chance: 0.18
+    loi_linh_thao:
+      name: "Lôi Linh Thảo"
+      color: "§9§l"
+      block: CORNFLOWER
+      min-stage: 11
+      drop-chance: 0.12
+      lt-value: 90
+      lk-percent: 0.016
+    bang_phach_thao:
+      name: "Băng Phách Thảo"
+      color: "§b§l"
+      block: AZURE_BLUET
+      min-stage: 12
+      drop-chance: 0.11
+      lt-value: 110
+      lk-percent: 0.018
+    quang_linh_thao:
+      name: "Quang Linh Thảo"
+      color: "§e"
+      block: GLOW_LICHEN
+      min-stage: 13
+      drop-chance: 0.1
+      lt-value: 130
+      lk-percent: 0.02
+    huyet_linh_thao:
+      name: "Huyết Linh Thảo"
+      color: "§4"
+      block: RED_TULIP
+      min-stage: 14
+      drop-chance: 0.09
+      lt-value: 160
+      lk-percent: 0.022
+    ngoc_linh_thao:
+      name: "Ngọc Linh Thảo"
+      color: "§b"
+      block: PINK_TULIP
+      min-stage: 10
+      drop-chance: 0.1
+      lt-value: 145
+      lk-percent: 0.02
+      plantable: true
+      seed-block: PITCHER_CROP
+      grow-yield-multiplier: 3.0
+      premium-chance: 0.2
+    dia_linh_thao:
+      name: "Địa Linh Thảo"
+      color: "§6"
+      block: BROWN_MUSHROOM
+      min-stage: 15
+      drop-chance: 0.08
+      lt-value: 180
+      lk-percent: 0.024
+    tinh_than_thao:
+      name: "Tinh Thần Thảo"
+      color: "§d"
+      block: SPORE_BLOSSOM
+      min-stage: 16
+      drop-chance: 0.07
+      lt-value: 220
+      lk-percent: 0.026
+    cuu_am_thao:
+      name: "Cửu Âm Thảo"
+      color: "§5§l"
+      block: SCULK
+      min-stage: 17
+      drop-chance: 0.06
+      lt-value: 260
+      lk-percent: 0.028
+    cuu_duong_thao:
+      name: "Cửu Dương Thảo"
+      color: "§c§l"
+      block: RED_MUSHROOM
+      min-stage: 18
+      drop-chance: 0.055
+      lt-value: 300
+      lk-percent: 0.03
+    thanh_lien_thao:
+      name: "Thanh Liên Thảo"
+      color: "§a§l"
+      block: LILY_PAD
+      min-stage: 19
+      drop-chance: 0.05
+      lt-value: 350
+      lk-percent: 0.032
+    tien_linh_thao:
+      name: "Tiên Linh Thảo"
+      color: "§b§l"
+      block: TORCHFLOWER
+      min-stage: 20
+      drop-chance: 0.045
+      lt-value: 450
+      lk-percent: 0.035
+    kim_tien_thao:
+      name: "Kim Tiên Thảo"
+      color: "§e§l"
+      block: PITCHER_PLANT
+      min-stage: 20
+      drop-chance: 0.035
+      lt-value: 550
+      lk-percent: 0.038
+    thai_at_thao:
+      name: "Thái Ất Thảo"
+      color: "§d§l"
+      block: CRIMSON_FUNGUS
+      min-stage: 21
+      drop-chance: 0.028
+      lt-value: 700
+      lk-percent: 0.042
+    dai_la_thao:
+      name: "Đại La Thảo"
+      color: "§5§l"
+      block: WARPED_FUNGUS
+      min-stage: 22
+      drop-chance: 0.022
+      lt-value: 900
+      lk-percent: 0.046
+    tien_de_thao:
+      name: "Tiên Đế Thảo"
+      color: "§c§l"
+      block: CHORUS_FLOWER
+      min-stage: 23
+      drop-chance: 0.016
+      lt-value: 1200
+      lk-percent: 0.05
+    thien_ton_thao:
+      name: "Thiên Tôn Thảo"
+      color: "§f§l"
+      block: PEONY
+      min-stage: 20
+      drop-chance: 0.012
+      lt-value: 1600
+      lk-percent: 0.055
+    thien_dao_thao:
+      name: "Thiên Đạo Thảo"
+      color: "§b§l"
+      block: END_ROD
+      min-stage: 21
+      drop-chance: 0.008
+      lt-value: 2200
+      lk-percent: 0.06
+    hon_nguyen_thao:
+      name: "Hỗn Nguyên Thảo"
+      color: "§5§l"
+      block: WITHER_ROSE
+      min-stage: 22
+      drop-chance: 0.005
+      lt-value: 3500
+      lk-percent: 0.07
+    vo_thuong_thao:
+      name: "Vô Thượng Thảo"
+      color: "§6§l"
+      block: WEEPING_VINES
+      min-stage: 24
+      drop-chance: 0.003
+      lt-value: 6000
+      lk-percent: 0.08
+    to_khai_thien_thao:
+      name: "Tổ Khai Thiên Thảo"
+      color: "§c§l"
+      block: TWISTING_VINES
+      min-stage: 24
+      drop-chance: 0.001
+      lt-value: 12000
+      lk-percent: 0.1
+
+lingcan:
+  normal-roots:
+    kim: 0.25
+    moc: 0.25
+    thuy: 0.20
+    hoa: 0.20
+    tho: 0.10
+  rare-roots:
+    loi: 0.04
+    bang: 0.03
+    phong: 0.03
+    am: 0.02
+    quang: 0.02
+  ultra-roots:
+    hon: 0.005
+    huyet: 0.004
+    co-ho: 0.003
+    thien-nhat: 0.002
+    nguyen-shi: 0.001
+    vo-thuong-can: 0.0001
+  max-roots: 5
+  multi-root-chance:
+    two: 0.25
+    three: 0.12
+    four: 0.05
+    five: 0.01
+
+toc:
+  nguoi: 0.45
+  thu-hoa: 0.20
+  yeu-toc: 0.15
+  than-toc: 0.10
+  linh-toc: 0.08
+  long-toc: 0.0001
+  phuong-hoang: 0.00008
+  thuong-than: 0.00006
+  hon-hiep: 0.00004
+  kim-cuong: 0.00003
+  dao-toc: 0.00001
+  thuy-tinh: 0.000001
+
+dao-path:
+  switch-cost: 500
+  switch-cooldown-hours: 24
+  chinh-dao:
+    break-diff-mult: 0.85
+    atk-mult: 1.0
+    def-mult: 1.10
+  ma-dao:
+    break-diff-mult: 1.20
+    atk-mult: 1.20
+    def-mult: 0.90
+    reward-mult: 2.0
+  si-vuong:
+    meditation-lk-mult: 5.0
+    break-diff-mult: 0.60
+    atk-mult: 0.60
+    damage-reduction-when-meditating: 0.25
+  lo-vuong:
+    def-mult: 1.60
+    atk-mult: 0.80
+    speed-penalty: 0.30
+    revive-hp-percent: 0.05
+    revive-duration-ms: 3000
+    revive-cooldown-ms: 300000
+    reflect-chance: 0.10
+    reflect-percent: 0.30
+
+# ============================================================
+# SEASON — "meta mùa": admin chọn 1 Class + 1 Đạo mạnh nhất mùa này
+# bằng lệnh "/ttadmin season set <class> <dao>" (VD: /ttadmin season set
+# KIEM_TU MA_DAO). Người chơi ĐÚNG class/đạo đó được cộng thêm % sức mạnh
+# theo cấu hình dưới đây, cộng dồn (nhân) vào hệ số ATK/DEF/tu luyện sẵn có
+# của class/đạo đó — không thay thế, chỉ cộng thêm.
+#
+# Chọn class/đạo hiện tại của mùa được LƯU RIÊNG ở season_state.yml (tự
+# tạo khi dùng lệnh), KHÔNG lưu ở config.yml này — để tránh việc lưu season
+# làm mất hết comment trong file config.yml. Muốn xem season hiện tại:
+# "/ttadmin season info". Muốn xóa season (không ai được bonus): "/ttadmin
+# season clear". Chỉ đặt class hoặc chỉ đặt đạo cũng được, không bắt buộc
+# đặt cả 2 (dùng /ttadmin season set <class> <dao>, tuy cần điền cả 2 tham
+# số mỗi lần set, nhưng bạn có thể set lại toàn bộ bất cứ lúc nào).
+# ============================================================
+season:
+  enabled: true
+  # % cộng thêm khi ĐÚNG class là class mạnh nhất mùa này (nhân dồn vào ATK/DEF/tốc độ tu luyện sẵn có)
+  class-atk-bonus-percent: 40
+  class-def-bonus-percent: 40
+  class-cultivation-bonus-percent: 40
+  # % cộng thêm khi ĐÚNG đạo là đạo mạnh nhất mùa này (nhân dồn vào atk-mult/def-mult của đạo đó)
+  dao-atk-bonus-percent: 40
+  dao-def-bonus-percent: 40
+  # Broadcast toàn server mỗi khi admin đổi season bằng lệnh "season set"
+  announce-on-set: true
+  announce-message: "&6&l✦ MÙA MỚI! &eClass mạnh nhất: &b{class} &e| Đạo mạnh nhất: &b{dao}"
+
+tong-mon:
+  max-members: 50
+  max-tong-mon-per-server: 20
+  kho-size-slots: 54
+  exp-per-breakthrough: 100
+
+blood-moon:
+  duration-minutes: 30
+  mob-hp-multiplier: 2.0
+  mob-dmg-multiplier: 1.5
+  drop-rate-multiplier: 3.0
+  lt-bonus-multiplier: 2.0
+  announce-before-minutes: 5
+
+mythicmobs:
+  enabled: true
+  use-mm-boss: true
+  use-mm-aura: true
+  use-mm-race-effect: true
+  boss-level-bonus: 0
+  vanilla-fallback: true
+
+mythiclib:
+  enabled: true
+  sync-interval-seconds: 30
+  stat-weights:
+    linh-khi-regen: 1.0
+    phap-cong: 1.0
+    phap-phong: 1.0
+    boss-dmg-reduce: 1.0
+    crit-lk-mult: 1.0
+
+zones:
+  default-radius: 20
+  max-zones: 10
+  lk-multiplier: 3.0
+  announce-on-enter: true
+
+effects:
+  enabled: true
+  breakthrough-charge: true
+  breakthrough-waves: true
+  breakthrough-success: true
+  breakthrough-fail: true
+  boss-spawn: true
+  realm-aura: true
+  sounds-enabled: true
+  particle-density: 1.0
+
+  # ============================================================
+  # HIỆU ỨNG ITEMSADDER (tùy chọn) — thay hiệu ứng particle mặc định
+  # bằng hiệu ứng riêng của bạn, KHÔNG cần sửa code, không cần build lại.
+  #
+  # CÁCH DÙNG:
+  #   1. Làm 1 "Custom Entity" trong ItemsAdder (Blockbench + extension IA):
+  #      model + particle bone + animation tùy ý, đặt 1 namespace:id riêng,
+  #      ví dụ "tutien:vfx_dotpha_thanhcong".
+  #   2. /iareload (hoặc restart server) để ItemsAdder nạp Custom Entity đó.
+  #   3. Điền namespace:id vào đúng dòng bên dưới trong "map:".
+  #   4. /ttadmin reload (hoặc restart TuTienPlugin) để áp dụng.
+  #
+  # QUY TẮC AN TOÀN: dòng nào để trống "" HOẶC id đó CHƯA tồn tại trong
+  # ItemsAdder (làm chưa xong / gõ sai / chưa /iareload) -> plugin TỰ ĐỘNG
+  # dùng lại hiệu ứng particle mặc định cho đúng sự kiện đó, KHÔNG lỗi,
+  # KHÔNG mất hiệu ứng. Bạn có thể vừa chơi vừa làm dần từng cái một,
+  # không cần làm hết một lúc.
+  # ============================================================
+  itemsadder:
+    # Bật/tắt toàn bộ tính năng này. false = luôn dùng hiệu ứng particle mặc
+    # định dù map bên dưới có điền ID hay không.
+    enabled: true
+
+    # Tên animation sẽ tự gọi trên Custom Entity ngay sau khi spawn (nếu
+    # model của bạn có animation đó). Để trống "" nếu không cần.
+    animation: ""
+
+    # Số tick (1 tick = 0.05 giây) sau khi spawn sẽ TỰ ĐỘNG xóa Custom Entity
+    # để không để rác thực thể ngoài map. 100 tick = 5 giây. Đặt 0 nếu model
+    # tự hủy bằng animation riêng của nó (không cần plugin tự xóa).
+    lifetime-ticks: 100
+
+    # Ánh xạ <sự_kiện> -> <namespace:id trong ItemsAdder>. Cứ để trống ""
+    # cho tới khi bạn làm xong hiệu ứng riêng cho sự kiện đó.
+    #
+    # RIÊNG 2 DÒNG "thi-trien-ky-nang" và "pha-bao-kich-hoat" bên dưới là hiệu
+    # ứng DÙNG CHUNG mặc định cho MỌI skill chủ động / MỌI Pháp Bảo — dùng khi
+    # bạn muốn 1 hiệu ứng chung cho tất cả, đỡ phải làm riêng từng cái.
+    #
+    # Muốn hiệu ứng RIÊNG cho TỪNG skill hoặc TỪNG Pháp Bảo (khác nhau mỗi
+    # cái) thì thêm dòng mới ngay dưới "map:", dùng đúng 2 khuôn key sau:
+    #   skill-<skill_id>: "namespace:id"      (skill_id xem trong SkillManager.java,
+    #                                          VD: "toc_kiem", "nhat_kiem_sat"...)
+    #   phabao-<ability_id>: "namespace:id"   (ability_id xem trong PhaBaoType.java,
+    #                                          VD: "kiemkhi", "loiphu", "phaplucthung"...)
+    # VD:
+    #   skill-toc_kiem: "tutien:vfx_tockiem"
+    #   phabao-loiphu: "tutien:vfx_loiphu"
+    # Skill/Pháp Bảo NÀO không có dòng riêng thì tự dùng hiệu ứng CHUNG ở
+    # "thi-trien-ky-nang"/"pha-bao-kich-hoat" bên dưới (hoặc particle mặc định
+    # nếu cả 2 đều chưa cấu hình) — không cần khai báo hết mọi skill/pháp bảo
+    # cùng lúc, làm dần cái nào cũng được.
+    map:
+      dot-pha-tich-luy: ""       # breakthroughCharge   - lúc đang tích Linh Khí để đột phá
+      thi-luyen-song: ""         # breakthroughTrialWave - mỗi đợt sóng Thiên Kiếp thử luyện
+      dot-pha-thanh-cong: ""     # breakthroughSuccess   - đột phá thành công, lên cảnh giới mới
+      dot-pha-that-bai: ""       # breakthroughFail      - đột phá thất bại
+      boss-xuat-hien: ""         # bossSpawnEffect       - boss Thiên Kiếp xuất hiện
+      thi-trien-ky-nang: ""      # skillCast             - người chơi dùng skill chủ động
+      pha-bao-kich-hoat: ""      # phaBaoCast            - kích hoạt nội tại Pháp Bảo
+      linh-can-lo-dien: ""       # linhCanReveal         - lộ diện Linh Căn
+      toc-lo-dien: ""            # tocReveal             - lộ diện Tộc (chủng tộc)
+      dung-dan-duoc: ""          # danDuocUse            - uống Đan Dược
+
+flying-sword:
+  enabled: true
+  min-stage: "BAN_THANH"
+  speed-base: 0.3
+  speed-per-stage: 0.01
+  stamina-drain-per-second: 5
+
+# ============================================================
+# LINH THÚ (Pet đồng hành) — cấu hình theo GIỚI, KHÔNG cần build lại plugin.
+#
+# Muốn đổi loại thú / model / buff cho 1 Giới -> sửa mục con trong "tiers"
+# rồi chạy "/ttadmin reload" (áp dụng ngay, không cần restart server).
+# Muốn thêm 1 Giới mới -> thêm 1 mục con nữa với đúng tên Giới, xong.
+#
+# mode cho mỗi Giới có thể là:
+#   VANILLA    - mob Bukkit thường (WOLF, FOX, ALLAY, PARROT...). Luôn chạy,
+#                không cần cài thêm plugin nào.
+#   MYTHICMOBS - mob custom định nghĩa trong mythicmobs/Mobs/*.yml, có thể
+#                gắn model 3D riêng (kỳ lân, phượng hoàng...) qua ModelEngine.
+#                Cần server cài MythicMobs (miễn phí) + ModelEngine nếu muốn
+#                model riêng. Xem ví dụ trong mythicmobs/Mobs/TT_Pets.yml.
+#   SIMPLEPETS - dùng plugin SimplePets ngoài (có GUI quản lý pet cho người chơi).
+#
+# Nếu 1 Giới chọn mode mà plugin tương ứng CHƯA cài, hệ thống tự động rớt
+# xuống mode kế tiếp trong "fallback-order" bên dưới — cuối cùng luôn rơi về
+# VANILLA (không bao giờ thất bại hoàn toàn, kể cả server không cài gì thêm).
+# ============================================================
+linh-thu:
+  enabled: true
+  # Ưu tiên MythicMobs. Nếu thiếu MythicMobs/ModelEngine vẫn fallback vanilla.
+  fallback-order: [MYTHICMOBS, SIMPLEPETS, VANILLA]
+  default:
+    mode: VANILLA
+    entity-type: WOLF
+    mythicmobs-id: "TT_Pet_LuyenKhi"
+    mythicmobs-level: 1
+    simplepets-type: wolf
+    display-name: "Linh Thú"
+    flies: false
+    regen-amplifier: 0
+    luck-amplifier: -1
+    attack-skill: "TT_Pet_LuyenKhi_Attack"
+    defend-skill: "TT_Pet_LuyenKhi_Defend"
+    attack-damage: 2.0
+    defend-heal-percent: 0.08
+    defend-resistance-amplifier: 0
+    defend-duration-seconds: 3
+    attack-cooldown-seconds: 8
+    defend-cooldown-seconds: 12
+
+  # Fallback theo 5 Đại Giới nếu một stage không được khai báo.
+  tiers:
+    Linh Giới: {mode: VANILLA, entity-type: WOLF, display-name: "Linh Thú Linh Giới", flies: false, regen-amplifier: 0, luck-amplifier: -1}
+    Đế Giới: {mode: VANILLA, entity-type: OCELOT, display-name: "Linh Thú Đế Giới", flies: false, regen-amplifier: 0, luck-amplifier: -1}
+    Thánh Giới: {mode: MYTHICMOBS, entity-type: FOX, mythicmobs-id: "TT_Pet_BanThanh", display-name: "Thánh Linh Thú", flies: false, regen-amplifier: 1, luck-amplifier: 0}
+    Tiên Giới: {mode: MYTHICMOBS, entity-type: ALLAY, mythicmobs-id: "TT_Pet_ChanTien", display-name: "Tiên Linh Thú", flies: true, regen-amplifier: 1, luck-amplifier: 0}
+    Thiên Giới: {mode: MYTHICMOBS, entity-type: PARROT, mythicmobs-id: "TT_Pet_ThienTon", display-name: "Thiên Linh Thú", flies: true, regen-amplifier: 2, luck-amplifier: 0}
+
+  # 25 pet — mỗi cảnh giới một con, mỗi con có skill riêng.
+  stages:
+    LUYEN_KHI:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_LuyenKhi"
+      mythicmobs-level: 1
+      entity-type: WOLF
+      simplepets-type: wolf
+      display-name: "Thanh Vũ Lang"
+      flies: false
+      regen-amplifier: 0
+      luck-amplifier: -1
+      attack-skill: "TT_Pet_LUYEN_KHI_Attack"
+      defend-skill: "TT_Pet_LUYEN_KHI_Defend"
+      attack-damage: 2
+      defend-heal-percent: 0.08
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 3
+      attack-cooldown-seconds: 8
+      defend-cooldown-seconds: 12
+    TRUC_CO:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_TrucCo"
+      mythicmobs-level: 1
+      entity-type: CAT
+      simplepets-type: wolf
+      display-name: "Linh Mộc Miêu"
+      flies: false
+      regen-amplifier: 0
+      luck-amplifier: -1
+      attack-skill: "TT_Pet_TRUC_CO_Attack"
+      defend-skill: "TT_Pet_TRUC_CO_Defend"
+      attack-damage: 3
+      defend-heal-percent: 0.1
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 4
+      attack-cooldown-seconds: 8
+      defend-cooldown-seconds: 12
+    KET_DAN:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_KetDan"
+      mythicmobs-level: 1
+      entity-type: OCELOT
+      simplepets-type: wolf
+      display-name: "Kim Giáp Hổ"
+      flies: false
+      regen-amplifier: 0
+      luck-amplifier: -1
+      attack-skill: "TT_Pet_KET_DAN_Attack"
+      defend-skill: "TT_Pet_KET_DAN_Defend"
+      attack-damage: 4
+      defend-heal-percent: 0.1
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 4
+      attack-cooldown-seconds: 7
+      defend-cooldown-seconds: 11
+    NGUYEN_ANH:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_NguyenAnh"
+      mythicmobs-level: 2
+      entity-type: FOX
+      simplepets-type: wolf
+      display-name: "Huyền Băng Hồ"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_NGUYEN_ANH_Attack"
+      defend-skill: "TT_Pet_NGUYEN_ANH_Defend"
+      attack-damage: 5
+      defend-heal-percent: 0.12
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 5
+      attack-cooldown-seconds: 7
+      defend-cooldown-seconds: 10
+    HOA_THAN:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_HoaThan"
+      mythicmobs-level: 2
+      entity-type: WOLF
+      simplepets-type: wolf
+      display-name: "Xích Viêm Lang"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_HOA_THAN_Attack"
+      defend-skill: "TT_Pet_HOA_THAN_Defend"
+      attack-damage: 7
+      defend-heal-percent: 0.12
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 5
+      attack-cooldown-seconds: 7
+      defend-cooldown-seconds: 10
+    DE_TU:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DeTu"
+      mythicmobs-level: 2
+      entity-type: SPIDER
+      simplepets-type: wolf
+      display-name: "Cửu U Xà"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_DE_TU_Attack"
+      defend-skill: "TT_Pet_DE_TU_Defend"
+      attack-damage: 9
+      defend-heal-percent: 0.14
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 6
+      attack-cooldown-seconds: 7
+      defend-cooldown-seconds: 10
+    DE_HAU:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DeHau"
+      mythicmobs-level: 3
+      entity-type: OCELOT
+      simplepets-type: wolf
+      display-name: "Ngọc Lân Miêu"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_DE_HAU_Attack"
+      defend-skill: "TT_Pet_DE_HAU_Defend"
+      attack-damage: 11
+      defend-heal-percent: 0.14
+      defend-resistance-amplifier: 0
+      defend-duration-seconds: 6
+      attack-cooldown-seconds: 6
+      defend-cooldown-seconds: 9
+    DE_VUONG:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DeVuong"
+      mythicmobs-level: 3
+      entity-type: RAVAGER
+      simplepets-type: wolf
+      display-name: "Thiên Lôi Hổ"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_DE_VUONG_Attack"
+      defend-skill: "TT_Pet_DE_VUONG_Defend"
+      attack-damage: 13
+      defend-heal-percent: 0.15
+      defend-resistance-amplifier: 1
+      defend-duration-seconds: 6
+      attack-cooldown-seconds: 6
+      defend-cooldown-seconds: 9
+    DE_TON:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DeTon"
+      mythicmobs-level: 3
+      entity-type: TURTLE
+      simplepets-type: wolf
+      display-name: "Huyền Minh Quy"
+      flies: false
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_DE_TON_Attack"
+      defend-skill: "TT_Pet_DE_TON_Defend"
+      attack-damage: 15
+      defend-heal-percent: 0.16
+      defend-resistance-amplifier: 1
+      defend-duration-seconds: 7
+      attack-cooldown-seconds: 6
+      defend-cooldown-seconds: 9
+    DE_CHU:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DeChu"
+      mythicmobs-level: 4
+      entity-type: PHANTOM
+      simplepets-type: wolf
+      display-name: "Cửu Thiên Bằng"
+      flies: true
+      regen-amplifier: 1
+      luck-amplifier: 0
+      attack-skill: "TT_Pet_DE_CHU_Attack"
+      defend-skill: "TT_Pet_DE_CHU_Defend"
+      attack-damage: 18
+      defend-heal-percent: 0.17
+      defend-resistance-amplifier: 1
+      defend-duration-seconds: 7
+      attack-cooldown-seconds: 5
+      defend-cooldown-seconds: 8
+    BAN_THANH:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_BanThanh"
+      mythicmobs-level: 4
+      entity-type: FOX
+      simplepets-type: wolf
+      display-name: "Thánh Quang Hồ"
+      flies: false
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_BAN_THANH_Attack"
+      defend-skill: "TT_Pet_BAN_THANH_Defend"
+      attack-damage: 21
+      defend-heal-percent: 0.18
+      defend-resistance-amplifier: 1
+      defend-duration-seconds: 7
+      attack-cooldown-seconds: 5
+      defend-cooldown-seconds: 8
+    CHUAN_THANH:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ChuanThanh"
+      mythicmobs-level: 4
+      entity-type: HORSE
+      simplepets-type: wolf
+      display-name: "Thánh Viêm Kỳ Lân"
+      flies: false
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_CHUAN_THANH_Attack"
+      defend-skill: "TT_Pet_CHUAN_THANH_Defend"
+      attack-damage: 24
+      defend-heal-percent: 0.19
+      defend-resistance-amplifier: 1
+      defend-duration-seconds: 8
+      attack-cooldown-seconds: 5
+      defend-cooldown-seconds: 8
+    DAI_THANH:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DaiThanh"
+      mythicmobs-level: 5
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Thánh Vực Long"
+      flies: true
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_DAI_THANH_Attack"
+      defend-skill: "TT_Pet_DAI_THANH_Defend"
+      attack-damage: 28
+      defend-heal-percent: 0.2
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 8
+      attack-cooldown-seconds: 5
+      defend-cooldown-seconds: 7
+    THANH_TON:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThanhTon"
+      mythicmobs-level: 5
+      entity-type: PARROT
+      simplepets-type: wolf
+      display-name: "Tinh Hà Phượng"
+      flies: true
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_THANH_TON_Attack"
+      defend-skill: "TT_Pet_THANH_TON_Defend"
+      attack-damage: 32
+      defend-heal-percent: 0.22
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 8
+      attack-cooldown-seconds: 5
+      defend-cooldown-seconds: 7
+    THANH_DE:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThanhDe"
+      mythicmobs-level: 5
+      entity-type: HORSE
+      simplepets-type: wolf
+      display-name: "Thánh Thiên Kỳ Lân"
+      flies: false
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_THANH_DE_Attack"
+      defend-skill: "TT_Pet_THANH_DE_Defend"
+      attack-damage: 36
+      defend-heal-percent: 0.23
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 9
+      attack-cooldown-seconds: 4
+      defend-cooldown-seconds: 7
+    CHAN_TIEN:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ChanTien"
+      mythicmobs-level: 6
+      entity-type: FOX
+      simplepets-type: wolf
+      display-name: "Cửu Thiên Tiên Hồ"
+      flies: true
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_CHAN_TIEN_Attack"
+      defend-skill: "TT_Pet_CHAN_TIEN_Defend"
+      attack-damage: 40
+      defend-heal-percent: 0.24
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 9
+      attack-cooldown-seconds: 4
+      defend-cooldown-seconds: 7
+    KIM_TIEN:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_KimTien"
+      mythicmobs-level: 6
+      entity-type: HORSE
+      simplepets-type: wolf
+      display-name: "Kim Diệu Tiên Lộc"
+      flies: false
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_KIM_TIEN_Attack"
+      defend-skill: "TT_Pet_KIM_TIEN_Defend"
+      attack-damage: 44
+      defend-heal-percent: 0.25
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 10
+      attack-cooldown-seconds: 4
+      defend-cooldown-seconds: 7
+    THAI_AT:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThaiAt"
+      mythicmobs-level: 6
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Thái Ất Linh Long"
+      flies: true
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_THAI_AT_Attack"
+      defend-skill: "TT_Pet_THAI_AT_Defend"
+      attack-damage: 48
+      defend-heal-percent: 0.26
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 10
+      attack-cooldown-seconds: 4
+      defend-cooldown-seconds: 6
+    DAI_LA:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_DaiLa"
+      mythicmobs-level: 7
+      entity-type: PARROT
+      simplepets-type: wolf
+      display-name: "Đại La Thiên Phượng"
+      flies: true
+      regen-amplifier: 2
+      luck-amplifier: 1
+      attack-skill: "TT_Pet_DAI_LA_Attack"
+      defend-skill: "TT_Pet_DAI_LA_Defend"
+      attack-damage: 52
+      defend-heal-percent: 0.28
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 10
+      attack-cooldown-seconds: 4
+      defend-cooldown-seconds: 6
+    TIEN_DE:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_TienDe"
+      mythicmobs-level: 7
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Tiên Đế Thần Long"
+      flies: true
+      regen-amplifier: 3
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_TIEN_DE_Attack"
+      defend-skill: "TT_Pet_TIEN_DE_Defend"
+      attack-damage: 58
+      defend-heal-percent: 0.3
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 11
+      attack-cooldown-seconds: 3
+      defend-cooldown-seconds: 6
+    THIEN_TON:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThienTon"
+      mythicmobs-level: 7
+      entity-type: WARDEN
+      simplepets-type: wolf
+      display-name: "Thiên Tôn Huyền Vũ"
+      flies: false
+      regen-amplifier: 3
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_THIEN_TON_Attack"
+      defend-skill: "TT_Pet_THIEN_TON_Defend"
+      attack-damage: 65
+      defend-heal-percent: 0.32
+      defend-resistance-amplifier: 2
+      defend-duration-seconds: 12
+      attack-cooldown-seconds: 3
+      defend-cooldown-seconds: 6
+    THIEN_DAO:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThienDao"
+      mythicmobs-level: 8
+      entity-type: WARDEN
+      simplepets-type: wolf
+      display-name: "Thiên Đạo Thần Kỳ Lân"
+      flies: false
+      regen-amplifier: 3
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_THIEN_DAO_Attack"
+      defend-skill: "TT_Pet_THIEN_DAO_Defend"
+      attack-damage: 72
+      defend-heal-percent: 0.34
+      defend-resistance-amplifier: 3
+      defend-duration-seconds: 12
+      attack-cooldown-seconds: 3
+      defend-cooldown-seconds: 5
+    THIEN_DE:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_ThienDe"
+      mythicmobs-level: 8
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Thiên Đế Kim Long"
+      flies: true
+      regen-amplifier: 3
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_THIEN_DE_Attack"
+      defend-skill: "TT_Pet_THIEN_DE_Defend"
+      attack-damage: 82
+      defend-heal-percent: 0.36
+      defend-resistance-amplifier: 3
+      defend-duration-seconds: 13
+      attack-cooldown-seconds: 3
+      defend-cooldown-seconds: 5
+    HON_NGUYEN:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_HonNguyen"
+      mythicmobs-level: 8
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Hỗn Nguyên Thánh Long"
+      flies: true
+      regen-amplifier: 3
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_HON_NGUYEN_Attack"
+      defend-skill: "TT_Pet_HON_NGUYEN_Defend"
+      attack-damage: 95
+      defend-heal-percent: 0.4
+      defend-resistance-amplifier: 3
+      defend-duration-seconds: 14
+      attack-cooldown-seconds: 2
+      defend-cooldown-seconds: 5
+    VO_THUONG_CHI_TON:
+      mode: MYTHICMOBS
+      mythicmobs-id: "TT_Pet_VoThuongChiTon"
+      mythicmobs-level: 9
+      entity-type: ENDER_DRAGON
+      simplepets-type: wolf
+      display-name: "Vô Thượng Tổ Long"
+      flies: true
+      regen-amplifier: 4
+      luck-amplifier: 2
+      attack-skill: "TT_Pet_VO_THUONG_CHI_TON_Attack"
+      defend-skill: "TT_Pet_VO_THUONG_CHI_TON_Defend"
+      attack-damage: 120
+      defend-heal-percent: 0.5
+      defend-resistance-amplifier: 4
+      defend-duration-seconds: 15
+      attack-cooldown-seconds: 2
+      defend-cooldown-seconds: 4
+
+combat:
+  pvp-enabled: true
+  pvp-in-safe-zones: false
+  pvp-stage-damage-scaling: true
+  pvp-scaling-cap: 3.0
+  lt-drop-on-pvp-death: 0.05
+
+database:
+  type: yaml
+  auto-save-seconds: 300
+  mysql:
+    host: localhost
+    port: 3306
+    database: tutien
+    username: root
+    password: password
+    pool-size: 10
+    table-prefix: "tt_"
+
+
+debug:
+  enabled: false
+  log-lk-regen: false
+  log-breakthrough: true
+  log-boss-spawn: true
+
+performance:
+  lk-regen-interval-ticks: 20
+  nametag-update-ticks: 100
+  mythiclib-sync-ticks: 600
+
+language:
+  locale: vi
+  fallback: vi
+
+# ══════════════════════════════════════════════
+#  BANG "NGUOI CHOI DA BI BAN" (doc thang tu banned-players.json,
+#  hoat dong voi ca /ban vanilla lan /ban cua EssentialsX vi ca hai deu
+#  ghi vao file nay theo mac dinh). Dung cho hologram/GUI qua cac
+#  placeholder %tutien_ban_<so_thu_tu>_name/reason/duration%.
+ban-board:
+  enabled: true
+  # Chu ky doc lai file banned-players.json (giay). Dung qua ngan se
+  # ton IO doc file lien tuc khong can thiet.
+  update-interval-seconds: 30
+  # So nguoi hien thi toi da (khop voi so placeholder duoc dang ky).
+  top-count: 10
+
+# ══════════════════════════════════════════════
+#  LENH CONSOLE TUY CHINH KHI DAT CANH GIOI MOI (khong bat buoc)
+#  %player% se duoc thay bang ten nguoi choi. Lenh chay bang CONSOLE.
+#
+#  LUU Y (v7.3.0): permission "tutien.<canh_gioi>" + group "tt_realm_*" +
+#  prefix GIO DA duoc LuckPermsHook.java tu dong xu ly qua LuckPerms API
+#  (1 lan ghi duy nhat/lan doi canh gioi, co self-heal + cache RAM).
+#  KHONG can (va KHONG nen) khai bao lai lenh "lp user ... permission set/unset"
+#  o day nua — truoc day moi lan sync se chay them ~25 lenh console rieng le
+#  cho MOI canh gioi (unset het 24 permission cu roi set 1 cai moi), khien
+#  LuckPerms phai xep hang xu ly lenh ("Another command is being executed...")
+#  va ngon RAM/CPU ro ret khi nhieu nguoi choi join/dot pha cung luc (vd luc
+#  restart server). Da go bo toan bo cac lenh do o day.
+#
+#  Chi dien vao day neu ban muon chay THEM lenh khac (khong phai LuckPerms)
+#  khi nguoi choi dat 1 canh gioi cu the, VD:
+#    LUYEN_KHI:
+#      - "broadcast %player% da nhap mon tu tien!"
+breakthrough-commands: {}
+
+# ══════════════════════════════════════════════
+#  DOT PHA QUA NPC (can plugin Citizens)
+#
+#  Khi "enabled: true": tai world duoc ghi trong "world" ben duoi, lenh
+#  /vuottamma va /dotpha SE BI CHAN — nguoi choi bat buoc phai den gap
+#  1 trong cac NPC (Citizens) co ID nam trong "npc-ids" va CLICK CHUOT
+#  PHAI vao NPC do thi moi bat dau duoc Thien Dinh / Thien Kiep.
+#
+#  Cach lay ID NPC: dung lenh Citizens "/npc list" hoac dung "/npc select"
+#  roi "/npc id" khi dang dung canh NPC do.
+#
+#  worlds: [] (rong) = KHONG khoa world nao (lenh /vuottamma, /dotpha van
+#  dung binh thuong o moi noi, NPC chi la 1 cach dot pha THEM).
+#  Dien 1 hoac NHIEU ten world (vd ["the_gioi_tu_luyen", "the_gioi_tu_luyen_nether"])
+#  = TAT CA cac world trong danh sach nay deu bi khoa lenh; world nao
+#  KHONG co trong danh sach thi khong bi anh huong.
+#
+#  npc-ids: [] = chua khai bao NPC nao (NPC se khong lam gi ca cho toi
+#  khi ban dien ID vao day). Co the khai bao nhieu NPC cung luc (moi NPC
+#  o 1 world khac nhau trong danh sach "worlds" cung duoc, mien la ID co
+#  trong danh sach nay thi click vao la dot pha duoc).
+breakthrough-npc:
+  enabled: false
+  worlds: []
+  npc-ids: []
+  block-message: "&cKhu vực này bạn phải đến gặp NPC để tiến hành Đột Phá! Không thể dùng lệnh trực tiếp."

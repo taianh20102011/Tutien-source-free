@@ -60,6 +60,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 
         return switch (args[0].toLowerCase()) {
 
+            case "help", "huongdan", "gui" -> { showHelp(sender); yield true; }
+
             // ======================== INFO ========================
             case "info" -> {
                 if (args.length < 2) { sender.sendMessage(plugin.msg("auto_bd624637cd")); yield true; }
@@ -247,6 +249,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 plugin.getPetTierManager().reload();
                 plugin.getAlchemyManager().reload();
                 plugin.getHerbManager().reload();
+                if (plugin.getBachNgheManager() != null) plugin.getBachNgheManager().reload();
+                if (plugin.getCoDuyenManager() != null) plugin.getCoDuyenManager().reload();
                 int customStages = com.tutien.data.CultivationStage.loadCustomizations(
                         new java.io.File(plugin.getDataFolder(), "custom-canh-gioi.yml"), plugin.getLogger());
                 for (com.tutien.data.PlayerData data : plugin.getDataManager().getAllData()) {
@@ -257,7 +261,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     if (maxLinhKhi > 0 && data.getLinhKhi() > maxLinhKhi) data.setLinhKhi(maxLinhKhi);
                 }
                 plugin.getDataManager().saveAll();
-                sender.sendMessage("§aĐã reload: §eLinh Thú + Luyện Đan + Vườn Tiên Thảo + "
+                sender.sendMessage("§aĐã reload: §eLinh Thú + Luyện Đan + Vườn Tiên Thảo + Bách Nghệ + Cơ Duyên + "
                         + customStages + " slot cảnh giới tuỳ biến§a.");
                 yield true;
             }
@@ -678,29 +682,24 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     // ========================
 
     private void showHelp(CommandSender sender) {
-        sender.sendMessage(plugin.msg("auto_76826dad30"));
-        sender.sendMessage(plugin.msg("auto_7bca6bd775"));
-        sender.sendMessage(plugin.msg("auto_444fcdfcbc"));
-        sender.sendMessage(plugin.msg("auto_de5c5ae198"));
-        sender.sendMessage(plugin.msg("auto_aae5226266"));
-        sender.sendMessage(plugin.msg("auto_83373edbfc"));
-        sender.sendMessage(plugin.msg("auto_515df2e2ea"));
-        sender.sendMessage(plugin.msg("auto_eb28a249cf"));
-        sender.sendMessage(plugin.msg("auto_9d82b5555a"));
-        sender.sendMessage(plugin.msg("auto_0955f8d27d"));
-        sender.sendMessage(plugin.msg("auto_3638afa78e"));
-        sender.sendMessage(plugin.msg("auto_9f2fb70a66"));
-        sender.sendMessage(plugin.msg("auto_458a67bce4"));
-        sender.sendMessage(plugin.msg("auto_9c44042f2f"));
-        sender.sendMessage(plugin.msg("auto_afcb4027b6"));
-        sender.sendMessage(plugin.msg("auto_de078c84df"));
-        sender.sendMessage(plugin.msg("auto_1bcbd19509"));
-        sender.sendMessage(plugin.msg("auto_d3a8f7d82e"));
-        sender.sendMessage(plugin.msg("auto_1c5c98d80c"));
-        sender.sendMessage(plugin.msg("auto_ca52792715"));
-        sender.sendMessage(plugin.msg("auto_18937bc00b"));
-        sender.sendMessage(plugin.msg("auto_9edb57a473"));
-        sender.sendMessage(plugin.msg("auto_045f213664"));
+        if (sender instanceof Player p && plugin.getGuideGUI() != null) {
+            plugin.getGuideGUI().openAdminCommands(p, 0);
+            return;
+        }
+        sender.sendMessage("§c§l╔═════════════════ LỆNH QUẢN TRỊ TUTIEN ═════════════════╗");
+        sender.sendMessage("  §e/ttadmin info <player>                 §8- §7Xem hồ sơ người chơi");
+        sender.sendMessage("  §e/ttadmin set <stage|rank|class|dao|lk|tien> <p> <val> §8- §7Set thông số");
+        sender.sendMessage("  §e/ttadmin give <phabao|dan|bidong_sach|token|lk|tien>  §8- §7Phát vật phẩm");
+        sender.sendMessage("  §e/ttadmin reset <player> confirm       §8- §7Reset sạch nhân vật");
+        sender.sendMessage("  §e/ttadmin maxlk [player] / maxlk_all   §8- §7Đầy 100% linh khí");
+        sender.sendMessage("  §e/ttadmin heal <player>                §8- §7Hồi đầy máu và linh khí");
+        sender.sendMessage("  §e/ttadmin dotpha <player>              §8- §7Ép vượt đột phá ngay");
+        sender.sendMessage("  §e/ttadmin zone <create|list|remove>    §8- §7Quản lý linh mạch");
+        sender.sendMessage("  §e/ttadmin bloodmoon <start|stop>       §8- §7Bật/tắt Huyết Nguyệt");
+        sender.sendMessage("  §e/ttadmin worldboss <spawn|despawn>    §8- §7Quản lý Boss Thế Giới");
+        sender.sendMessage("  §e/ttadmin broadcast <tin_nhắn>         §8- §7Thông báo thiên hạ toàn server");
+        sender.sendMessage("  §e/ttadmin reload                       §8- §7Reload config plugin");
+        sender.sendMessage("§c§l╚══════════════════════════════════════════════════════╝");
     }
 
     private void listStages(CommandSender sender) {
@@ -742,8 +741,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender s, Command cmd, String alias, String[] args) {
         if (args.length == 1)
-            return Arrays.asList("info","set","give","reset","reload","top","broadcast",
-                    "dotpha","maxlk","maxlk_all","list","heal","bc","season","worldboss");
+            return Arrays.asList("help","gui","info","set","give","reset","reload","top","broadcast",
+                    "dotpha","maxlk","maxlk_all","list","heal","bc","season","worldboss","zone","bloodmoon");
         if (args.length == 2 && args[0].equals("season"))
             return Arrays.asList("set","clear","info");
         if (args.length == 3 && args[0].equals("season") && args[1].equals("set")) {

@@ -8,248 +8,257 @@ depend: []
 softdepend: [LuckPerms, Vault, WorldEdit, WorldGuard, GriefPrevention, PlaceholderAPI, BetterHud, MythicLib, MythicMobs, SimplePets, ItemsAdder, Citizens]
 
 commands:
-  # ======= LENH CHINH =======
+  # ======= LỆNH CHÍNH =======
   tutien:
-    description: "Lenh chinh Tu Tien (chon class, dao, xem info...)"
-    usage: "/tutien <chon|dao|info|skill|layky|items|phabao|reroll|reroll_toc|top>"
+    description: "Lệnh chính Tu Tiên (chọn môn phái, đạo, thông tin, bảng xếp hạng...)"
+    usage: "/tutien <chon|dao|info|skill|layky|items|phabao|reroll|reroll_toc|top|help>"
     aliases: [tt, tx]
 
   vuottamma:
-    description: "Vuot Tam Ma - Buoc 1 truoc khi dot pha (tu Thanh Gioi tro len)"
+    description: "Vượt Tâm Ma - Thử thách bắt buộc trước khi độ kiếp (Bán Thánh+)"
     usage: "/vuottamma"
     aliases: [vtm]
 
   dotpha:
-    description: "Bat dau Thien Kiep dot pha"
+    description: "Kích hoạt Thiên Kiếp lôi đình để đột phá cảnh giới mới"
     usage: "/dotpha"
     aliases: [dp]
 
   boqua:
-    description: "Bo qua thong bao dot pha"
+    description: "Bỏ qua thông báo sẵn sàng đột phá"
     usage: "/boqua"
     aliases: [bq]
 
   linhkhi:
-    description: "Xem thanh Linh Khi"
+    description: "Kiểm tra tiến trình Linh Khí và tốc độ tích lũy tu vi"
     usage: "/linhkhi"
     aliases: [lk]
 
-  # ======= TUI DO =======
+  # ======= TÚI ĐỒ TRỮ VẬT =======
   tuitutien:
-    description: "Mo Tui Do Tu Tien (GUI 54 slot)"
+    description: "Mở Túi Trữ Vật Tu Tiên (54 ô bảo lưu vĩnh viễn)"
     usage: "/tuitutien"
     aliases: [ttbag, tuidotutien]
 
   ttbag:
-    description: "Mo Tui Do Tu Tien"
+    description: "Mở Túi Trữ Vật Tu Tiên"
     usage: "/ttbag"
 
   skill:
-    description: "Lenh skill (alias cua tutien)"
+    description: "Nhận lại vật phẩm thi triển kỹ năng môn phái"
     usage: "/skill"
 
-  # ======= NHAN VAT =======
+  # ======= NHÂN VẬT & KHÍ TỨC =======
   toc:
-    description: "Xem Toc (giong loai) cua ban"
+    description: "Xem thông tin Chủng Tộc và thuộc tính huyết mạch"
     usage: "/toc"
 
   aura:
-    description: "Bat/Tat vong Tu Vi phat sang"
+    description: "Bật hoặc tắt vòng hào quang Tu Vi phát sáng"
     usage: "/aura [on|off]"
     aliases: [tuvi]
 
-  # ======= LUYEN CHE =======
+  # ======= LUYỆN CHẾ & PHÁP BẢO =======
   luyen:
-    description: "Luyen Dan Duoc (32 cong thuc)"
-    usage: "/luyen [ten_dan|danh_sach]"
+    description: "Luyện Đan Dược theo 32 công thức tiên gia"
+    usage: "/luyen [tên_đan|danh_sach]"
     aliases: [luyendan, ld]
 
   renduc:
-    description: "Ren Duc nang cap Phap Bao len tier cao hon"
+    description: "Rèn Đúc nâng phẩm giai Pháp Bảo (Hạ ➔ Tiên phẩm)"
     usage: "/renduc"
     aliases: [rd, forge]
 
   cuonghoa:
-    description: "Cuong Hoa Phap Bao +1 -> +10 (giu nguyen tier, tang % chi so)"
+    description: "Cường Hóa Pháp Bảo từ +1 đến +10 gia tăng chỉ số"
     usage: "/cuonghoa"
     aliases: [chpb, enhance]
 
   khamnam:
-    description: "Kham Nam Ngoc thuoc tinh (Lua/Bang/Loi) vao Phap Bao"
+    description: "Khảm Nạm ngọc thuộc tính (Hỏa, Băng, Lôi) vào Pháp Bảo"
     usage: "/khamnam"
     aliases: [kn, socket]
 
   dunghop:
-    description: "Dung Hop 2 Phap Bao cung loai: gop dong an + co hoi thang pham"
+    description: "Dung Hợp 2 Pháp Bảo cùng loại để ghép dòng ẩn & thăng phẩm"
     usage: "/dunghop"
     aliases: [dh, fusion]
 
   linhthuc:
-    description: "Gan Linh Thuc (ky nang tu dong theo ngu canh) len Phap Bao dang cam"
+    description: "Gán Linh Thức (kỹ năng tự động theo ngữ cảnh) lên Pháp Bảo"
     usage: "/linhthuc"
     aliases: [lt]
 
   khilinh:
-    description: "Cho Phap Bao an do rac de tich diem Linh Tinh (Khi Linh)"
+    description: "Cho Pháp Bảo ăn vật phẩm thừa để tích lũy nuôi Khí Linh"
     usage: "/khilinh"
     aliases: [kl, phapbaopet]
 
-  # ======= TINH NANG MOI =======
+  # ======= TÍNH NĂNG CHIẾN ĐẤU & TU LUYỆN =======
   thiendinh:
-    description: "Thien Dinh - ngoi tu luyen lay LK tu dong"
+    description: "Thiền Định tĩnh tọa hấp thu linh khí tự động"
     usage: "/thiendinh [bat|tat]"
     aliases: [td, meditate]
 
   trieukiem:
-    description: "Trieu hoi Kiem Bay (Kiem Tu, Ban Thanh+)"
+    description: "Triệu hồi Vạn Kiếm Quy Tông hộ thể sau lưng (Kiếm Tu Bán Thánh+)"
     usage: "/trieukiem [mode]"
     aliases: [tk, kiemdao]
 
   trieuthu:
-    description: "Trieu hoi Linh Thu dong hanh (moi class)"
+    description: "Triệu hồi hoặc thu hồi Linh Thú đồng hành tác chiến"
     usage: "/trieuthu"
     aliases: [ls, linhthu, pet]
 
   hocbidong:
-    description: "Hoc 1 bi kip bi dong tu sach dang cam tren tay (toi da 3)"
+    description: "Lĩnh ngộ bí kíp nội công bị động từ sách trên tay (tối đa 3)"
     usage: "/hocbidong <atk|hp|def|speed|luck|regen>"
     aliases: [hoc, learnpassive]
 
   bidong:
-    description: "Xem cac bi kip bi dong da hoc"
+    description: "Xem danh sách bí kíp bị động đã học"
     usage: "/bidong"
     aliases: [passives, passive]
 
   doiky:
-    description: "Doi sub-skill dang active trong 1 slot cua Linh Khi Kiem (item ghep)"
+    description: "Hoán đổi nhánh kỹ năng trong slot Linh Khí Kiếm"
     usage: "/doiky <a|b|c|d>"
     aliases: [changeskill, doikinang]
 
   ngukiem:
-    description: "Ngu Kiem Phi Hanh - dung tren Phi Kiem khi bay (Kiem Tu, Ban Thanh+)"
+    description: "Ngự Kiếm Phi Hành - Đạp kiếm bay lượn (Kiếm Tu Bán Thánh+)"
     usage: "/ngukiem"
     aliases: [nk, phikiem]
 
-
   linhchungshop:
-    description: "Mua/Ban Linh Chung, co khoa canh gioi server-side"
-    usage: "/linhchungshop <buy|sell> <herbId> [soLuong]"
+    description: "Mua bán hạt giống Linh Chủng (khóa theo cảnh giới)"
+    usage: "/linhchungshop <buy|sell> <herbId> [số_lượng]"
     aliases: [lcshop]
 
   thao:
-    description: "Xem thong tin Tien Thao hien co"
+    description: "Xem danh sách và dược tính các loài Tiên Thảo"
     usage: "/thao"
     aliases: [thaodoc, herb]
 
   addlinhzone:
-    description: "Them vung Linh Mach tang LK (Admin)"
-    usage: "/addlinhzone <ten> [ban_kinh]"
+    description: "Tạo khu vực Linh Mạch tăng tốc tu vi (Admin)"
+    usage: "/addlinhzone <tên> [bán_kính]"
     permission: tutien.admin
     aliases: [alz]
 
-  # ======= TONG MON =======
+  # ======= TÔNG MÔN =======
   tongmon:
-    description: "He thong Tong Mon / Bang Hoi"
+    description: "Hệ thống Tông Môn / Bang Hội tu tiên"
     usage: "/tongmon <tao|info|moi|kick|roi|rank|kho>"
     aliases: [tm, sect]
 
-  # ======= CUSTOM CULTIVATION TECHNIQUES =======
   congphap:
-    description: "Hệ thống công pháp do server tùy chỉnh qua congphap.yml"
+    description: "Hệ thống Công Pháp tu tiên do server tùy chỉnh"
     usage: "/congphap <list|info|hoc|trangbi|thi-trien|bo>"
     aliases: [congphapcustom, technique]
 
-  # ======= TONG MON RECRUITMENT SHORTCUT =======
   mochieumo:
-    description: "Mở/đóng chiêu mộ công khai của Tông Môn (Môn Chủ)"
+    description: "Mở hoặc đóng chiêu mộ công khai của Tông Môn (Môn Chủ)"
     usage: "/mochieumo"
     aliases: [mcm]
 
   kinang:
-    description: "Mở giao diện tùy chọn các hệ thống kỹ năng"
+    description: "Mở giao diện GUI tùy chọn các hệ thống kỹ năng"
     usage: "/kinang"
 
-  # ======= HUONG DAN =======
-  guide:
-    description: "Huong dan chi tiet tat ca tinh nang"
-    usage: "/guide [batdau|class|canh_gioi|dotpha|skill|linh_dan|phap_bao|linh_thach|tong_mon|linh_can|dao|cong_phap|toc|meo|lenh]"
+  # ======= BÁCH NGHỆ & CƠ DUYÊN =======
+  bachnghe:
+    description: "Bách Nghệ Tu Tiên: 6 nghề phụ, cấp nghề và đặc quyền"
+    usage: "/bachnghe <list|info|chon|status|reset>"
+    aliases: [nghephu, bachnghesu]
 
-  # ======= ADMIN =======
+  coduyen:
+    description: "Cơ Duyên & Kim Thủ Chỉ: phúc lợi và điểm Hệ Thống"
+    usage: "/coduyen <status|help|dung>"
+    aliases: [kimthuchi, co-duyen]
+
+  # ======= CẨM NANG HƯỚNG DẪN =======
+  guide:
+    description: "Cẩm Nang Toàn Tập & Bảng Tra Cứu Toàn Bộ Lệnh (GUI & Text)"
+    usage: "/guide [batdau|kiemdao|luyenche|bachnghe|tongmon|lenh|admin]"
+    aliases: [hd, huongdan, help]
+
+  # ======= QUẢN TRỊ VIÊN (ADMIN) =======
   ttadmin:
-    description: "Admin commands cho TuTien"
-    usage: "/ttadmin <lenh>"
+    description: "Toàn bộ lệnh quản trị hệ thống Tu Tiên (Admin / OP)"
+    usage: "/ttadmin <help|info|set|give|reset|heal|maxlk|dotpha|zone|bloodmoon|worldboss|season|reload>"
     permission: tutien.admin
     aliases: [tta]
 
   debug:
-    description: "Bat/tat che do Debug TuTien (Admin)"
+    description: "Bật/tắt chế độ ghi log Debug TuTien (Admin)"
     usage: "/debug [on|off]"
     permission: tutien.admin
     aliases: [ttdebug]
 
-  # ======= KARMA & QUEST =======
+  # ======= CÔNG ĐỨC & NHIỆM VỤ =======
   karma:
-    description: "Xem Cong Duc va Nghiep Luc"
+    description: "Kiểm tra điểm Công Đức và Nghiệp Lực"
     usage: "/karma"
     aliases: [congduc]
 
   quest:
-    description: "Xem nhiem vu Daily/Weekly"
+    description: "Xem và nhận thưởng nhiệm vụ Tu Tiên hàng ngày/tuần"
     usage: "/quest"
     aliases: [nhiemvu, nv]
 
   party:
-    description: Nhom cung tu tien
-    usage: /party <create|invite|accept|leave|kick|disband|info>
+    description: "Thành lập tổ đội cùng tu luyện và săn Boss"
+    usage: "/party <create|invite|accept|leave|kick|disband|info>"
     aliases: [nhom]
 
   group:
-    description: Quan ly nhom tu tien (Alias cua Party)
-    usage: /group <create|invite|accept|leave|kick|disband|info>
+    description: "Quản lý tổ đội tu tiên (Alias của Party)"
+    usage: "/group <create|invite|accept|leave|kick|disband|info>"
     aliases: [grp]
 
   bloodmoon:
-    description: Quan ly su kien Huyet Nguyet
-    usage: /bloodmoon <start|stop|status>
+    description: "Quản lý sự kiện Huyết Nguyệt dị tượng (Admin)"
+    usage: "/bloodmoon <start|stop|status>"
     permission: tutien.admin
     aliases: [huyetnguyet, hn]
 
   binhxl:
-    description: Dung Binh Huyet Nguyet (cong/farm/heal)
-    usage: /binhxl <cong|farm|heal>
+    description: "Sử dụng Bình Huyết Nguyệt (công, farm, hồi phục)"
+    usage: "/binhxl <cong|farm|heal>"
     aliases: [binh, binhhuyet]
 
   trade:
-    description: Giao dich vat pham voi nguoi khac
-    usage: /trade <player>
+    description: "Giao dịch vật phẩm an toàn giữa 2 người chơi"
+    usage: "/trade <player>"
     aliases: [giaodich, gd]
 
   tang:
-    description: Tang item tren tay cho nguoi khac
-    usage: /tang <player>
+    description: "Tặng vật phẩm trên tay cho đạo hữu"
+    usage: "/tang <player>"
     aliases: [gift, cho]
 
-  # ======= SU DO (Master-Disciple) =======
+  # ======= SƯ ĐỒ & ĐỆ TỬ =======
   suphu:
-    description: "Nhan mot nguoi choi lam de tu"
+    description: "Bái sư hoặc nhận người chơi làm đệ tử chân truyền"
     usage: "/suphu <player>"
 
   dedoan:
-    description: "Sư đồ người chơi và NPC follower có dữ liệu độc lập"
-    usage: "/dedoan [roi|kick <player>|npc <tao|list|stats|randomskip|thechat|linhcan|tuchat|xoa> ...]"
+    description: "Quản lý đồ đoàn sư đồ và đệ tử NPC theo sau phò tá"
+    usage: "/dedoan [roi|kick <player>|npc <tao|list|stats|xoa> ...]"
 
-  # ======= UY AP TOGGLE =======
+  # ======= UY ÁP CẢNH GIỚI =======
   uyap:
-    description: "Bật/tắt hiệu ứng Uy Áp cảnh giới lên bản thân"
+    description: "Bật hoặc tắt hiệu ứng Uy Áp cảnh giới lên bản thân"
     usage: "/uyap [on|off|bat|tat|status]"
 
 permissions:
   tutien.admin:
-    description: "Quyen Admin cao nhat cua TuTienPlugin"
+    description: "Quyền Quản Trị Viên cao nhất của TuTienPlugin"
     default: op
   group.admin:
-    description: "Quyen Admin quan ly tat ca cac Nhom/Party"
+    description: "Quyền Quản Trị Viên quản lý tất cả các Nhóm/Party"
     default: op
   tutien.user:
-    description: "Quyen su dung cac lenh co ban cua TuTienPlugin"
+    description: "Quyền sử dụng các lệnh cơ bản của TuTienPlugin"
     default: true

@@ -1,0 +1,13 @@
+{
+  "project": "TuTien_FREE_v7.7.3_FREE_PERPETUAL",
+  "java_files": 105,
+  "resource_yaml_files": 16,
+  "yaml_pom_errors": [],
+  "java_delimiter_issues": [],
+  "checks": {
+    "feature_classes_present": true,
+    "commands_declared": true,
+    "configs_parse": true
+  },
+  "static_checks_passed": true
+}

@@ -134,10 +134,17 @@ public class FlyingSwordManager implements Listener {
 
                     // Trail particles dep
                     Color swordColor = getSwordColor(d, i);
-                    w.spawnParticle(Particle.DUST, swordLoc, 2, 0.05,0.05,0.05, 0,
-                        new Particle.DustOptions(swordColor, 1.5f));
-                    // Dau kiem sang hon
-                    w.spawnParticle(Particle.CRIT, swordLoc.clone().add(0,0.15,0), 1, 0,0,0, 0.01);
+                    w.spawnParticle(Particle.DUST, swordLoc, 2, 0.04, 0.04, 0.04, 0,
+                        new Particle.DustOptions(swordColor, 1.4f));
+                    
+                    // Vệt đuôi kiếm khí lưu quang
+                    double prevAngle = angle - Math.toRadians(8);
+                    Location trailLoc = base.clone().add(Math.cos(prevAngle) * radius, yOff, Math.sin(prevAngle) * radius);
+                    w.spawnParticle(Particle.DUST, trailLoc, 1, 0.01, 0.01, 0.01, 0,
+                        new Particle.DustOptions(swordColor, 0.8f));
+
+                    // Mũi kiếm sắc bén sáng rực
+                    w.spawnParticle(Particle.END_ROD, swordLoc.clone().add(0, 0.16, 0), 1, 0.01, 0.01, 0.01, 0.01);
                 }
 
                 // Tan cong ke thu moi 40 tick (2 giay)
@@ -184,8 +191,12 @@ public class FlyingSwordManager implements Listener {
             LivingEntity le = (LivingEntity) e;
             double totalDmg = dmgPerSword * count * 0.3; // Moi kiem gay 30% sát thương co ban
             le.damage(totalDmg, player);
-            le.getWorld().spawnParticle(Particle.CRIT, le.getLocation().add(0,1,0),
-                5, 0.3,0.3,0.3, 0.1);
+            Location hitLoc = le.getLocation().add(0, 1.0, 0);
+            le.getWorld().spawnParticle(Particle.SWEEP_ATTACK, hitLoc, 1, 0, 0, 0, 0);
+            le.getWorld().spawnParticle(Particle.CRIT, hitLoc, 8, 0.3, 0.3, 0.3, 0.15);
+            le.getWorld().spawnParticle(Particle.FIREWORK, hitLoc, 4, 0.2, 0.2, 0.2, 0.05);
+            le.getWorld().playSound(hitLoc, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1.4f);
+            le.getWorld().playSound(hitLoc, Sound.ITEM_TRIDENT_HIT, 0.6f, 1.6f);
             break; // Chi tan cong 1 ke thu moi 2 giay de can bang
         }
     }

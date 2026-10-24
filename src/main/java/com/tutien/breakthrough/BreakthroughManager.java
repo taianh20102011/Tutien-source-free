@@ -471,6 +471,7 @@ public class BreakthroughManager implements Listener {
             player.sendTitle(plugin.msg("auto_60a172cb9c"), newLevel, 10, 80, 20);
         }
         player.sendMessage("§a✦ Đột phá thành công! Cấp mới: " + newLevel + " | +" + fmt(reward) + " " + plugin.getTienManager().tenTien() + "!");
+        if (plugin.getCoDuyenManager() != null) plugin.getCoDuyenManager().rollForBreakthrough(player);
     }
 
     private void failTrial(Player player, PlayerData data) {

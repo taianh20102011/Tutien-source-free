@@ -1,553 +1,214 @@
 package com.tutien.commands;
 
 import com.tutien.TuTienPlugin;
+import com.tutien.gui.TuTienGuideGUI;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+
 import java.util.*;
 
 /**
- * /guide - Hướng dẫn chi tiết cho người mới chơi Tu Tiên Plugin
- * /hd <chu_de>
+ * /guide - Cẩm Nang Toàn Tập & Hướng Dẫn Tu Tiên Plugin
+ * Hỗ trợ giao diện rương GUI trực quan và tra cứu lệnh văn bản tiện lợi.
  */
 public class GuideCommand implements CommandExecutor, TabCompleter {
 
     private final TuTienPlugin plugin;
 
-    public GuideCommand(TuTienPlugin plugin) { this.plugin = plugin; }
+    public GuideCommand(TuTienPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player player)) { sender.sendMessage(plugin.msg("auto_6df645165c")); return true; }
+        TuTienGuideGUI gui = plugin.getGuideGUI();
 
-        // /guide is owned by TuTienPlugin. When DeluxeMenus is installed,
-        // hand the main guide over to DeluxeMenus instead of printing the old text menu.
-        if (args.length == 0) {
-            if (openDeluxeMenusGuide(player)) {
+        // Nếu là Player và không có tham số: Mở thẳng giao diện GUI
+        if (sender instanceof Player player) {
+            if (args.length == 0 || args[0].equalsIgnoreCase("gui") || args[0].equalsIgnoreCase("menu")) {
+                if (gui != null) {
+                    gui.openMain(player);
+                } else {
+                    showTextMainMenu(player);
+                }
                 return true;
             }
-            showMainMenu(player);
+
+            switch (args[0].toLowerCase()) {
+                case "batdau", "start", "tuyen" -> {
+                    if (gui != null) gui.openTuLuyen(player);
+                    else showTextTuLuyen(player);
+                    return true;
+                }
+                case "kiemdao", "skill", "kiem" -> {
+                    if (gui != null) gui.openKiemDao(player);
+                    else showTextKiemDao(player);
+                    return true;
+                }
+                case "luyenche", "phabao", "dan", "phap_bao" -> {
+                    if (gui != null) gui.openLuyenChe(player);
+                    else showTextLuyenChe(player);
+                    return true;
+                }
+                case "bachnghe", "coduyen", "nghe" -> {
+                    if (gui != null) gui.openBachNghe(player);
+                    else showTextBachNghe(player);
+                    return true;
+                }
+                case "tongmon", "sudo", "party" -> {
+                    if (gui != null) gui.openTongMon(player);
+                    else showTextTongMon(player);
+                    return true;
+                }
+                case "lenh", "commands", "player" -> {
+                    if (gui != null) gui.openPlayerCommands(player, 0);
+                    else showTextPlayerCommands(player);
+                    return true;
+                }
+                case "admin", "quantri" -> {
+                    if (gui != null) gui.openAdminCommands(player, 0);
+                    else showTextAdminCommands(player);
+                    return true;
+                }
+                case "text", "chat" -> {
+                    showTextMainMenu(player);
+                    return true;
+                }
+            }
+        }
+
+        // Dành cho Console hoặc fallback Text
+        if (args.length == 0) {
+            showTextMainMenu(sender);
             return true;
         }
 
-        return switch (args[0].toLowerCase()) {
-            case "batdau","start"       -> { showBatDau(player);     yield true; }
-            case "canh_gioi","level"    -> { showCanhGioi(player);   yield true; }
-            case "class"                -> { showClass(player);       yield true; }
-            case "dao"                  -> { showDao(player);         yield true; }
-            case "linh_can","linhcan"   -> { showLinhCan(player);    yield true; }
-            case "toc"                  -> { showToc(player);         yield true; }
-            case "skill"                -> { showSkill(player);       yield true; }
-            case "phap_bao","phabao"    -> { showPhaBao(player);     yield true; }
-            case "dot_pha","dotpha"     -> { showDotPha(player);     yield true; }
-            case "linh_dan","luyen"     -> { showLinhDan(player);    yield true; }
-            case "tien","lt"            -> { showTien(player);       yield true; }
-            case "tong_mon","tongmon"   -> { showTongMon(player);    yield true; }
-            case "lenh","commands"      -> { showLenh(player);        yield true; }
-            case "meo","tip"            -> { showMeo(player);         yield true; }
-            case "thiendinh","td"       -> { showThienDinh(player); yield true; }
-            case "kiemdao","sword"      -> { showKiemDao(player);   yield true; }
-            case "thao","herb"          -> { showThao(player);      yield true; }
-            case "zone"                 -> { showZone(player);      yield true; }
-            default                     -> { showMainMenu(player);   yield true; }
-        };
-    }
-
-    /**
-     * Opens the DeluxeMenus menu "tutien_guide" through its admin command.
-     * Console dispatch is used so normal members do not need deluxemenus.open.others.
-     */
-    private boolean openDeluxeMenusGuide(Player player) {
-        if (plugin.getServer().getPluginManager().getPlugin("DeluxeMenus") == null) {
-            return false;
+        switch (args[0].toLowerCase()) {
+            case "batdau", "start", "tuyen" -> showTextTuLuyen(sender);
+            case "kiemdao", "skill", "kiem"  -> showTextKiemDao(sender);
+            case "luyenche", "phabao", "dan" -> showTextLuyenChe(sender);
+            case "bachnghe", "coduyen"       -> showTextBachNghe(sender);
+            case "tongmon", "sudo"           -> showTextTongMon(sender);
+            case "lenh", "commands", "player"-> showTextPlayerCommands(sender);
+            case "admin", "quantri"          -> showTextAdminCommands(sender);
+            default                          -> showTextMainMenu(sender);
         }
 
-        try {
-            String command = "dm open tutien_guide " + player.getName();
-            boolean ok = plugin.getServer().dispatchCommand(
-                    plugin.getServer().getConsoleSender(),
-                    command
-            );
+        return true;
+    }
 
-            if (!ok) {
-                plugin.getLogger().warning("Không thể mở DeluxeMenus menu tutien_guide cho " + player.getName());
-            }
-            return ok;
-        } catch (Exception ex) {
-            plugin.getLogger().warning("Lỗi khi mở DeluxeMenus tutien_guide: " + ex.getMessage());
-            return false;
+    // ============================================================
+    // VĂN BẢN HƯỚNG DẪN TRONG CHAT
+    // ============================================================
+
+    private void showTextMainMenu(CommandSender sender) {
+        sender.sendMessage("§6§l╔══════════════════════════════════════════════╗");
+        sender.sendMessage("§6§l║      §e§l✦ CẨM NANG TU TIÊN GIỚI TOÀN TẬP ✦      §6§l║");
+        sender.sendMessage("§6§l╠══════════════════════════════════════════════╣");
+        sender.sendMessage("§7  Gõ lệnh để tra cứu từng phân mục chi tiết:");
+        sender.sendMessage("  §a/guide batdau     §8- §fNhập môn, Linh khí, Cảnh giới, Đột phá");
+        sender.sendMessage("  §b/guide kiemdao    §8- §fNgự kiếm phi hành, Kỹ năng, Công pháp");
+        sender.sendMessage("  §d/guide luyenche   §8- §fLuyện đan, Rèn đúc, Cường hóa Pháp bảo");
+        sender.sendMessage("  §6/guide bachnghe   §8- §f6 Nghề phụ, Kim thủ chỉ, Tiên thảo");
+        sender.sendMessage("  §e/guide tongmon    §8- §fTông môn, Sư đồ, Đệ tử NPC, Tổ đội");
+        sender.sendMessage("  §f/guide lenh       §8- §fBảng tra cứu toàn bộ lệnh người chơi");
+        sender.sendMessage("  §c/guide admin      §8- §fBảng tra cứu toàn bộ lệnh quản trị viên");
+        sender.sendMessage("§6§l╚══════════════════════════════════════════════╝");
+    }
+
+    private void showTextTuLuyen(CommandSender sender) {
+        sender.sendMessage("§a§l[1. NHẬP MÔN & TU LUYỆN]");
+        sender.sendMessage("§7• §e/tutien chon [class] §8- §fChọn môn phái (Kiếm Tu, Thể Tu, Pháp Tu, Đan Tu, Phù Tu).");
+        sender.sendMessage("§7• §e/tutien dao [dao]     §8- §fChọn đạo tâm (Chính Đạo, Ma Đạo, Kiếm Đạo, Tiêu Dao...).");
+        sender.sendMessage("§7• §e/linhkhi             §8- §fXem thanh tiến trình linh khí tích lũy.");
+        sender.sendMessage("§7• §e/thiendinh           §8- §fNgồi thiền tĩnh tọa tăng tốc hấp thu linh khí tự động.");
+        sender.sendMessage("§7• §e/vuottamma           §8- §fChiến đấu vượt tâm ma (bắt buộc từ Bán Thánh trở lên).");
+        sender.sendMessage("§7• §e/dotpha              §8- §fKích hoạt lôi kiếp để đột phá cảnh giới khi đạt 100% LK.");
+        sender.sendMessage("§7• §e/boqua               §8- §fBỏ qua thông báo sẵn sàng đột phá.");
+        sender.sendMessage("§7• §e/aura [on|off]       §8- §fBật/tắt vòng hào quang tu vi phát sáng.");
+        sender.sendMessage("§7• §e/uyap [on|off]       §8- §fBật/tắt hiệu ứng uy áp áp chế đối thủ xung quanh.");
+    }
+
+    private void showTextKiemDao(CommandSender sender) {
+        sender.sendMessage("§b§l[2. KIẾM ĐẠO & KỸ NĂNG]");
+        sender.sendMessage("§7• §e/ngukiem             §8- §fNgự Kiếm Phi Hành (Đạp phi kiếm bay lượn, mũi kiếm xoay 3D chuẩn xác).");
+        sender.sendMessage("§7• §e/trieukiem [mode]    §8- §fTriệu hồi kiếm bay hộ thể sau lưng (AUTO/SEMI/OFF).");
+        sender.sendMessage("§7• §e/trieuthu            §8- §fTriệu hồi hoặc thu hồi Linh Thú đồng hành.");
+        sender.sendMessage("§7• §e/hocbidong <hệ>      §8- §fHọc bí kíp bị động từ sách trên tay (atk, hp, def, speed, luck, regen).");
+        sender.sendMessage("§7• §e/bidong              §8- §fXem danh sách bí kíp bị động đã lĩnh ngộ.");
+        sender.sendMessage("§7• §e/doiky <a|b|c|d>     §8- §fHoán đổi nhánh kỹ năng trong slot Linh Khí Kiếm.");
+        sender.sendMessage("§7• §e/kinang              §8- §fMở bảng GUI bật/tắt các module kỹ năng.");
+        sender.sendMessage("§7• §e/congphap            §8- §fHệ thống công pháp tu tiên tùy chỉnh (list, hoc, trangbi).");
+    }
+
+    private void showTextLuyenChe(CommandSender sender) {
+        sender.sendMessage("§d§l[3. LUYỆN CHẾ & PHÁP BẢO]");
+        sender.sendMessage("§7• §e/luyen danh_sach     §8- §fXem danh sách 32 công thức đan dược tu tiên.");
+        sender.sendMessage("§7• §e/luyen <tên_đan>     §8- §fBắt đầu luyện chế đan dược theo công thức.");
+        sender.sendMessage("§7• §e/renduc              §8- §fRèn đúc nâng phẩm giai Pháp Bảo (Hạ ➔ Trung ➔ Thượng ➔ Cực ➔ Đế ➔ Tiên).");
+        sender.sendMessage("§7• §e/cuonghoa            §8- §fCường hóa Pháp Bảo từ +1 đến +10 gia tăng % chỉ số.");
+        sender.sendMessage("§7• §e/khamnam             §8- §fKhảm ngọc nguyên tố (Hỏa, Băng, Lôi) vào lỗ khảm.");
+        sender.sendMessage("§7• §e/dunghop             §8- §fDung hợp 2 pháp bảo cùng loại để ghép dòng ẩn & thăng phẩm.");
+        sender.sendMessage("§7• §e/linhthuc            §8- §fGán kỹ năng tự động kích hoạt (hộ thể, phản kích) lên Pháp Bảo.");
+        sender.sendMessage("§7• §e/khilinh             §8- §fCho Pháp Bảo ăn item thừa nuôi dưỡng Khí Linh phò trợ.");
+        sender.sendMessage("§7• §e/tuitutien           §8- §fMở Túi Trữ Vật Tu Tiên (54 ô bảo lưu vĩnh viễn).");
+    }
+
+    private void showTextBachNghe(CommandSender sender) {
+        sender.sendMessage("§6§l[4. BÁCH NGHỆ & CƠ DUYÊN]");
+        sender.sendMessage("§7• §e/bachnghe list       §8- §fXem 6 nghề phụ (Đan, Khí, Trận, Phù, Thú, Nông).");
+        sender.sendMessage("§7• §e/bachnghe chon <id>  §8- §fChọn nghề nghiệp tu tiên.");
+        sender.sendMessage("§7• §e/bachnghe status     §8- §fXem cấp độ và đặc quyền nghề hiện tại.");
+        sender.sendMessage("§7• §e/coduyen status      §8- §fKiểm tra điểm Hệ Thống Kim Thủ Chỉ.");
+        sender.sendMessage("§7• §e/coduyen dung        §8- §fSử dụng điểm Cơ Duyên đổi phúc lợi.");
+        sender.sendMessage("§7• §e/thao                §8- §fXem thông tin và dược tính các loài Tiên Thảo.");
+        sender.sendMessage("§7• §e/linhchungshop       §8- §fMua bán hạt giống Linh Chủng theo cảnh giới.");
+        sender.sendMessage("§7• §e/tutien reroll       §8- §fQuay lại Linh Căn bằng Linh Thạch.");
+        sender.sendMessage("§7• §e/tutien reroll_toc   §8- §fQuay lại Chủng Tộc bằng Linh Thạch.");
+    }
+
+    private void showTextTongMon(CommandSender sender) {
+        sender.sendMessage("§e§l[5. TÔNG MÔN & SƯ ĐỒ]");
+        sender.sendMessage("§7• §e/tongmon tao <tên>   §8- §fKhai tông lập phái, thành lập môn phái riêng.");
+        sender.sendMessage("§7• §e/tongmon info        §8- §fXem thông tin môn phái và thành viên.");
+        sender.sendMessage("§7• §e/tongmon moi <p>     §8- §fMời người chơi gia nhập tông môn.");
+        sender.sendMessage("§7• §e/tongmon kho         §8- §fMở rương kho tàng bảo vật tông môn.");
+        sender.sendMessage("§7• §e/mochieumo           §8- §fMở hoặc đóng trạng thái chiêu mộ đệ tử công khai.");
+        sender.sendMessage("§7• §e/suphu <player>      §8- §fBái sư hoặc nhận đệ tử chân truyền.");
+        sender.sendMessage("§7• §e/dedoan              §8- §fQuản lý đồ đoàn và đệ tử môn hạ.");
+        sender.sendMessage("§7• §e/dedoan npc tao <tên>§8- §fTạo đệ tử NPC theo sau phò tá chiến đấu.");
+        sender.sendMessage("§7• §e/party <create|moi>  §8- §fTổ đội cùng săn quái và tu luyện.");
+        sender.sendMessage("§7• §e/trade <player>      §8- §fGiao dịch vật phẩm an toàn 2 bên.");
+        sender.sendMessage("§7• §e/tang <player>       §8- §fTặng vật phẩm trên tay cho đạo hữu.");
+    }
+
+    private void showTextPlayerCommands(CommandSender sender) {
+        sender.sendMessage("§a§l════════════ BẢNG LỆNH NGƯỜI CHƠI ════════════");
+        for (TuTienGuideGUI.CommandEntry cmd : TuTienGuideGUI.getPlayerCommands()) {
+            sender.sendMessage(" §e" + cmd.syntax() + " §8- §7" + cmd.desc());
         }
     }
 
-    // ========================
-    //  MENU CHÍNH
-    // ========================
-
-    private void showMainMenu(Player player) {
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_e2666b3719"));
-        player.sendMessage(plugin.msg("auto_57fd58df39"));
-        player.sendMessage(plugin.msg("auto_415b23d63e"));
-        player.sendMessage(plugin.msg("auto_cf3c014412"));
-        player.sendMessage(plugin.msg("auto_8d79d2cf3a"));
-        player.sendMessage(plugin.msg("auto_0647212cfd"));
-        player.sendMessage(plugin.msg("auto_3a4649a39a"));
-        player.sendMessage(plugin.msg("auto_9b3fab2287"));
-        player.sendMessage(plugin.msg("auto_b80821e59c"));
-        player.sendMessage(plugin.msg("auto_a2a9ef10a2"));
-        player.sendMessage(plugin.msg("auto_c8fbc22302"));
-        player.sendMessage(plugin.msg("auto_4ee3006447"));
-        player.sendMessage(plugin.msg("auto_fb03960a54"));
-        player.sendMessage(plugin.msg("auto_5f34b048c8"));
-        player.sendMessage(plugin.msg("auto_6b6999a6ab"));
-        player.sendMessage(plugin.msg("auto_aaa55c0013"));
-        player.sendMessage(plugin.msg("auto_af793931b0"));
-        player.sendMessage(plugin.msg("auto_69eef8845d"));
-        player.sendMessage(plugin.msg("auto_ccfc9ea068"));
-    }
-
-    // ========================
-    //  BẮT ĐẦU (Người mới)
-    // ========================
-
-    private void showBatDau(Player player) {
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_e2666b3719"));
-        player.sendMessage(plugin.msg("auto_5189f84122"));
-        player.sendMessage(plugin.msg("auto_415b23d63e"));
-        player.sendMessage(plugin.msg("auto_0b1c5cefa9"));
-        player.sendMessage(plugin.msg("auto_cd6853f448"));
-        player.sendMessage(plugin.msg("auto_b9a892e397"));
-        player.sendMessage(plugin.msg("auto_3722a62cef"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_546b589ea8"));
-        player.sendMessage(plugin.msg("auto_eb0f79aea2"));
-        player.sendMessage(plugin.msg("auto_20467a56d7"));
-        player.sendMessage(plugin.msg("auto_901ceb5983"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_6f57bf9991"));
-        player.sendMessage(plugin.msg("auto_4a4867162a"));
-        player.sendMessage(plugin.msg("auto_933cad9960"));
-        player.sendMessage(plugin.msg("auto_8bee24f8a8"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_37996cbf52"));
-        player.sendMessage(plugin.msg("auto_cf0b24f4b8"));
-        player.sendMessage(plugin.msg("auto_3590cf511b"));
-        player.sendMessage(plugin.msg("auto_5d1b91b51a"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_4051e370ee"));
-        player.sendMessage(plugin.msg("auto_c1e57fe7a9"));
-        player.sendMessage(plugin.msg("auto_a3662d8bdd"));
-        player.sendMessage(plugin.msg("auto_74a7ce0f36"));
-        player.sendMessage(plugin.msg("auto_cf7f7f6137"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_b110cd233d"));
-        player.sendMessage(plugin.msg("auto_da189f166f"));
-        player.sendMessage(plugin.msg("auto_b0b9a378dc"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_ce3e839a45"));
-        player.sendMessage(plugin.msg("auto_a7ab6cd5bf"));
-        player.sendMessage(plugin.msg("auto_69eef8845d"));
-    }
-
-    // ========================
-    //  CẢNH GIỚI
-    // ========================
-
-    private void showCanhGioi(Player player) {
-        player.sendMessage(plugin.msg("auto_3e4a34df5c"));
-        player.sendMessage(plugin.msg("auto_00a22778f9"));
-        player.sendMessage(plugin.msg("auto_e03366e85e"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_135ce01263"));
-        player.sendMessage(plugin.msg("auto_86ee20a34e"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_a2e7c5a6cd"));
-        player.sendMessage(plugin.msg("auto_d85c501f9c"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_21ccf49c1e"));
-        player.sendMessage(plugin.msg("auto_0f706b1846"));
-        player.sendMessage(plugin.msg("auto_87178cfd02"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_29c66ab794"));
-        player.sendMessage(plugin.msg("auto_079248c6a4"));
-        player.sendMessage(plugin.msg("auto_1ab64f84b9"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_8204ba4f09"));
-        player.sendMessage(plugin.msg("auto_9ea55ce169"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_3e83b80669"));
-        player.sendMessage(plugin.msg("auto_c9d0588637"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
-    }
-
-    // ========================
-    //  CLASS
-    // ========================
-
-    private void showClass(Player player) {
-        player.sendMessage(plugin.msg("auto_a672ea8859"));
-        player.sendMessage(plugin.msg("auto_976fbaf0e2"));
-        player.sendMessage(plugin.msg("auto_d7d221d3e4"));
-        player.sendMessage(plugin.msg("auto_dbc256f40c"));
-        player.sendMessage(plugin.msg("auto_049b0922f8"));
-        player.sendMessage(plugin.msg("auto_c3b63dcced"));
-        player.sendMessage(plugin.msg("auto_b8cbc6bf2e"));
-        player.sendMessage(plugin.msg("auto_0cb9b2c7ee"));
-        player.sendMessage(plugin.msg("auto_1ab7b39726"));
-        player.sendMessage(plugin.msg("auto_9e8070e26b"));
-        player.sendMessage(plugin.msg("auto_f93a6a6c73"));
-        player.sendMessage(plugin.msg("auto_11127ec38f"));
-        player.sendMessage(plugin.msg("auto_d906ee281a"));
-        player.sendMessage(plugin.msg("auto_0c71d5592d"));
-        player.sendMessage(plugin.msg("auto_8ceff0057c"));
-        player.sendMessage(plugin.msg("auto_282988ce2f"));
-        player.sendMessage(plugin.msg("auto_cca74da5b8"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_f2ad6d3580"));
-        player.sendMessage(plugin.msg("auto_2e6e72c7f2"));
-        player.sendMessage(plugin.msg("auto_5b9f0a9ea8"));
-    }
-
-    // ========================
-    //  ĐẠO
-    // ========================
-
-    private void showDao(Player player) {
-        player.sendMessage(plugin.msg("auto_6bdb128406"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_6da031b9e1"));
-        player.sendMessage(plugin.msg("auto_7a3581cc05"));
-        player.sendMessage(plugin.msg("auto_0a13a7a66a"));
-        player.sendMessage(plugin.msg("auto_362b867dab"));
-        player.sendMessage(plugin.msg("auto_706d4a9edd"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_90d1bd4fda"));
-        player.sendMessage(plugin.msg("auto_0ccea91651"));
-        player.sendMessage(plugin.msg("auto_1ca2cd3ad2"));
-        player.sendMessage(plugin.msg("auto_e3eb8a3f76"));
-        player.sendMessage(plugin.msg("auto_53ae14329d"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_bc6815518a"));
-        player.sendMessage(plugin.msg("auto_5b9f0a9ea8"));
-    }
-
-    // ========================
-    //  ĐỘT PHÁ
-    // ========================
-
-    private void showDotPha(Player player) {
-        player.sendMessage(plugin.msg("auto_2ef10632be"));
-        player.sendMessage(plugin.msg("auto_6139ea22fe"));
-        player.sendMessage(plugin.msg("auto_dc1ac344b4"));
-        player.sendMessage(plugin.msg("auto_2b66973fa3"));
-        player.sendMessage(plugin.msg("auto_bd494e937b"));
-        player.sendMessage(plugin.msg("auto_7c35565400"));
-        player.sendMessage(plugin.msg("auto_9c9967f885"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_4518312ae1"));
-        player.sendMessage(plugin.msg("auto_0e0939a896"));
-        player.sendMessage(plugin.msg("auto_ba90f4ef64"));
-        player.sendMessage(plugin.msg("auto_a3ff223b16"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_998757159d"));
-        player.sendMessage(plugin.msg("auto_788c25b929"));
-        player.sendMessage(plugin.msg("auto_22c93b57aa"));
-        player.sendMessage(plugin.msg("auto_8818a56154"));
-        player.sendMessage(plugin.msg("auto_55b950ddb6"));
-        player.sendMessage(plugin.msg("auto_5e5fbb2641"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_d3af5505e4"));
-        player.sendMessage(plugin.msg("auto_2edb48bb8d"));
-        player.sendMessage(plugin.msg("auto_9376933f8d"));
-    }
-
-    // ========================
-    //  SKILL
-    // ========================
-
-    private void showSkill(Player player) {
-        player.sendMessage(plugin.msg("auto_c3aa5360b0"));
-        player.sendMessage(plugin.msg("auto_2c807dfab3"));
-        player.sendMessage(plugin.msg("auto_acf82cee69"));
-        player.sendMessage(plugin.msg("auto_f29b327261"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_0cc04b59ec"));
-        player.sendMessage(plugin.msg("auto_ac8ca8ac93"));
-        player.sendMessage(plugin.msg("auto_36f64e4f65"));
-        player.sendMessage(plugin.msg("auto_9664d73254"));
-        player.sendMessage(plugin.msg("auto_70f264b341"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_017211abeb"));
-        player.sendMessage(plugin.msg("auto_3751b7f842"));
-        player.sendMessage(plugin.msg("auto_56d8485e82"));
-        player.sendMessage(plugin.msg("auto_bdb8a523b3"));
-        player.sendMessage(plugin.msg("auto_a0d7c48c6c"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_65280bc25c"));
-        player.sendMessage(plugin.msg("auto_42ca0ec765"));
-        player.sendMessage(plugin.msg("auto_e52b567b44"));
-        player.sendMessage(plugin.msg("auto_5b9f0a9ea8"));
-    }
-
-    // ========================
-    //  LINH ĐAN (Alchemy)
-    // ========================
-
-    private void showLinhDan(Player player) {
-        player.sendMessage(plugin.msg("auto_b095c63eb9"));
-        player.sendMessage(plugin.msg("auto_a4dcfb40e4"));
-        player.sendMessage(plugin.msg("auto_9b9ad162ac"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_c0d2086aa5"));
-        player.sendMessage(plugin.msg("auto_46bb887e39"));
-        player.sendMessage(plugin.msg("auto_ce0ed55b78"));
-        player.sendMessage(plugin.msg("auto_1cd9b17c41"));
-        player.sendMessage(plugin.msg("auto_dc014ce825"));
-        player.sendMessage(plugin.msg("auto_8e5e9c04a6"));
-        player.sendMessage(plugin.msg("auto_ede1a07eb5"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_ad578097e9"));
-        player.sendMessage(plugin.msg("auto_49dc1aa671"));
-        player.sendMessage(plugin.msg("auto_3ebbc245e4"));
-        player.sendMessage(plugin.msg("auto_fbc0669c52"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_4befc25269"));
-        player.sendMessage(plugin.msg("auto_1bca9ccf7d"));
-        player.sendMessage(plugin.msg("auto_9270648988"));
-        player.sendMessage(plugin.msg("auto_e3d2fd7a32"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_faae212753"));
-        player.sendMessage(plugin.msg("auto_9883818a23"));
-        player.sendMessage(plugin.msg("auto_de0860aebf"));
-        player.sendMessage(plugin.msg("auto_734f6b8934"));
-        player.sendMessage(plugin.msg("auto_2ac02f613e"));
-        player.sendMessage(plugin.msg("auto_f6fc33c05d"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_28c0a1d4a0"));
-        player.sendMessage(plugin.msg("auto_6c7da6fc19"));
-        player.sendMessage(plugin.msg("auto_c90456f64e"));
-        player.sendMessage(plugin.msg("auto_d5d3b83f24"));
-        player.sendMessage(plugin.msg("auto_3f968367e0"));
-        player.sendMessage(plugin.msg("auto_ffea016d2d"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_2060ed23e0"));
-        player.sendMessage(plugin.msg("auto_9a32e9dcd6"));
-        player.sendMessage(plugin.msg("auto_78670bc9db"));
-    }
-
-    // ========================
-    //  PHÁP BẢO
-    // ========================
-
-    private void showPhaBao(Player player) {
-        player.sendMessage(plugin.msg("auto_657187e610"));
-        player.sendMessage(plugin.msg("auto_c2e9b0d540"));
-        player.sendMessage(plugin.msg("auto_b801230baa"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_da4bf19807"));
-        player.sendMessage(plugin.msg("auto_f7e04bb775"));
-        player.sendMessage(plugin.msg("auto_fbc78b421a"));
-        player.sendMessage(plugin.msg("auto_acad1deb86"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_58da2b37f7"));
-        player.sendMessage(plugin.msg("auto_37b4419c8d"));
-        player.sendMessage(plugin.msg("auto_51986fb740"));
-        player.sendMessage(plugin.msg("auto_3759ff3495"));
-        player.sendMessage(plugin.msg("auto_b7b1dda2fe"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_b707d88a76"));
-        player.sendMessage(plugin.msg("auto_69eef8845d"));
-    }
-
-    // ========================
-    //  TIỀN
-    // ========================
-
-    private void showTien(Player player) {
-        player.sendMessage(plugin.msg("auto_7b6e548b5a"));
-        player.sendMessage(plugin.msg("auto_8a94065de9"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_9947aca8f3"));
-        player.sendMessage(plugin.msg("auto_a93af8ded5"));
-        player.sendMessage(plugin.msg("auto_a7e2ddf80b"));
-        player.sendMessage(plugin.msg("auto_a46f341f79"));
-        player.sendMessage(plugin.msg("auto_e289e2e113"));
-        player.sendMessage(plugin.msg("auto_331aee445a"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_f003e8168f"));
-        player.sendMessage(plugin.msg("auto_f04872d426"));
-        player.sendMessage(plugin.msg("auto_587d913927"));
-        player.sendMessage(plugin.msg("auto_a495c01eb1"));
-        player.sendMessage(plugin.msg("auto_f0388e1ebd"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_6da2418e7a"));
-        player.sendMessage(plugin.msg("auto_b1a90c95de"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
-    }
-
-    // ========================
-    //  LINH CĂN
-    // ========================
-
-    private void showLinhCan(Player player) {
-        player.sendMessage(plugin.msg("auto_6d4fd21dd4"));
-        player.sendMessage(plugin.msg("auto_93064a0b14"));
-        player.sendMessage(plugin.msg("auto_c74f7810b2"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_20f3c5be96"));
-        player.sendMessage(plugin.msg("auto_0c3f53c023"));
-        player.sendMessage(plugin.msg("auto_250f8ca489"));
-        player.sendMessage(plugin.msg("auto_cae0471aba"));
-        player.sendMessage(plugin.msg("auto_27b6009fb8"));
-        player.sendMessage(plugin.msg("auto_5d44b207e9"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_3ab4c99a16"));
-        player.sendMessage(plugin.msg("auto_bfdf0936d5"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
-    }
-
-    // ========================
-    //  TỘC
-    // ========================
-
-    private void showToc(Player player) {
-        player.sendMessage(plugin.msg("auto_051ba2576b"));
-        player.sendMessage(plugin.msg("auto_194ff4b664"));
-        player.sendMessage(plugin.msg("auto_c14580619c"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_1e9bb0ee1c"));
-        player.sendMessage(plugin.msg("auto_055e8bee31"));
-        player.sendMessage(plugin.msg("auto_8f201ee4ce"));
-        player.sendMessage(plugin.msg("auto_c8afe648e2"));
-        player.sendMessage(plugin.msg("auto_c2ea7c8767"));
-        player.sendMessage(plugin.msg("auto_3bcaa4e619"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_2abc93ed55"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
-    }
-
-    // ========================
-    //  TÔNG MÔN
-    // ========================
-
-    private void showTongMon(Player player) {
-        player.sendMessage(plugin.msg("auto_0a060c7b77"));
-        player.sendMessage(plugin.msg("auto_777f6977fd"));
-        player.sendMessage(plugin.msg("auto_de288e469c"));
-        player.sendMessage(plugin.msg("auto_1ee2113477"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_8b40a35313"));
-        player.sendMessage(plugin.msg("auto_8766137980"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_29bcfed7f9"));
-        player.sendMessage(plugin.msg("auto_4b6423b2ba"));
-        player.sendMessage(plugin.msg("auto_0a9e1c0de0"));
-        player.sendMessage(plugin.msg("auto_da39a3ee5e"));
-        player.sendMessage(plugin.msg("auto_9693b461a9"));
-        player.sendMessage(plugin.msg("auto_426ae88127"));
-        player.sendMessage(plugin.msg("auto_63597b0ce1"));
-        player.sendMessage(plugin.msg("auto_b0f4b5318a"));
-        player.sendMessage(plugin.msg("auto_f9555e414b"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
-    }
-
-    // ========================
-    //  LỆNH
-    // ========================
-
-    private void showLenh(Player player) {
-        player.sendMessage(plugin.msg("auto_63b2b75f9c"));
-        player.sendMessage(plugin.msg("auto_bdddfc941b"));
-        player.sendMessage(plugin.msg("auto_309c4f4db7"));
-        player.sendMessage(plugin.msg("auto_d55d848473"));
-        player.sendMessage(plugin.msg("auto_1a7d0fb339"));
-        player.sendMessage(plugin.msg("auto_cefa3e0d50"));
-        player.sendMessage(plugin.msg("auto_e2cb8f1588"));
-        player.sendMessage(plugin.msg("auto_7658025872"));
-        player.sendMessage(plugin.msg("auto_10ba840c9a"));
-        player.sendMessage(plugin.msg("auto_a052214978"));
-        player.sendMessage(plugin.msg("auto_53b872fce3"));
-        player.sendMessage(plugin.msg("auto_2cc93473d4"));
-        player.sendMessage(plugin.msg("auto_825d264ad5"));
-        player.sendMessage(plugin.msg("auto_4ebcd2f5a2"));
-        player.sendMessage(plugin.msg("auto_ebb38c1514"));
-        player.sendMessage(plugin.msg("auto_2950416a88"));
-    }
-
-    // ========================
-    //  MẸO
-    // ========================
-
-    private void showMeo(Player player) {
-        player.sendMessage(plugin.msg("auto_81e4658bfc"));
-        player.sendMessage(plugin.msg("auto_db9be31cba"));
-        player.sendMessage(plugin.msg("auto_efe8731ad9"));
-        player.sendMessage(plugin.msg("auto_f6232a962b"));
-        player.sendMessage(plugin.msg("auto_f56394eca1"));
-        player.sendMessage(plugin.msg("auto_d32c820fa8"));
-        player.sendMessage(plugin.msg("auto_a7413dc46b"));
-        player.sendMessage(plugin.msg("auto_d9037b6881"));
-        player.sendMessage(plugin.msg("auto_105eeafd83"));
-        player.sendMessage(plugin.msg("auto_edf5e06899"));
-        player.sendMessage(plugin.msg("auto_371709a4e4"));
-        player.sendMessage(plugin.msg("auto_98bf4777b9"));
-        player.sendMessage(plugin.msg("auto_f58cbd3333"));
-        player.sendMessage(plugin.msg("auto_ddb6eb52a2"));
+    private void showTextAdminCommands(CommandSender sender) {
+        if (!sender.hasPermission("tutien.admin") && !sender.isOp()) {
+            sender.sendMessage("§cBạn không có quyền quản trị viên!");
+            return;
+        }
+        sender.sendMessage("§c§l════════════ BẢNG LỆNH ADMIN (QUẢN TRỊ) ════════════");
+        for (TuTienGuideGUI.CommandEntry cmd : TuTienGuideGUI.getAdminCommands()) {
+            sender.sendMessage(" §c" + cmd.syntax() + " §8- §7" + cmd.desc());
+        }
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender s, Command c, String a, String[] args) {
-        if (args.length == 1)
-            return Arrays.asList("batdau","canh_gioi","class","dao","linh_can","toc",
-                    "skill","phap_bao","dot_pha","linh_dan","tien",
-                    "tong_mon","lenh","meo");
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (args.length == 1) {
+            List<String> list = new ArrayList<>(List.of("gui", "batdau", "kiemdao", "luyenche", "bachnghe", "tongmon", "lenh"));
+            if (sender.hasPermission("tutien.admin") || sender.isOp()) {
+                list.add("admin");
+            }
+            return list.stream().filter(s -> s.startsWith(args[0].toLowerCase())).toList();
+        }
         return Collections.emptyList();
-    }
-
-    private void showThienDinh(Player player) {
-        player.sendMessage(plugin.msg("auto_3614d3508f"));
-        player.sendMessage(plugin.msg("auto_e6025239d4"));
-        player.sendMessage(plugin.msg("auto_141ca2eeaf"));
-        player.sendMessage(plugin.msg("auto_10be12e4aa"));
-        player.sendMessage(plugin.msg("auto_a58f87ecf9"));
-        player.sendMessage(plugin.msg("auto_c0c74ffb84"));
-        player.sendMessage(plugin.msg("auto_f3b265e7cc"));
-        player.sendMessage(plugin.msg("auto_69eef8845d"));
-    }
-
-    private void showKiemDao(Player player) {
-        player.sendMessage(plugin.msg("auto_456d129100"));
-        player.sendMessage(plugin.msg("auto_0709b180f6"));
-        player.sendMessage(plugin.msg("auto_b0bfd90c80"));
-        player.sendMessage(plugin.msg("auto_009d81ca84"));
-        player.sendMessage(plugin.msg("auto_16a7c50d1b"));
-        player.sendMessage(plugin.msg("auto_070c2aee88"));
-        player.sendMessage(plugin.msg("auto_e5aa51968e"));
-        player.sendMessage(plugin.msg("auto_42ab840bae"));
-        player.sendMessage(plugin.msg("auto_69eef8845d"));
-    }
-
-    private void showThao(Player player) {
-        player.sendMessage(plugin.msg("auto_7e6b3f468d"));
-        player.sendMessage(plugin.msg("auto_55acc2f171"));
-        player.sendMessage(plugin.msg("auto_943d288217"));
-        player.sendMessage(plugin.msg("auto_c319921e7c"));
-        player.sendMessage(plugin.msg("auto_a9566f23ea"));
-        player.sendMessage(plugin.msg("auto_22fa98d525"));
-        player.sendMessage(plugin.msg("auto_dffc95dcf1"));
-        player.sendMessage(plugin.msg("auto_dc29ec6d36"));
-        player.sendMessage(plugin.msg("auto_e110222104"));
-        player.sendMessage(plugin.msg("auto_5b9f0a9ea8"));
-    }
-
-    private void showZone(Player player) {
-        player.sendMessage(plugin.msg("auto_41cf52a361"));
-        player.sendMessage(plugin.msg("auto_32acbd77ef"));
-        player.sendMessage(plugin.msg("auto_2f428baabc"));
-        player.sendMessage(plugin.msg("auto_f1103fa8d0"));
-        player.sendMessage(plugin.msg("auto_2b80216a24"));
-        player.sendMessage(plugin.msg("auto_b7364fdfbf"));
-        player.sendMessage(plugin.msg("auto_f91daf9941"));
-        player.sendMessage(plugin.msg("auto_616cc61300"));
     }
 }

@@ -2,6 +2,7 @@ package com.tutien.sword;
 
 import com.tutien.TuTienPlugin;
 import com.tutien.data.ClassType;
+import com.tutien.data.CultivationStage;
 import com.tutien.data.PlayerData;
 
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
@@ -18,126 +20,128 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SwordFlightManager V3
+ * SwordFlightManager V4 (Hoàn Thiện & Nâng Cấp)
  *
- * NGỰ KIẾM PHI HÀNH
+ * NGỰ KIẾM PHI HÀNH - TIÊN HIỆP ĐỈNH CAO
  *
- * Mục tiêu:
- * - Player đứng thẳng trên thanh kiếm.
- * - Kiếm nằm ngang theo hướng nhìn / hướng bay của player.
- * - Mũi kiếm hướng về phía trước.
- * - Không dùng ArmorStand.
- * - Dùng ItemDisplay + Transformation để kiểm soát chính xác rotation.
- * - Particle nhẹ, tập trung quanh kiếm và phía sau kiếm.
- *
- * Yêu cầu:
- * - Paper/Spigot API có ItemDisplay (Minecraft 1.19.4+).
+ * Tính năng chính:
+ * - Player đứng vững chãi, uy nghi trên phi kiếm.
+ * - Mũi kiếm xoay chuẩn xác 100% theo hướng nhìn 3D (Yaw xoay trái/phải, Pitch ngẩng lên/chúc xuống).
+ * - Khắc phục hoàn toàn lỗi kiếm không quay đầu theo hướng nhìn và lỗi xoay vòng tròn 360 độ quanh trục X.
+ * - Hệ thống hiệu ứng Kiếm Khí (Sword Aura), Vệt Đuôi Khí Động Học 3D (Dual Spiral Trail),
+ *   Linh Trận Bàn Chân (Foot Lotus Array), cùng hiệu ứng Triệu Hồi / Thu Kiếm tráng lệ.
+ * - Màu sắc khí tức và loại phi kiếm tự động tiến hóa theo Cảnh Giới tu tiên của người chơi.
  */
 public class SwordFlightManager implements Listener {
 
     private final TuTienPlugin plugin;
 
     private final Set<UUID> enabled = new HashSet<>();
-    private final Map<UUID, ItemDisplay> mounts = new HashMap<>();
+    private final Map<UUID, ItemDisplay> mounts = new ConcurrentHashMap<>();
+    private BukkitTask loopTask;
 
-    private static final int MIN_ORD = 10; // BAN_THANH trong he 25 canh gioi moi
+    private static final int MIN_ORD = 10; // BÁN_THÁNH trong hệ thống 25 cảnh giới
 
     // ============================================================
-    // ⚔️ CẤU HÌNH VỊ TRÍ
+    // ⚔️ CẤU HÌNH VỊ TRÍ & KÍCH THƯỚC
     // ============================================================
 
     /**
-     * Độ cao của tâm ItemDisplay so với vị trí chân player.
-     *
-     * Giá trị càng GẦN 0 (vd -0.20)  → kiếm càng SÁT chân.
-     * Giá trị càng ÂM sâu (vd -0.80) → kiếm càng thấp, xa chân hơn.
-     *
-     * Đã chỉnh sát chân hơn theo yêu cầu (cũ: -0.54).
-     * Nếu vẫn muốn sát hơn nữa: chỉnh dần về -0.20 / -0.15.
-     * Nếu bị lún quá xuống đất/chân lún vào kiếm: lùi về -0.40 / -0.45.
+     * Vị trí tâm ItemDisplay so với chân player.
+     * -0.30 đặt tâm kiếm ngay dưới đế giày của player.
      */
     private static final double Y_OFFSET = -0.30;
 
     /**
-     * Đưa kiếm tiến/lùi theo hướng player.
-     */
-    private static final double FORWARD_OFFSET = 0.0;
-
-    /**
-     * Độ cao player đứng trên kiếm.
-     *
-     * Đây là khoảng cách visual giữa tâm kiếm và chân.
+     * Nâng visual kiếm lên một khoảng nhỏ để đế giày tiếp xúc tự nhiên với sống kiếm.
      */
     private static final double FOOT_LIFT = 0.02;
 
-    // ============================================================
-    // ⚔️ KÍCH THƯỚC
-    // ============================================================
-
     /**
-     * Scale thanh kiếm.
-     *
-     * 1.0 = kích thước ItemDisplay bình thường.
+     * Kích thước phi kiếm (1.30f tạo cảm giác cự kiếm / phi kiếm tiên gia oai phong, rộng rãi).
      */
-    private static final float SWORD_SCALE = 1.20f;
+    private static final float SWORD_SCALE = 1.30f;
 
     /**
-     * Xoay nhẹ mũi kiếm xuống.
-     *
-     * 0 = hoàn toàn nằm ngang.
+     * Tinh chỉnh góc pitch mặc định của kiếm nếu muốn chúc nhẹ.
      */
     private static final float SWORD_PITCH = 0.0f;
 
-    /**
-     * Góc nghiêng ngang của kiếm.
-     *
-     * 0 = thẳng theo hướng bay.
-     */
-    private static final float SWORD_ROLL = 0.0f;
-
     // ============================================================
-    // ✨ ANIMATION
+    // ✨ ANIMATION BỒNG BỀNH
     // ============================================================
 
-    private static final float BOB_HEIGHT = 0.018f;
-    private static final float BOB_SPEED = 0.16f;
-
-    /**
-     * Không xoay thân kiếm khi bay.
-     * Player đứng ổn định trên sống kiếm.
-     */
-    private static final float ROLL_ANIMATION = 0.0f;
+    private static final float BOB_HEIGHT = 0.016f;
+    private static final float BOB_SPEED = 0.14f;
 
     // ============================================================
-    // 🌌 TRAIL
+    // 🎨 HỆ THỐNG KHÍ TỨC CẢNH GIỚI (STAGE AURA)
     // ============================================================
 
-    private static final double TRAIL_LENGTH = 2.2;
-    private static final int TRAIL_POINTS = 6;
+    private static class StageAura {
+        final Color primary;
+        final Color secondary;
+        final Particle accentParticle;
+        final String swordTitle;
+        final Material defaultMaterial;
 
-    private static final Color ENERGY_BLUE =
-            Color.fromRGB(80, 220, 255);
+        StageAura(Color primary, Color secondary, Particle accentParticle, String swordTitle, Material defaultMaterial) {
+            this.primary = primary;
+            this.secondary = secondary;
+            this.accentParticle = accentParticle;
+            this.swordTitle = swordTitle;
+            this.defaultMaterial = defaultMaterial;
+        }
+    }
 
-    private static final Color ENERGY_PURPLE =
-            Color.fromRGB(175, 90, 255);
-
-    private static final Color ENERGY_WHITE =
-            Color.fromRGB(235, 250, 255);
+    private StageAura getStageAura(CultivationStage stage) {
+        int ord = (stage != null) ? stage.ordinal() : MIN_ORD;
+        if (ord >= 20) {
+            // Thiên Giới & Chí Tôn: Hoàng Kim Xích Diễm Chí Tôn
+            return new StageAura(
+                    Color.fromRGB(255, 215, 0),    // Vàng Kim
+                    Color.fromRGB(255, 60, 0),     // Xích Hỏa
+                    Particle.SOUL_FIRE_FLAME,
+                    "§6✦ §eThái Sơ Hỗn Nguyên Phi Kiếm §6✦",
+                    Material.NETHERITE_SWORD
+            );
+        } else if (ord >= 15) {
+            // Tiên Giới: Tử Tiêu U Minh Huyền Khí
+            return new StageAura(
+                    Color.fromRGB(180, 80, 255),   // Tím Huyền Ảo
+                    Color.fromRGB(90, 230, 255),   // Lam Ngọc Tiên Giới
+                    Particle.PORTAL,
+                    "§d✦ §5Tử Tiêu Cửu U Phi Kiếm §d✦",
+                    Material.NETHERITE_SWORD
+            );
+        } else {
+            // Thánh Giới: Bích Hải Thanh Phong Băng Lôi
+            return new StageAura(
+                    Color.fromRGB(0, 235, 255),    // Lam Băng Sáng
+                    Color.fromRGB(240, 250, 255),  // Bạch Kim Tinh Khiết
+                    Particle.ELECTRIC_SPARK,
+                    "§b✦ §fBích Hải Thanh Phong Phi Kiếm §b✦",
+                    Material.DIAMOND_SWORD
+            );
+        }
+    }
 
     public SwordFlightManager(TuTienPlugin plugin) {
         this.plugin = plugin;
@@ -145,94 +149,46 @@ public class SwordFlightManager implements Listener {
     }
 
     // ============================================================
-    // TOGGLE
+    // TOGGLE BẬT / TẮT
     // ============================================================
 
     public void toggle(Player player) {
-
-        PlayerData data =
-                plugin.getDataManager().get(player);
+        PlayerData data = plugin.getDataManager().get(player);
 
         if (data == null || !data.hasClass()) {
-
-            player.sendMessage(
-                    plugin.prefix()
-                            + "§cCần chọn class trước! /tutien chon"
-            );
-
+            player.sendMessage(plugin.prefix() + "§cCần chọn class trước! /tutien chon");
             return;
         }
 
         if (data.getClassType() != ClassType.KIEM_TU) {
-
-            player.sendMessage(
-                    plugin.prefix()
-                            + "§cChỉ §eKiếm Tu §cmới có thể Ngự Kiếm Phi Hành!"
-            );
-
+            player.sendMessage(plugin.prefix() + "§cChỉ §eKiếm Tu §cmới có thể Ngự Kiếm Phi Hành!");
             return;
         }
 
-        if (!data.getStage().canFly()
-                || data.getStage().ordinal() < MIN_ORD) {
-
-            player.sendMessage(
-                    plugin.prefix()
-                            + "§cCần đạt §fThánh Giới §c(Bán Thánh) trở lên để bay và ngự kiếm!"
-            );
-
+        if (!data.getStage().canFly() || data.getStage().ordinal() < MIN_ORD) {
+            player.sendMessage(plugin.prefix() + "§cCần đạt §fThánh Giới §c(Bán Thánh) trở lên để bay và ngự kiếm!");
             return;
         }
 
-        UUID uid =
-                player.getUniqueId();
+        UUID uid = player.getUniqueId();
 
-        // ========================================================
-        // TẮT
-        // ========================================================
-
+        // Tắt ngự kiếm
         if (enabled.contains(uid)) {
-
             enabled.remove(uid);
-
-            removeMount(
-                    uid,
-                    true
-            );
-
-            player.sendMessage(
-                    plugin.prefix()
-                            + "§7Đã thu hồi §bPhi Kiếm§7."
-            );
-
-            player.playSound(
-                    player.getLocation(),
-                    Sound.BLOCK_BEACON_DEACTIVATE,
-                    0.7f,
-                    1.25f
-            );
-
+            removeMount(uid, true);
+            player.sendMessage(plugin.prefix() + "§7Đã thu hồi §bPhi Kiếm§7.");
+            player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 0.7f, 1.25f);
             return;
         }
 
-        // ========================================================
-        // BẬT
-        // ========================================================
-
+        // Bật ngự kiếm
         enabled.add(uid);
-
         player.sendMessage(
                 plugin.prefix()
-                        + "§b✦ §fNgự Kiếm Phi Hành §bđã bật!"
-                        + " §7Bay lên §e(Space x2) §7để đứng lên kiếm."
+                        + "§b✦ §fNgự Kiếm Phi Hành §bđã kích hoạt!"
+                        + " §7Bay lên §e(Space x2) §7để đạp kiếm ngao du thiên hạ."
         );
-
-        player.playSound(
-                player.getLocation(),
-                Sound.ITEM_TRIDENT_RIPTIDE_1,
-                0.75f,
-                1.35f
-        );
+        player.playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_1, 0.8f, 1.35f);
 
         if (player.isFlying()) {
             spawnMount(player);
@@ -244,127 +200,80 @@ public class SwordFlightManager implements Listener {
     // ============================================================
 
     private void spawnMount(Player player) {
+        UUID uid = player.getUniqueId();
+        ItemDisplay existing = mounts.get(uid);
 
-        UUID uid =
-                player.getUniqueId();
-
-        ItemDisplay existing =
-                mounts.get(uid);
-
-        if (existing != null
-                && !existing.isDead()) {
-
+        if (existing != null && !existing.isDead()) {
             return;
         }
 
         mounts.remove(uid);
 
         try {
+            Location loc = getSwordLocation(player);
+            ItemDisplay display = player.getWorld().spawn(loc, ItemDisplay.class);
 
-            Location loc =
-                    getSwordLocation(player);
+            // Item kiếm tương thích với tay cầm hoặc cảnh giới
+            display.setItemStack(createSword(player));
 
-            ItemDisplay display =
-                    player.getWorld()
-                            .spawn(
-                                    loc,
-                                    ItemDisplay.class
-                            );
-
-            // ====================================================
-            // ITEM
-            // ====================================================
-
-            display.setItemStack(
-                    createSword()
-            );
-
-            /*
-             * NONE = không tự áp dụng transform kiểu GUI/GROUND.
-             *
-             * Toàn bộ hướng kiếm được điều khiển bằng
-             * Transformation bên dưới.
-             */
-            display.setItemDisplayTransform(
-                    ItemDisplay.ItemDisplayTransform.NONE
-            );
-
-            display.setBillboard(
-                    Display.Billboard.FIXED
-            );
-
+            // NONE để giữ model gốc, toàn bộ góc xoay được kiểm soát qua Transformation
+            display.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.NONE);
+            display.setBillboard(Display.Billboard.FIXED);
             display.setGravity(false);
             display.setInvulnerable(true);
             display.setPersistent(false);
             display.setSilent(true);
 
+            // Nội suy góc quay 1 tick siêu mượt trên client
             display.setInterpolationDuration(1);
             display.setInterpolationDelay(0);
 
-            // ====================================================
-            // ROTATION
-            // ====================================================
+            // Áp dụng góc quay chuẩn xác theo hướng nhìn người chơi
+            applySwordTransformation(display, player, 0);
 
-            applySwordTransformation(
-                    display,
-                    player,
-                    0
-            );
+            mounts.put(uid, display);
 
-            mounts.put(
-                    uid,
-                    display
-            );
-
-            // ====================================================
-            // SUMMON EFFECT
-            // ====================================================
-
-            spawnSummonEffect(
-                    player
-            );
+            // Hiệu ứng triệu hoán oai linh
+            spawnSummonEffect(player);
 
         } catch (Exception e) {
-
             plugin.getLogger().warning(
-                    "[SwordFlight] Không thể tạo Phi Kiếm cho "
-                            + player.getName()
-                            + ": "
-                            + e.getMessage()
+                    "[SwordFlight] Không thể tạo Phi Kiếm cho " + player.getName() + ": " + e.getMessage()
             );
         }
     }
 
     // ============================================================
-    // ⚔️ ITEM
+    // ⚔️ KHỞI TẠO ITEM KIẾM
     // ============================================================
 
-    private ItemStack createSword() {
+    private ItemStack createSword(Player player) {
+        PlayerData data = plugin.getDataManager().get(player);
+        CultivationStage stage = (data != null) ? data.getStage() : null;
+        StageAura aura = getStageAura(stage);
 
-        ItemStack sword =
-                new ItemStack(
-                        Material.NETHERITE_SWORD
-                );
+        ItemStack handItem = player.getInventory().getItemInMainHand();
+        ItemStack sword;
 
-        ItemMeta meta =
-                sword.getItemMeta();
-
-        if (meta != null) {
-
-            meta.setDisplayName(plugin.msg("auto_b473af6861"));
-
-            meta.addItemFlags(
-                    org.bukkit.inventory.ItemFlag.values()
-            );
-
-            sword.setItemMeta(meta);
+        if (handItem != null && handItem.getType().name().endsWith("_SWORD")) {
+            sword = handItem.clone();
+            sword.setAmount(1);
+        } else {
+            sword = new ItemStack(aura.defaultMaterial);
+            ItemMeta meta = sword.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(aura.swordTitle);
+                meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+                meta.addItemFlags(ItemFlag.values());
+                sword.setItemMeta(meta);
+            }
         }
 
         return sword;
     }
 
     // ============================================================
-    // 🔄 TRANSFORMATION
+    // 🔄 TÍNH TOÁN TRANSFORMATION (XOAY ĐẦU KIẾM CHUẨN XÁC 100%)
     // ============================================================
 
     private void applySwordTransformation(
@@ -372,234 +281,127 @@ public class SwordFlightManager implements Listener {
             Player player,
             long tick
     ) {
+        Location pLoc = player.getLocation();
+        float yaw = pLoc.getYaw();
+        float pitch = pLoc.getPitch();
 
-        Location pLoc =
-                player.getLocation();
+        // Khống chế góc ngẩng/chúc [-75, +75] độ để phi kiếm bổ nhào / thăng thiên đẹp mắt
+        float effectivePitch = Math.max(-75.0f, Math.min(75.0f, pitch + SWORD_PITCH));
 
-        /*
-         * Minecraft yaw:
-         * 0   = South
-         * 90  = West
-         * 180 = North
-         * -90 = East
-         */
-
-        float yaw =
-                (float) Math.toRadians(
-                        -pLoc.getYaw()
-                );
-
-        float pitch =
-                pLoc.getPitch();
-
-        float bob =
-                (float)
-                        Math.sin(
-                                tick * BOB_SPEED
-                        ) * BOB_HEIGHT;
+        // Nhấp nhô bồng bềnh thanh thoát
+        float bob = (float) Math.sin(tick * BOB_SPEED) * BOB_HEIGHT;
 
         /*
-         * ĐÃ KHẮC PHỤC LỖI KIẾM DỰNG THẲNG:
-         * ItemDisplayTransform.NONE giữ nguyên không gian gốc của model Netherite Sword (vốn dĩ nằm dọc theo trục Y/Z tùy phiên bản).
-         * Để kiếm nằm ngang song song mặt đất và mũi kiếm hướng thẳng về trước theo hướng nhìn của người chơi:
-         * 1. Xoay 90 độ quanh trục X để lật kiếm từ trạng thái dọc sang nằm ngang.
-         * 2. Kết hợp với góc pitch từ hướng nhìn của người chơi.
+         * CƠ CHẾ XOAY 3D CHUẨN XÁC (FIX BUG XOAY 360 VÀ SAI HƯỚNG):
+         *
+         * Model 2D của kiếm trong ItemDisplayTransform.NONE nằm chéo 45 độ trong mặt phẳng XY:
+         *   - Chuôi kiếm ở góc (-0.5, -0.5, 0).
+         *   - Mũi kiếm hướng chéo lên ở góc (+0.5, +0.5, 0).
+         *
+         * Bước 1 (qBase):
+         *   - Xoay quanh trục X: -90 độ.
+         *   - Xoay quanh trục Z: -135 độ.
+         *   -> Chuyển đổi model nằm ngang song song mặt đất, mũi kiếm hướng chuẩn về trục +Z (hướng Nam Minecraft),
+         *      sống kiếm nằm ngang và mặt phẳng kiếm hướng thẳng lên (+Y) làm bệ đứng vững chắc.
+         *
+         * Bước 2 (Look Rotation):
+         *   - Xoay quanh trục Y: (-yaw) đưa mũi kiếm quay theo góc nhìn ngang của người chơi.
+         *   - Xoay quanh trục X: (effectivePitch) ngẩng/chúc đầu kiếm theo góc nhìn dọc của người chơi.
+         *
+         * Vì Display entity giữ yaw=0, pitch=0 ở tọa độ thế giới, ma trận biến đổi này kiểm soát
+         * góc quay trực tiếp không bị cộng dồn hay triệt tiêu góc yaw như bản cũ.
          */
-        Quaternionf rotation =
+        Quaternionf qBase = new Quaternionf()
+                .rotateX((float) Math.toRadians(-90.0))
+                .rotateZ((float) Math.toRadians(-135.0));
+
+        Quaternionf rotation = new Quaternionf()
+                .rotateY((float) -Math.toRadians(yaw))
+                .rotateX((float) Math.toRadians(effectivePitch))
+                .mul(qBase);
+
+        Transformation transformation = new Transformation(
+                new Vector3f(0f, (float) (FOOT_LIFT + bob), 0f),
+                rotation,
+                new Vector3f(SWORD_SCALE, SWORD_SCALE, SWORD_SCALE),
                 new Quaternionf()
-                        .rotateY(yaw)
-                        .rotateX(
-                                (float)
-                                        Math.toRadians(
-                                                90.0f + pitch + SWORD_PITCH
-                                        )
-                        );
-
-        Transformation transformation =
-                new Transformation(
-
-                        // Translation
-                        new Vector3f(
-                                0f,
-                                (float) (FOOT_LIFT + bob),
-                                0f
-                        ),
-
-                        // Left rotation
-                        rotation,
-
-                        // Scale
-                        new Vector3f(
-                                SWORD_SCALE,
-                                SWORD_SCALE,
-                                SWORD_SCALE
-                        ),
-
-                        // Right rotation
-                        new Quaternionf()
-                );
+        );
 
         display.setInterpolationDelay(0);
-        display.setTransformation(
-                transformation
-        );
+        display.setTransformation(transformation);
     }
 
     // ============================================================
-    // 📍 VỊ TRÍ
+    // 📍 VỊ TRÍ GỐC CỦA DISPLAY ENTITY
     // ============================================================
 
-    private Location getSwordLocation(
-            Player player
-    ) {
+    private Location getSwordLocation(Player player) {
+        Location pLoc = player.getLocation();
+        Location loc = pLoc.clone().add(0, Y_OFFSET, 0);
 
-        Location pLoc =
-                player.getLocation();
-
-        Vector dir =
-                pLoc.getDirection()
-                        .setY(0);
-
-        if (dir.lengthSquared()
-                > 0.0001) {
-
-            dir.normalize();
-        }
-
-        Location loc =
-                pLoc.clone()
-                        .add(
-                                dir.multiply(
-                                        FORWARD_OFFSET
-                                )
-                        )
-                        .add(
-                                0,
-                                Y_OFFSET,
-                                0
-                        );
-
-        loc.setYaw(
-                pLoc.getYaw()
-        );
-
-        loc.setPitch(0);
+        // Đặt yaw=0, pitch=0 cố định để Translation & Rotation trong Transformation
+        // kiểm soát tuyệt đối và mượt mà góc xoay 3D
+        loc.setYaw(0f);
+        loc.setPitch(0f);
 
         return loc;
     }
 
     // ============================================================
-    // 🔄 FOLLOW LOOP
+    // 🔄 VÒNG LẶP CẬP NHẬT (FOLLOW LOOP)
     // ============================================================
 
     private void startFollowLoop() {
+        if (loopTask != null) {
+            loopTask.cancel();
+        }
 
-        new BukkitRunnable() {
-
+        loopTask = new BukkitRunnable() {
             long tick = 0;
 
             @Override
             public void run() {
-
                 tick++;
 
-                for (UUID uid :
-                        new HashSet<>(
-                                mounts.keySet()
-                        )) {
+                for (UUID uid : new HashSet<>(mounts.keySet())) {
+                    Player player = Bukkit.getPlayer(uid);
+                    ItemDisplay display = mounts.get(uid);
 
-                    Player player =
-                            Bukkit.getPlayer(uid);
-
-                    ItemDisplay display =
-                            mounts.get(uid);
-
-                    // ==========================================
-                    // PLAYER KHÔNG TỒN TẠI
-                    // ==========================================
-
-                    if (player == null
-                            || !player.isOnline()) {
-
-                        removeMount(uid);
-
+                    // Player offline / không tồn tại
+                    if (player == null || !player.isOnline()) {
+                        removeMount(uid, false);
                         continue;
                     }
 
-                    // ==========================================
-                    // KHÔNG CÒN BAY
-                    // ==========================================
-
-                    if (!player.isFlying()) {
-
-                        removeMount(
-                                uid,
-                                true
-                        );
-
+                    // Không còn trong trạng thái bay
+                    if (!player.isFlying() || !enabled.contains(uid)) {
+                        removeMount(uid, true);
                         continue;
                     }
 
-                    // ==========================================
-                    // DISPLAY HỎNG
-                    // ==========================================
-
-                    if (display == null
-                            || display.isDead()) {
-
-                        mounts.remove(uid);
-
-                        spawnMount(
-                                player
-                        );
-
+                    // Display entity bị xóa hoặc khác thế giới
+                    if (display == null || display.isDead() || !display.getWorld().equals(player.getWorld())) {
+                        removeMount(uid, false);
+                        spawnMount(player);
                         continue;
                     }
 
-                    // ==========================================
-                    // FOLLOW PLAYER
-                    // ==========================================
+                    // Cập nhật vị trí bám theo người chơi
+                    Location target = getSwordLocation(player);
+                    display.teleport(target);
 
-                    Location target =
-                            getSwordLocation(
-                                    player
-                            );
+                    // Cập nhật góc quay theo hướng nhìn
+                    applySwordTransformation(display, player, tick);
 
-                    display.teleport(
-                            target
-                    );
-
-                    // ==========================================
-                    // ROTATION
-                    // ==========================================
-
-                    applySwordTransformation(
-                            display,
-                            player,
-                            tick
-                    );
-
-                    // ==========================================
-                    // PARTICLES
-                    // ==========================================
-
-                    spawnFlightParticles(
-                            player,
-                            display,
-                            tick
-                    );
+                    // Hiệu ứng kiếm khí và vệt đuôi 3D
+                    spawnFlightParticles(player, display, tick);
                 }
             }
-
-        }.runTaskTimer(
-                plugin,
-                1L,
-                1L
-        );
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
     // ============================================================
-    // ✨ PARTICLES
+    // ✨ HIỆU ỨNG KIẾM KHÍ & VỆT ĐUÔI 3D NÂNG CẤP
     // ============================================================
 
     private void spawnFlightParticles(
@@ -607,487 +409,234 @@ public class SwordFlightManager implements Listener {
             ItemDisplay sword,
             long tick
     ) {
+        World world = player.getWorld();
+        Location pLoc = player.getLocation();
+        PlayerData data = plugin.getDataManager().get(player);
+        CultivationStage stage = (data != null) ? data.getStage() : null;
+        StageAura aura = getStageAura(stage);
 
-        Location base =
-                sword.getLocation();
+        Vector lookDir = pLoc.getDirection().normalize();
+        Vector backward = lookDir.clone().multiply(-1);
 
-        World world =
-                player.getWorld();
+        // Tính hệ vector trực chuẩn 3D vuông góc với hướng nhìn
+        Vector upRef = (Math.abs(lookDir.getY()) > 0.9) ? new Vector(1, 0, 0) : new Vector(0, 1, 0);
+        Vector side = lookDir.clone().crossProduct(upRef).normalize();
+        Vector orthoUp = side.clone().crossProduct(lookDir).normalize();
 
-        Vector forward =
-                getHorizontalDirection(
-                        player
-                );
+        Location swordCenter = sword.getLocation().clone().add(0, FOOT_LIFT, 0);
+        Location tipLoc = swordCenter.clone().add(lookDir.clone().multiply(0.78 * SWORD_SCALE));
+        Location hiltLoc = swordCenter.clone().add(backward.clone().multiply(0.65 * SWORD_SCALE));
 
-        Vector backward =
-                forward.clone()
-                        .multiply(-1);
+        boolean moving = player.getVelocity().lengthSquared() > 0.005;
 
-        // ========================================================
-        // 1. LINH KHÍ SÁT THÂN KIẾM
-        // ========================================================
-
+        // 1. MŨI KIẾM (SWORD TIP) - Điểm phá không, lôi quang xé gió
         if (tick % 2 == 0) {
-
-            for (int i = 0; i < 2; i++) {
-
-                Location p =
-                        base.clone()
-                                .add(
-                                        (Math.random() - 0.5)
-                                                * 0.75,
-                                        (Math.random() - 0.5)
-                                                * 0.12,
-                                        (Math.random() - 0.5)
-                                                * 0.75
-                                );
-
-                world.spawnParticle(
-                        Particle.END_ROD,
-                        p,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0
-                );
+            world.spawnParticle(aura.accentParticle, tipLoc, 1, 0.02, 0.02, 0.02, 0.01);
+            world.spawnParticle(Particle.DUST, tipLoc, 1, 0.01, 0.01, 0.01, 0,
+                    new Particle.DustOptions(aura.secondary, 0.85f));
+            if (moving && tick % 6 == 0) {
+                world.spawnParticle(Particle.SWEEP_ATTACK, tipLoc, 1, 0, 0, 0, 0);
             }
         }
 
-        // ========================================================
-        // 2. TRAIL SAU PHI KIẾM
-        // ========================================================
-
+        // 2. RÌA LƯỠI KIẾM (BLADE EDGES) - Kiếm cương hộ thể 2 bên thân
         if (tick % 2 == 0) {
+            double edgeDist = 0.16 * SWORD_SCALE;
+            Location leftEdge = swordCenter.clone().add(side.clone().multiply(edgeDist));
+            Location rightEdge = swordCenter.clone().add(side.clone().multiply(-edgeDist));
 
-            for (int i = 1;
-                 i <= TRAIL_POINTS;
-                 i++) {
-
-                double progress =
-                        i / (double)
-                                TRAIL_POINTS;
-
-                double distance =
-                        progress
-                                * TRAIL_LENGTH;
-
-                double wave =
-                        Math.sin(
-                                tick * 0.18
-                                        + i * 0.8
-                        )
-                                * 0.08;
-
-                Location trail =
-                        base.clone()
-                                .add(
-                                        backward
-                                                .clone()
-                                                .multiply(
-                                                        distance
-                                                )
-                                )
-                                .add(
-                                        0,
-                                        wave,
-                                        0
-                                );
-
-                Particle.DustOptions dust =
-                        new Particle.DustOptions(
-                                i % 3 == 0
-                                        ? ENERGY_PURPLE
-                                        : ENERGY_BLUE,
-                                0.55f
-                        );
-
-                world.spawnParticle(
-                        Particle.DUST,
-                        trail,
-                        1,
-                        0.025,
-                        0.025,
-                        0.025,
-                        0,
-                        dust
-                );
-
-                if (i == 2
-                        || i == 5) {
-
-                    world.spawnParticle(
-                            Particle.END_ROD,
-                            trail,
-                            1,
-                            0.02,
-                            0.02,
-                            0.02,
-                            0
-                    );
-                }
-            }
+            Particle.DustOptions edgeDust = new Particle.DustOptions(aura.primary, 0.65f);
+            world.spawnParticle(Particle.DUST, leftEdge, 1, 0.02, 0.01, 0.02, 0, edgeDust);
+            world.spawnParticle(Particle.DUST, rightEdge, 1, 0.02, 0.01, 0.02, 0, edgeDust);
         }
 
-        // ========================================================
-        // 3. VÒNG LINH LỰC NHỎ
-        // ========================================================
+        // 3. LINH TỰ & CỔ VĂN (SWIRLING RUNES)
+        if (tick % 4 == 0) {
+            world.spawnParticle(Particle.ENCHANT, swordCenter, 2, 0.3, 0.08, 0.3, 0.3);
+        }
 
+        // 4. LINH TRẬN BÀN CHÂN (FOOT LOTUS FORMATION)
         if (tick % 3 == 0) {
+            double ringRadius = 0.42;
+            int ringPoints = 8;
+            for (int i = 0; i < ringPoints; i++) {
+                double angle = (tick * 0.12) + (i * Math.PI * 2.0 / ringPoints);
+                Location footPt = swordCenter.clone()
+                        .add(side.clone().multiply(Math.cos(angle) * ringRadius))
+                        .add(orthoUp.clone().multiply(Math.sin(angle) * ringRadius * 0.4))
+                        .add(lookDir.clone().multiply(Math.sin(angle) * ringRadius * 0.6));
 
-            double radius =
-                    0.45;
-
-            for (int i = 0;
-                 i < 8;
-                 i++) {
-
-                double angle =
-                        tick * 0.18
-                                + (
-                                Math.PI * 2
-                                        * i
-                                        / 8
-                        );
-
-                Location p =
-                        base.clone()
-                                .add(
-                                        Math.cos(angle)
-                                                * radius,
-                                        0.02,
-                                        Math.sin(angle)
-                                                * radius
-                                );
-
-                world.spawnParticle(
-                        Particle.DUST,
-                        p,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        new Particle.DustOptions(
-                                i % 2 == 0
-                                        ? ENERGY_BLUE
-                                        : ENERGY_PURPLE,
-                                0.45f
-                        )
-                );
+                world.spawnParticle(Particle.DUST, footPt, 1, 0, 0, 0, 0,
+                        new Particle.DustOptions(i % 2 == 0 ? aura.primary : aura.secondary, 0.5f));
             }
         }
 
-        // ========================================================
-        // 4. SPARKS
-        // ========================================================
+        // 5. VỆT ĐUÔI KHÍ ĐỘNG HỌC 3D (3D DUAL SPIRAL TRAIL)
+        int trailPoints = moving ? 9 : 5;
+        double trailLength = moving ? 3.4 : 1.8;
 
-        if (tick % 7 == 0) {
+        for (int i = 1; i <= trailPoints; i++) {
+            double progress = i / (double) trailPoints;
+            double dist = progress * trailLength;
+            Location trailBase = hiltLoc.clone().add(backward.clone().multiply(dist));
 
-            Location spark =
-                    base.clone()
-                            .add(
-                                    backward
-                                            .clone()
-                                            .multiply(
-                                                    0.5
-                                            )
-                            )
-                            .add(
-                                    (Math.random()
-                                            - 0.5)
-                                            * 0.5,
-                                    Math.random()
-                                            * 0.25,
-                                    (Math.random()
-                                            - 0.5)
-                                            * 0.5
-                            );
+            double spiralRadius = 0.12 + (progress * 0.24);
+            double angle1 = (tick * 0.28) + (i * 0.7);
+            double angle2 = angle1 + Math.PI;
 
-            world.spawnParticle(
-                    Particle.ELECTRIC_SPARK,
-                    spark,
-                    1,
-                    0.02,
-                    0.02,
-                    0.02,
-                    0.01
-            );
+            Location pt1 = trailBase.clone()
+                    .add(side.clone().multiply(Math.cos(angle1) * spiralRadius))
+                    .add(orthoUp.clone().multiply(Math.sin(angle1) * spiralRadius));
+
+            Location pt2 = trailBase.clone()
+                    .add(side.clone().multiply(Math.cos(angle2) * spiralRadius))
+                    .add(orthoUp.clone().multiply(Math.sin(angle2) * spiralRadius));
+
+            world.spawnParticle(Particle.DUST, pt1, 1, 0.01, 0.01, 0.01, 0,
+                    new Particle.DustOptions(aura.primary, (float) (0.75 - progress * 0.35)));
+            world.spawnParticle(Particle.DUST, pt2, 1, 0.01, 0.01, 0.01, 0,
+                    new Particle.DustOptions(aura.secondary, (float) (0.65 - progress * 0.35)));
+
+            // Đốm tinh tú lấp lánh xen kẽ
+            if (i == 2 || (moving && i == 6)) {
+                world.spawnParticle(Particle.END_ROD, trailBase, 1, 0.02, 0.02, 0.02, 0.01);
+            }
+        }
+
+        // 6. TIẾNG KIẾM REO BỒNG BỀNH
+        if (tick % 38 == 0) {
+            player.playSound(pLoc, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 0.16f, 1.75f);
+        }
+        if (moving && tick % 25 == 0) {
+            player.playSound(pLoc, Sound.ITEM_ELYTRA_FLYING, 0.10f, 1.6f);
         }
     }
 
     // ============================================================
-    // 🧭 HƯỚNG NGANG
+    // 🌟 HIỆU ỨNG TRIỆU HOÁN (SUMMON)
     // ============================================================
 
-    private Vector getHorizontalDirection(
-            Player player
-    ) {
+    private void spawnSummonEffect(Player player) {
+        Location pLoc = player.getLocation();
+        World world = player.getWorld();
+        PlayerData data = plugin.getDataManager().get(player);
+        CultivationStage stage = (data != null) ? data.getStage() : null;
+        StageAura aura = getStageAura(stage);
 
-        Vector dir =
-                player.getLocation()
-                        .getDirection()
-                        .setY(0);
-
-        if (dir.lengthSquared()
-                < 0.0001) {
-
-            return new Vector(
-                    0,
-                    0,
-                    1
-            );
+        // Vòng kiếm hoàn 36 hạt tỏa rộng
+        for (int i = 0; i < 36; i++) {
+            double angle = (Math.PI * 2 * i) / 36.0;
+            double radius = 1.15;
+            Location p = pLoc.clone().add(Math.cos(angle) * radius, 0.05, Math.sin(angle) * radius);
+            world.spawnParticle(Particle.DUST, p, 1, 0, 0, 0, 0,
+                    new Particle.DustOptions(i % 2 == 0 ? aura.primary : aura.secondary, 0.85f));
         }
 
-        return dir.normalize();
+        // Cột kiếm quang bắn vút từ dưới lên
+        for (double y = 0; y <= 2.0; y += 0.25) {
+            Location col = pLoc.clone().add(0, y, 0);
+            world.spawnParticle(Particle.END_ROD, col, 2, 0.15, 0.05, 0.15, 0.02);
+            world.spawnParticle(Particle.DUST, col, 2, 0.2, 0.05, 0.2, 0,
+                    new Particle.DustOptions(aura.secondary, 0.7f));
+        }
+
+        world.spawnParticle(Particle.FIREWORK, pLoc.clone().add(0, 0.2, 0), 12, 0.4, 0.1, 0.4, 0.05);
+        world.spawnParticle(Particle.ENCHANT, pLoc.clone().add(0, 0.5, 0), 20, 0.5, 0.3, 0.5, 0.8);
+
+        world.playSound(pLoc, Sound.ITEM_TRIDENT_RIPTIDE_2, 0.85f, 1.2f);
+        world.playSound(pLoc, Sound.BLOCK_BEACON_ACTIVATE, 0.75f, 1.5f);
+        world.playSound(pLoc, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.9f, 0.7f);
     }
 
     // ============================================================
-    // 🌟 SUMMON
+    // 💨 HIỆU ỨNG THU KIẾM (DISAPPEAR)
     // ============================================================
 
-    private void spawnSummonEffect(
-            Player player
-    ) {
+    private void spawnDisappearEffect(Location loc, CultivationStage stage) {
+        World world = loc.getWorld();
+        if (world == null) return;
+        StageAura aura = getStageAura(stage);
 
-        Location loc =
-                getSwordLocation(
-                        player
-                );
+        world.spawnParticle(Particle.FIREWORK, loc.clone().add(0, 0.2, 0), 8, 0.25, 0.1, 0.25, 0.03);
+        world.spawnParticle(Particle.END_ROD, loc.clone().add(0, 0.1, 0), 10, 0.35, 0.1, 0.35, 0.02);
+        world.spawnParticle(Particle.ENCHANT, loc.clone().add(0, 0.3, 0), 16, 0.4, 0.15, 0.4, 0.6);
 
-        World world =
-                player.getWorld();
-
-        // ========================================================
-        // VÒNG TRIỆU HỒI
-        // ========================================================
-
-        for (int i = 0;
-             i < 18;
-             i++) {
-
-            double angle =
-                    Math.PI * 2
-                            * i
-                            / 18;
-
-            Location p =
-                    loc.clone()
-                            .add(
-                                    Math.cos(angle)
-                                            * 0.65,
-                                    0,
-                                    Math.sin(angle)
-                                            * 0.65
-                            );
-
-            world.spawnParticle(
-                    Particle.DUST,
-                    p,
-                    1,
-                    0,
-                    0,
-                    0,
-                    0,
-                    new Particle.DustOptions(
-                            i % 2 == 0
-                                    ? ENERGY_BLUE
-                                    : ENERGY_PURPLE,
-                            0.6f
-                    )
-            );
+        for (int i = 0; i < 16; i++) {
+            double angle = (Math.PI * 2 * i) / 16.0;
+            Location p = loc.clone().add(Math.cos(angle) * 0.65, 0.05, Math.sin(angle) * 0.65);
+            world.spawnParticle(Particle.DUST, p, 1, 0, 0, 0, 0,
+                    new Particle.DustOptions(aura.primary, 0.75f));
         }
 
-        world.spawnParticle(
-                Particle.END_ROD,
-                loc,
-                8,
-                0.45,
-                0.05,
-                0.45,
-                0.01
-        );
-
-        world.spawnParticle(
-                Particle.ENCHANT,
-                loc,
-                12,
-                0.45,
-                0.08,
-                0.45,
-                0.04
-        );
-
-        world.playSound(
-                loc,
-                Sound.BLOCK_BEACON_POWER_SELECT,
-                0.7f,
-                1.5f
-        );
-
-        world.playSound(
-                loc,
-                Sound.ITEM_TRIDENT_RIPTIDE_1,
-                0.55f,
-                1.65f
-        );
+        world.playSound(loc, Sound.BLOCK_BEACON_DEACTIVATE, 0.6f, 1.4f);
+        world.playSound(loc, Sound.ITEM_TRIDENT_RETURN, 0.5f, 1.6f);
     }
 
     // ============================================================
-    // 💨 DISAPPEAR
+    // 🧹 DỌN DẸP PHI KIẾM
     // ============================================================
 
-    private void spawnDisappearEffect(
-            Location loc
-    ) {
-
-        World world =
-                loc.getWorld();
-
-        if (world == null) {
-            return;
-        }
-
-        world.spawnParticle(
-                Particle.END_ROD,
-                loc,
-                8,
-                0.25,
-                0.06,
-                0.25,
-                0.01
-        );
-
-        world.spawnParticle(
-                Particle.CLOUD,
-                loc,
-                6,
-                0.22,
-                0.04,
-                0.22,
-                0.015
-        );
-
-        world.spawnParticle(
-                Particle.ENCHANT,
-                loc,
-                10,
-                0.25,
-                0.05,
-                0.25,
-                0.03
-        );
-
-        world.playSound(
-                loc,
-                Sound.BLOCK_BEACON_DEACTIVATE,
-                0.5f,
-                1.5f
-        );
-    }
-
-    // ============================================================
-    // 🧹 REMOVE
-    // ============================================================
-
-    private void removeMount(
-            UUID uid
-    ) {
-
-        removeMount(
-                uid,
-                false
-        );
-    }
-
-    private void removeMount(
-            UUID uid,
-            boolean effect
-    ) {
-
-        ItemDisplay display =
-                mounts.remove(uid);
-
-        if (display == null) {
-            return;
-        }
+    private void removeMount(UUID uid, boolean effect) {
+        ItemDisplay display = mounts.remove(uid);
+        if (display == null) return;
 
         if (!display.isDead()) {
-
             if (effect) {
-
-                spawnDisappearEffect(
-                        display.getLocation()
-                );
+                Player p = Bukkit.getPlayer(uid);
+                CultivationStage stage = null;
+                if (p != null) {
+                    PlayerData data = plugin.getDataManager().get(p);
+                    if (data != null) stage = data.getStage();
+                }
+                spawnDisappearEffect(display.getLocation(), stage);
             }
-
             display.remove();
         }
     }
 
+    /**
+     * Dọn dẹp toàn bộ khi plugin tắt / reload
+     */
+    public void cleanup() {
+        if (loopTask != null) {
+            loopTask.cancel();
+            loopTask = null;
+        }
+        for (UUID uid : new HashSet<>(mounts.keySet())) {
+            removeMount(uid, false);
+        }
+        mounts.clear();
+        enabled.clear();
+    }
+
     // ============================================================
-    // EVENT: DOUBLE SPACE
+    // EVENTS
     // ============================================================
 
     @EventHandler
-    public void onToggleFlight(
-            PlayerToggleFlightEvent event
-    ) {
-
-        Player player =
-                event.getPlayer();
-
-        UUID uid =
-                player.getUniqueId();
+    public void onToggleFlight(PlayerToggleFlightEvent event) {
+        Player player = event.getPlayer();
+        UUID uid = player.getUniqueId();
 
         if (!enabled.contains(uid)) {
             return;
         }
 
         if (event.isFlying()) {
-
-            Bukkit.getScheduler()
-                    .runTask(
-                            plugin,
-                            () -> {
-
-                                if (player.isOnline()
-                                        && player.isFlying()
-                                        && enabled.contains(uid)) {
-
-                                    spawnMount(
-                                            player
-                                    );
-                                }
-                            }
-                    );
-
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline() && player.isFlying() && enabled.contains(uid)) {
+                    spawnMount(player);
+                }
+            });
         } else {
-
-            removeMount(
-                    uid,
-                    true
-            );
+            removeMount(uid, true);
         }
     }
 
-    // ============================================================
-    // EVENT: QUIT
-    // ============================================================
-
     @EventHandler
-    public void onQuit(
-            PlayerQuitEvent event
-    ) {
-
-        UUID uid =
-                event.getPlayer()
-                        .getUniqueId();
-
+    public void onQuit(PlayerQuitEvent event) {
+        UUID uid = event.getPlayer().getUniqueId();
         enabled.remove(uid);
-
-        removeMount(
-                uid
-        );
+        removeMount(uid, false);
     }
 }

@@ -77,6 +77,8 @@ public class TuTienPlugin extends JavaPlugin {
     private static TuTienPlugin instance;
 
     private PlayerDataManager    dataManager;
+    private com.tutien.career.BachNgheManager bachNgheManager;
+    private com.tutien.coduyen.CoDuyenManager coDuyenManager;
     private SkillManager         skillManager;
     private PassiveSkillManager  passiveSkillManager;
     private SkillItemManager     skillItemManager;
@@ -143,6 +145,7 @@ public class TuTienPlugin extends JavaPlugin {
     private com.tutien.suphudedo.SuPhuDeDoManager suPhuDeDoManager;
     private com.tutien.tamma.TamMaManager    tamMaManager;
     private com.tutien.quest.QuestManager    questManager;
+    private com.tutien.gui.TuTienGuideGUI    guideGUI;
 
     private String prefixStr;
     private LicenseManager licenseManager;
@@ -155,6 +158,8 @@ public class TuTienPlugin extends JavaPlugin {
         saveDefaultConfig();
         ensureConfigResource("dao.yml");
         ensureConfigResource("congphap.yml");
+        ensureConfigResource("bach-nghe-tu-tien.yml");
+        ensureConfigResource("co-duyen-kim-thu-chi.yml");
         ensureConfigResource("tongmon-config.yml");
         ensureConfigResource("phabao.yml");
         ensureConfigResource("hubs.yml");
@@ -178,6 +183,10 @@ public class TuTienPlugin extends JavaPlugin {
         // Init order matters
         tienManager         = new TienManager(this); // Vault-backed economy must be ready before player data loads
         dataManager         = new PlayerDataManager(this);
+        bachNgheManager    = new com.tutien.career.BachNgheManager(this);
+        coDuyenManager     = new com.tutien.coduyen.CoDuyenManager(this);
+        getServer().getPluginManager().registerEvents(bachNgheManager, this);
+        getServer().getPluginManager().registerEvents(coDuyenManager, this);
         conGPhapManager     = new ConGPhapManager(this);
         hubItemFactory      = new HubItemFactory(this);
         skillSettingsGUI    = new SkillSettingsGUI(this);
@@ -281,6 +290,7 @@ public class TuTienPlugin extends JavaPlugin {
         uyApManager         = new UyApManager(this);
         flyingSwordManager  = new FlyingSwordManager(this);
         swordFlightManager  = new com.tutien.sword.SwordFlightManager(this);
+        guideGUI            = new com.tutien.gui.TuTienGuideGUI(this);
         herbManager         = new HerbManager(this);
         linhChungShopCommand = new com.tutien.commands.LinhChungShopCommand(this);
         if (getCommand("linhchungshop") != null) getCommand("linhchungshop").setExecutor(linhChungShopCommand);
@@ -329,6 +339,8 @@ public class TuTienPlugin extends JavaPlugin {
         if (getCommand("karma")   != null) getCommand("karma").setExecutor(cmd);
         if (getCommand("quest")   != null) getCommand("quest").setExecutor(cmd);
         if (getCommand("nhiemvu") != null) getCommand("nhiemvu").setExecutor(cmd);
+        if (getCommand("bachnghe") != null) { getCommand("bachnghe").setExecutor(bachNgheManager); getCommand("bachnghe").setTabCompleter(bachNgheManager); }
+        if (getCommand("coduyen") != null) { getCommand("coduyen").setExecutor(coDuyenManager); getCommand("coduyen").setTabCompleter(coDuyenManager); }
         adminCommand = new AdminCommand(this);
         if (getCommand("ttadmin") != null) getCommand("ttadmin").setExecutor(adminCommand);
         if (getCommand("ttadmin") != null) getCommand("ttadmin").setTabCompleter(adminCommand);
@@ -493,6 +505,7 @@ public class TuTienPlugin extends JavaPlugin {
         pm.registerEvents(petSummon,                this);
         pm.registerEvents(passiveSkillManager,      this);
         pm.registerEvents(swordFlightManager,       this);
+        pm.registerEvents(guideGUI,                 this);
         pm.registerEvents(breakthroughManager,      this);
 
         // Kiểm tra an toàn cho Boss Arena
@@ -540,6 +553,8 @@ public class TuTienPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (bachNgheManager != null) bachNgheManager.save();
+        if (coDuyenManager != null) coDuyenManager.save();
         if (dataManager   != null) dataManager.saveAll();
         if (tongMonManager != null) tongMonManager.saveAll();
         if (tongMonAllianceManager != null) tongMonAllianceManager.save();
@@ -547,6 +562,7 @@ public class TuTienPlugin extends JavaPlugin {
         if (banBoardManager != null) banBoardManager.stop();
         if (mythicLibHook != null) mythicLibHook.shutdown();
         if (zoneManager != null) zoneManager.saveZones();
+        if (swordFlightManager != null) swordFlightManager.cleanup();
         if (licenseManager != null) licenseManager.shutdown();
         instance = null;
         getLogger().info("TuTien đã tắt. Đã lưu dữ liệu.");
@@ -578,6 +594,8 @@ public class TuTienPlugin extends JavaPlugin {
 
     public static TuTienPlugin getInstance()             { return instance; }
     public PlayerDataManager    getDataManager()         { return dataManager; }
+    public com.tutien.career.BachNgheManager getBachNgheManager() { return bachNgheManager; }
+    public com.tutien.coduyen.CoDuyenManager getCoDuyenManager() { return coDuyenManager; }
     public SkillManager         getSkillManager()        { return skillManager; }
     public PassiveSkillManager  getPassiveSkillManager() { return passiveSkillManager; }
     public SkillItemManager     getSkillItemManager()    { return skillItemManager; }
@@ -645,4 +663,5 @@ public class TuTienPlugin extends JavaPlugin {
     public com.tutien.suphudedo.SuPhuDeDoManager getSuPhuDeDoManager() { return suPhuDeDoManager; }
     public com.tutien.tamma.TamMaManager    getTamMaManager()    { return tamMaManager; }
     public com.tutien.quest.QuestManager    getQuestManager()    { return questManager; }
+    public com.tutien.gui.TuTienGuideGUI    getGuideGUI()        { return guideGUI; }
 }

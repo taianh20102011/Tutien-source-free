@@ -1,0 +1,107 @@
+# CƠ DUYÊN / KIM THỦ CHỈ — độc lập với cấu hình Bách Nghệ Tu Tiên.
+# Cơ duyên được roll theo trigger, có cooldown toàn cục và giới hạn số lần mỗi người.
+settings:
+  enabled: true
+  first-join-delay-ticks: 40
+  global-roll-cooldown-seconds: 600
+  max-discoveries-per-player: 4
+
+messages:
+  title: "&d&lCƠ DUYÊN XUẤT THẾ"
+
+triggers:
+  first-join:
+    enabled: true
+    chance-percent: 35.0
+  mob-kill:
+    enabled: true
+    chance-percent: 0.25
+  boss-kill:
+    enabled: true
+    chance-percent: 8.0
+  breakthrough:
+    enabled: true
+    chance-percent: 2.0
+  rare-block-break:
+    enabled: true
+    chance-percent: 0.8
+    materials: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE, EMERALD_ORE, ANCIENT_DEBRIS]
+
+opportunities:
+  co_vat_bi_an:
+    enabled: true
+    name: "&dCổ Vật Bí Ẩn"
+    message: "&dNgươi tìm thấy &fCổ Vật Bí Ẩn&d. Linh văn cổ đại đang chờ được đánh thức!"
+    weight: 30
+    one-time-per-player: true
+    reward:
+      type: ancient_relic
+    item:
+      material: ECHO_SHARD
+      name: "&d&lCổ Vật Bí Ẩn"
+      lore:
+        - "&7Một mảnh di vật có linh tính."
+        - "&eChuột phải để hấp thu linh lực."
+    consume-reward:
+      linh-khi: 5000
+      system-points: 1
+      success-message: "&dCổ vật tan thành linh quang, truyền cho ngươi 5.000 Linh Khí và 1 điểm Hệ Thống!"
+
+  he_thong_tu_tien:
+    enabled: true
+    name: "&b&lHệ Thống Tu Tiên"
+    message: "&b[KENG!] &fHệ Thống Tu Tiên đã khóa định ký chủ!"
+    weight: 25
+    one-time-per-player: true
+    reward:
+      type: system
+      points: 5
+
+  dan_duoc_ky_dac:
+    enabled: true
+    name: "&aĐan Dược Kỳ Đặc"
+    message: "&aNgươi nhặt được một viên đan dược mang khí tức kỳ dị!"
+    weight: 25
+    one-time-per-player: true
+    reward:
+      type: special_pill
+    item:
+      material: HONEY_BOTTLE
+      name: "&a&lĐan Dược Kỳ Đặc"
+      lore:
+        - "&7Đan dược kết tinh từ cơ duyên."
+        - "&eChuột phải để dùng."
+    consume-reward:
+      linh-khi: 15000
+      heal: 6.0
+      buff-seconds: 30
+      strength-amplifier: 0
+      success-message: "&aĐan dược tan ra, khí huyết và Linh Khí đều tăng mạnh!"
+
+  lao_gia_gia_trong_nhan:
+    enabled: true
+    name: "&6Lão Gia Gia Trong Nhẫn"
+    message: "&6Một giọng nói già nua vang lên từ chiếc nhẫn: 'Tiểu tử, cuối cùng ngươi cũng tìm thấy ta!'"
+    weight: 20
+    one-time-per-player: true
+    reward:
+      type: ring_master
+    item:
+      material: GOLD_NUGGET
+      name: "&6&lNhẫn Cổ Có Linh"
+      lore:
+        - "&7Bên trong dường như có một tàn hồn cổ xưa."
+        - "&eChuột phải để nhận truyền thừa."
+    consume-reward:
+      linh-khi: 25000
+      system-points: 2
+      heal: 10.0
+      buff-seconds: 180
+      strength-amplifier: 0
+      success-message: "&6Lão gia gia truyền cho ngươi một luồng sức mạnh! Nhận 25.000 Linh Khí, 2 điểm Hệ Thống và gia trì chiến lực."
+
+rewards:
+  system:
+    linh-khi-per-point: 1000
+    buff-seconds: 120
+    strength-amplifier: 0

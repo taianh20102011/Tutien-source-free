@@ -353,7 +353,8 @@ public class SwordSummon implements Listener {
                                 Location cur = lerp(u.dashFrom, strikePos, prog);
                                 u.stand.teleport(cur);
                                 faceDirection(u.stand, u.dashFrom, strikePos);
-                                p.getWorld().spawnParticle(Particle.CRIT, cur, 2, 0.05,0.05,0.05,0.02);
+                                p.getWorld().spawnParticle(Particle.CRIT, cur, 3, 0.05, 0.05, 0.05, 0.05);
+                                p.getWorld().spawnParticle(Particle.END_ROD, cur, 1, 0.01, 0.01, 0.01, 0.01);
 
                                 if (prog >= 1.0) {
                                     // Va chạm - gây sát thương
@@ -477,14 +478,21 @@ public class SwordSummon implements Listener {
     }
 
     private void trailParticle(Player p, ArmorStand as, double tick, int total) {
-        if ((int)(tick*10) % 4 == 0) {
-            p.getWorld().spawnParticle(Particle.ENCHANTED_HIT,
-                    as.getLocation().add(0,0.5,0), 1, 0.03,0.03,0.03,0.08);
+        PlayerData data = plugin.getDataManager().get(p);
+        Color auraColor = (data != null && data.getStage().ordinal() >= 20)
+                ? Color.fromRGB(255, 215, 0)
+                : (data != null && data.getStage().ordinal() >= 15)
+                ? Color.fromRGB(180, 80, 255)
+                : Color.fromRGB(0, 220, 255);
+
+        if ((int)(tick*10) % 3 == 0) {
+            Location tipLoc = as.getLocation().add(0, 0.85, 0);
+            p.getWorld().spawnParticle(Particle.DUST, tipLoc, 1, 0.02, 0.02, 0.02, 0,
+                    new Particle.DustOptions(auraColor, 0.8f));
+            p.getWorld().spawnParticle(Particle.END_ROD, tipLoc, 1, 0.01, 0.01, 0.01, 0.005);
         }
-        if (total == MAX_SWORDS && (int)(tick*10) % 6 == 0) {
-            p.getWorld().spawnParticle(Particle.DUST,
-                    as.getLocation().add(0,0.5,0), 1, 0.1,0.1,0.1, 0,
-                    new Particle.DustOptions(Color.fromRGB(255,200,0), 1.0f));
+        if ((int)(tick*10) % 8 == 0) {
+            p.getWorld().spawnParticle(Particle.ENCHANT, as.getLocation().add(0, 0.4, 0), 1, 0.1, 0.1, 0.1, 0.2);
         }
     }
 

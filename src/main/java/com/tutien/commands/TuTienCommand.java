@@ -51,6 +51,14 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
         if (args.length == 0) { showHelp(player); return true; }
 
         return switch (args[0].toLowerCase()) {
+            case "help", "huongdan", "guide" -> {
+                if (plugin.getGuideGUI() != null) {
+                    plugin.getGuideGUI().open(player);
+                } else {
+                    showHelp(player);
+                }
+                yield true;
+            }
             case "chon"        -> handleClassSelect(player, args);
             case "dao"         -> handleDaoSelect(player, args);
             case "info"        -> showInfo(player);
@@ -493,22 +501,18 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
     }
 
     private void showHelp(Player player) {
-        player.sendMessage(plugin.msg("auto_08521cb5b5"));
-        player.sendMessage(plugin.msg("auto_03b4fcd956"));
-        player.sendMessage(plugin.msg("auto_f765bde8ba"));
-        player.sendMessage(plugin.msg("auto_9c6b60ed0b"));
-        player.sendMessage(plugin.msg("auto_39c2784f36"));
-        player.sendMessage(plugin.msg("auto_0597cd1caf"));
-        player.sendMessage(plugin.msg("auto_b637079839"));
-        player.sendMessage(plugin.msg("auto_7b7a12711c"));
-        player.sendMessage(plugin.msg("auto_780f0b3fa4"));
-        player.sendMessage(plugin.msg("auto_b79d8454f9"));
-        player.sendMessage(plugin.msg("auto_c3c447660e"));
-        player.sendMessage(plugin.msg("auto_9c7e6714bb"));
-        player.sendMessage(plugin.msg("auto_5ee5a61b45"));
-        player.sendMessage(plugin.msg("auto_088bc32359"));
-        player.sendMessage(plugin.msg("auto_d016e15d90"));
-        player.sendMessage(plugin.msg("auto_ed82b10c7b"));
+        if (plugin.getGuideGUI() != null) {
+            plugin.getGuideGUI().open(player);
+            return;
+        }
+        player.sendMessage("§6§l╔═════════════════ LỆNH TU TIÊN ═════════════════╗");
+        player.sendMessage("  §e/tutien chon [class]  §8- §fChọn môn phái tu tiên");
+        player.sendMessage("  §e/tutien dao [dao]     §8- §fChọn con đường Đạo");
+        player.sendMessage("  §e/tutien info          §8- §fXem thông tin tu vi, cảnh giới");
+        player.sendMessage("  §e/tutien skill         §8- §fNhận lại skill item môn phái");
+        player.sendMessage("  §e/tutien top           §8- §fXem bảng xếp hạng tu vi");
+        player.sendMessage("  §e/guide                §8- §aMở Cẩm Nang Tu Tiên Giới (GUI)");
+        player.sendMessage("§6§l╚══════════════════════════════════════════════════╝");
     }
 
     @Override
@@ -519,7 +523,7 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
             if (d != null && d.hasClass()) return d.getClassType().getSkillIds();
         }
         if (n.equals("tutien")) {
-            if (args.length == 1) return Arrays.asList("chon","dao","info","skill","layky","items","top","reset","admin","reroll","reroll_toc");
+            if (args.length == 1) return Arrays.asList("help","huongdan","chon","dao","info","skill","layky","items","top","reset","admin","reroll","reroll_toc");
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("layky")) {
                     PlayerData d = sender instanceof Player player ? plugin.getDataManager().get(player) : null;

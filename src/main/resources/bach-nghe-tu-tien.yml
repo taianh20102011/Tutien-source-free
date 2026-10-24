@@ -1,0 +1,79 @@
+# BÁCH NGHỆ TU TIÊN — độc lập với cấu hình Cơ Duyên/Kim Thủ Chỉ.
+# Mọi ID nghề đều viết thường, không dấu. Có thể chỉnh kinh nghiệm và đặc quyền tại đây.
+settings:
+  enabled: true
+  max-level: 50
+  xp-base: 100
+  xp-per-level: 75
+  action-cooldown-seconds: 3
+  show-xp-actionbar: false
+  reward-every-levels: 10
+  level-up-linh-khi: 250
+
+messages:
+  level-up: "&6[Bách Nghệ] &aNghề &e%profession% &ađã lên cấp &e%level%&a!"
+
+professions:
+  luyen_dan_su:
+    enabled: true
+    name: "&dLuyện Đan Sư"
+    description: "Tinh luyện đan dược; đôi khi tạo thêm một bình thuốc khi luyện thành công."
+    max-level: 50
+    xp:
+      brew: 25
+    bonus-potion-chance-per-level: 0.004
+    perks: "Mỗi cấp tăng cơ hội nhận thêm bình thuốc; cấp 10/20/30/40/50 mở rộng vận khí luyện đan."
+
+  luyen_khi_su:
+    enabled: true
+    name: "&6Luyện Khí Sư"
+    description: "Rèn giũa trang bị bằng phù phép; cấp nghề cao giảm nhẹ cấp kinh nghiệm phù phép cần dùng."
+    max-level: 50
+    xp:
+      enchant: 30
+    discount-levels-per-level: 10
+    perks: "Cứ mỗi 10 cấp giảm 1 cấp chi phí phù phép (không thấp hơn 1)."
+
+  tran_phap_su:
+    enabled: true
+    name: "&bTrận Pháp Sư"
+    description: "Bố trí vật liệu linh trận và nghiên cứu phù phép để tôi luyện trận đạo."
+    max-level: 50
+    xp:
+      formation-place: 12
+      enchant: 10
+    formation-materials: [OBSIDIAN, AMETHYST_BLOCK, GLOWSTONE, SEA_LANTERN]
+    barrier-chance-per-level: 0.01
+    barrier-duration-seconds: 3
+    perks: "Đặt vật liệu linh trận có cơ hội kích hoạt Linh Trận Hộ Thể, nhận Kháng Cự trong thời gian ngắn."
+
+  ngu_thu_su:
+    enabled: true
+    name: "&aNgự Thú Sư"
+    description: "Thuần hóa linh thú; linh thú vừa thuần hóa được hồi phục và tái sinh ngắn hạn."
+    max-level: 50
+    xp:
+      tame: 40
+    tame-heal: 4.0
+    tame-regeneration-seconds: 8
+    perks: "Mỗi lần thuần hóa thành công nhận kinh nghiệm; linh thú được hồi máu và tái sinh."
+
+  linh_dien_su:
+    enabled: true
+    name: "&2Linh Điền Sư"
+    description: "Chăm sóc linh điền; thu hoạch cây trưởng thành có cơ hội nhận thêm nông sản."
+    max-level: 50
+    xp:
+      harvest: 8
+    bonus-harvest-chance-per-level: 0.01
+    perks: "Mỗi cấp tăng 1% cơ hội nhận thêm nông sản, tối đa 50%."
+
+  phu_luc_su:
+    enabled: true
+    name: "&5Phù Lục Sư"
+    description: "Chế tác giấy, sách và sách phù phép; có cơ hội nhân đôi vật phẩm chế tác."
+    max-level: 50
+    xp:
+      craft-scroll: 10
+    bonus-scroll-chance-per-level: 0.005
+    perks: "Mỗi cấp tăng 0,5% cơ hội tạo thêm vật phẩm phù văn, tối đa 35%."

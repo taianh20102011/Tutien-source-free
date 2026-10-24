@@ -1,0 +1,8 @@
+TuTien FREE source update None: Bách Nghệ Tu Tiên + Cơ Duyên/Kim Thủ Chỉ.
+
+Phải build JAR mới trước khi cài lên server (JDK 21 + Maven):
+  FREE: mvn -Pfree clean package
+
+JAR cũ đã được loại khỏi gói source để tránh nhầm với bản mới.
+Java target: 21.
+Môi trường đóng gói không có Maven/dependency cache, vì vậy JAR mới chưa được build tại đây.

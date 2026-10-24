@@ -1445,32 +1445,14 @@ toc:
   dao-toc: 0.00001
   thuy-tinh: 0.000001
 
+# ============================================================
+# ĐẠO TÂM (Đạo Lộ Tu Tiên)
+# Chi tiết thuộc tính, hệ số công/thủ và Đạo tùy chỉnh được cấu hình
+# độc lập và đầy đủ tại file: plugins/TuTienPlugin/dao.yml
+# ============================================================
 dao-path:
   switch-cost: 500
   switch-cooldown-hours: 24
-  chinh-dao:
-    break-diff-mult: 0.85
-    atk-mult: 1.0
-    def-mult: 1.10
-  ma-dao:
-    break-diff-mult: 1.20
-    atk-mult: 1.20
-    def-mult: 0.90
-    reward-mult: 2.0
-  si-vuong:
-    meditation-lk-mult: 5.0
-    break-diff-mult: 0.60
-    atk-mult: 0.60
-    damage-reduction-when-meditating: 0.25
-  lo-vuong:
-    def-mult: 1.60
-    atk-mult: 0.80
-    speed-penalty: 0.30
-    revive-hp-percent: 0.05
-    revive-duration-ms: 3000
-    revive-cooldown-ms: 300000
-    reflect-chance: 0.10
-    reflect-percent: 0.30
 
 # ============================================================
 # SEASON — "meta mùa": admin chọn 1 Class + 1 Đạo mạnh nhất mùa này

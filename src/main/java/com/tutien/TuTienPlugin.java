@@ -128,6 +128,7 @@ public class TuTienPlugin extends JavaPlugin {
     private PetSummon            petSummon;
     private com.tutien.data.PetTierManager petTierManager;
     private com.tutien.sword.SwordFlightManager swordFlightManager;
+    private com.tutien.gui.TuTienPetGUI petGUI;
     private TienThao             tienThao;
     private UyApSystem           uyApSystem;
 
@@ -290,6 +291,7 @@ public class TuTienPlugin extends JavaPlugin {
         uyApManager         = new UyApManager(this);
         flyingSwordManager  = new FlyingSwordManager(this);
         swordFlightManager  = new com.tutien.sword.SwordFlightManager(this);
+        petGUI              = new com.tutien.gui.TuTienPetGUI(this);
         guideGUI            = new com.tutien.gui.TuTienGuideGUI(this);
         herbManager         = new HerbManager(this);
         linhChungShopCommand = new com.tutien.commands.LinhChungShopCommand(this);
@@ -411,7 +413,12 @@ public class TuTienPlugin extends JavaPlugin {
         if (getCommand("trieuthu") != null)
             getCommand("trieuthu").setExecutor((sender, command, label, args) -> {
                 if (!(sender instanceof org.bukkit.entity.Player p)) return true;
-                petSummon.togglePet(p); return true;
+                if (args.length > 0 && (args[0].equalsIgnoreCase("toggle") || args[0].equalsIgnoreCase("trieuhoi") || args[0].equalsIgnoreCase("thuhoi"))) {
+                    petSummon.togglePet(p);
+                } else {
+                    petGUI.open(p);
+                }
+                return true;
             });
         if (getCommand("hocbidong") != null)
             getCommand("hocbidong").setExecutor((sender, command, label, args) -> {
@@ -503,6 +510,7 @@ public class TuTienPlugin extends JavaPlugin {
         pm.registerEvents(herbManager,              this);
         pm.registerEvents(swordSummon,              this);
         pm.registerEvents(petSummon,                this);
+        pm.registerEvents(petGUI,                   this);
         pm.registerEvents(passiveSkillManager,      this);
         pm.registerEvents(swordFlightManager,       this);
         pm.registerEvents(guideGUI,                 this);
@@ -563,6 +571,7 @@ public class TuTienPlugin extends JavaPlugin {
         if (mythicLibHook != null) mythicLibHook.shutdown();
         if (zoneManager != null) zoneManager.saveZones();
         if (swordFlightManager != null) swordFlightManager.cleanup();
+        if (petSummon != null) petSummon.cleanup();
         if (licenseManager != null) licenseManager.shutdown();
         instance = null;
         getLogger().info("TuTien đã tắt. Đã lưu dữ liệu.");
@@ -638,6 +647,7 @@ public class TuTienPlugin extends JavaPlugin {
     public SwordSummon          getSwordSummon()         { return swordSummon; }
     public PetSummon            getPetSummon()           { return petSummon; }
     public com.tutien.data.PetTierManager getPetTierManager() { return petTierManager; }
+    public com.tutien.gui.TuTienPetGUI getPetGUI() { return petGUI; }
     public com.tutien.sword.SwordFlightManager getSwordFlightManager() { return swordFlightManager; }
     public TienThao             getTienThao()            { return tienThao; }
     public UyApSystem           getUyApSystem()          { return uyApSystem; }

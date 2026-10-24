@@ -312,9 +312,9 @@ public final class TuTienGuideGUI implements Listener {
                         "§7Linh Thú có chỉ số và kỹ năng hỗ trợ riêng biệt.",
                         "",
                         "§eLệnh: §f/trieuthu §7hoặc §f/linhthu",
-                        "§7Click để triệu hồi / thu hồi thú cưỡi"
+                        "§e▶ Click để mở Giao Diện Quản Lý Linh Thú"
                 )));
-        holder.actions.put(15, () -> runCommand(player, "trieuthu"));
+        holder.actions.put(15, () -> plugin.getPetGUI().open(player));
 
         inv.setItem(29, makeItem(Material.ENCHANTED_BOOK, "§d4. Bí Kíp Bị Động & Nội Tại",
                 List.of(

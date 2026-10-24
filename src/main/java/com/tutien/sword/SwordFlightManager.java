@@ -183,6 +183,9 @@ public class SwordFlightManager implements Listener {
 
         // Bật ngự kiếm
         enabled.add(uid);
+        if (!player.getAllowFlight() && data.getStage().canFly()) {
+            player.setAllowFlight(true);
+        }
         player.sendMessage(
                 plugin.prefix()
                         + "§b✦ §fNgự Kiếm Phi Hành §bđã kích hoạt!"
@@ -363,27 +366,30 @@ public class SwordFlightManager implements Listener {
             public void run() {
                 tick++;
 
-                for (UUID uid : new HashSet<>(mounts.keySet())) {
+                for (UUID uid : new HashSet<>(enabled)) {
                     Player player = Bukkit.getPlayer(uid);
-                    ItemDisplay display = mounts.get(uid);
 
                     // Player offline / không tồn tại
                     if (player == null || !player.isOnline()) {
+                        enabled.remove(uid);
                         removeMount(uid, false);
                         continue;
                     }
 
                     // Không còn trong trạng thái bay
-                    if (!player.isFlying() || !enabled.contains(uid)) {
+                    if (!player.isFlying()) {
                         removeMount(uid, true);
                         continue;
                     }
 
-                    // Display entity bị xóa hoặc khác thế giới
+                    ItemDisplay display = mounts.get(uid);
+
+                    // Display entity bị xóa hoặc khác thế giới hoặc chưa khởi tạo
                     if (display == null || display.isDead() || !display.getWorld().equals(player.getWorld())) {
                         removeMount(uid, false);
                         spawnMount(player);
-                        continue;
+                        display = mounts.get(uid);
+                        if (display == null) continue;
                     }
 
                     // Cập nhật vị trí bám theo người chơi
@@ -392,6 +398,11 @@ public class SwordFlightManager implements Listener {
 
                     // Cập nhật góc quay theo hướng nhìn
                     applySwordTransformation(display, player, tick);
+
+                    // Cập nhật đồng bộ model phi kiếm nếu đổi vũ khí cầm tay (mỗi 10 tick)
+                    if (tick % 10 == 0) {
+                        display.setItemStack(createSword(player));
+                    }
 
                     // Hiệu ứng kiếm khí và vệt đuôi 3D
                     spawnFlightParticles(player, display, tick);
@@ -415,13 +426,32 @@ public class SwordFlightManager implements Listener {
         CultivationStage stage = (data != null) ? data.getStage() : null;
         StageAura aura = getStageAura(stage);
 
-        Vector lookDir = pLoc.getDirection().normalize();
-        Vector backward = lookDir.clone().multiply(-1);
+        float yaw = pLoc.getYaw();
+        float pitch = pLoc.getPitch();
+        float effectivePitch = Math.max(-75.0f, Math.min(75.0f, pitch + SWORD_PITCH));
 
-        // Tính hệ vector trực chuẩn 3D vuông góc với hướng nhìn
-        Vector upRef = (Math.abs(lookDir.getY()) > 0.9) ? new Vector(1, 0, 0) : new Vector(0, 1, 0);
-        Vector side = lookDir.clone().crossProduct(upRef).normalize();
-        Vector orthoUp = side.clone().crossProduct(lookDir).normalize();
+        Quaternionf qBase = new Quaternionf()
+                .rotateX((float) Math.toRadians(-90.0))
+                .rotateZ((float) Math.toRadians(-135.0));
+
+        Quaternionf rotation = new Quaternionf()
+                .rotateY((float) -Math.toRadians(yaw))
+                .rotateX((float) Math.toRadians(effectivePitch))
+                .mul(qBase);
+
+        // Vector 3D trực chuẩn chính xác tuyệt đối theo frame xoay của thanh kiếm
+        Vector3f tipV = new Vector3f(1, 1, 0).normalize();
+        Vector3f edgeV = new Vector3f(-1, 1, 0).normalize();
+        Vector3f normV = new Vector3f(0, 0, 1).normalize();
+
+        rotation.transform(tipV);
+        rotation.transform(edgeV);
+        rotation.transform(normV);
+
+        Vector lookDir = new Vector(tipV.x, tipV.y, tipV.z);
+        Vector side = new Vector(edgeV.x, edgeV.y, edgeV.z);
+        Vector orthoUp = new Vector(normV.x, normV.y, normV.z);
+        Vector backward = lookDir.clone().multiply(-1);
 
         Location swordCenter = sword.getLocation().clone().add(0, FOOT_LIFT, 0);
         Location tipLoc = swordCenter.clone().add(lookDir.clone().multiply(0.78 * SWORD_SCALE));
@@ -629,6 +659,7 @@ public class SwordFlightManager implements Listener {
                 }
             });
         } else {
+            player.setFallDistance(0);
             removeMount(uid, true);
         }
     }

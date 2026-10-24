@@ -97,6 +97,7 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage(plugin.prefix() + "§aĐã lấy lại toàn bộ §eskill items§a!");
                 yield true;
             }
+            case "ngukiem", "phikiem" -> { plugin.getSwordFlightManager().toggle(player); yield true; }
             case "top"         -> showTop(player);
             case "reset"       -> handleReset(player, args);
             case "admin"       -> handleAdmin(player, args);
@@ -523,7 +524,7 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
             if (d != null && d.hasClass()) return d.getClassType().getSkillIds();
         }
         if (n.equals("tutien")) {
-            if (args.length == 1) return Arrays.asList("help","huongdan","chon","dao","info","skill","layky","items","top","reset","admin","reroll","reroll_toc");
+            if (args.length == 1) return Arrays.asList("help","huongdan","chon","dao","info","skill","layky","items","top","reset","admin","reroll","reroll_toc","ngukiem");
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("layky")) {
                     PlayerData d = sender instanceof Player player ? plugin.getDataManager().get(player) : null;

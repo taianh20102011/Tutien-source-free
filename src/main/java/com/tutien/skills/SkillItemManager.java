@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -126,7 +127,49 @@ public class SkillItemManager implements Listener {
         tryUseSkill(player, skillId);
     }
 
-    // ITEM GHEP: Doi tay (F / nut Swap Hand tren dien thoai) = Slot C
+    // ITEM GHEP: Sneak + Chuột trái (Nút Ngồi + Nút Chém trên Mobile / Shift + Left-click trên PC) = Slot C
+    @EventHandler(priority = org.bukkit.event.EventPriority.NORMAL, ignoreCancelled = true)
+    public void onLeftClick(PlayerInteractEvent event) {
+        if (event.getHand() != null && event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
+        if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+
+        Player player = event.getPlayer();
+        if (!player.isSneaking()) return;
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (!isMergedWeapon(item)) return;
+
+        event.setCancelled(true);
+        String skillId = getMergedSkillId(item, 2);
+        if (skillId == null) {
+            player.sendMessage(plugin.prefix() + "§7Slot C chưa mở khóa!");
+            return;
+        }
+        tryUseSkill(player, skillId);
+    }
+
+    // ITEM GHEP: Sneak + Chém trúng Mob/Entity trên Mobile/PC = kích hoạt Slot C
+    @EventHandler(priority = org.bukkit.event.EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)) return;
+        if (!player.isSneaking()) return;
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (!isMergedWeapon(item)) return;
+
+        String skillId = getMergedSkillId(item, 2);
+        if (skillId == null) return;
+
+        PlayerData data = plugin.getDataManager().get(player);
+        if (data == null || !data.hasClass()) return;
+
+        // Nếu Skill C sẵn sàng (không cooldown) -> tự kích hoạt kèm đòn đánh
+        if (!data.isSkillOnCooldown(skillId)) {
+            tryUseSkill(player, skillId);
+        }
+    }
+
+    // ITEM GHEP: Đổi tay (F trên PC / Swap Hand) = Slot C
     @EventHandler
     public void onSwapHand(org.bukkit.event.player.PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
@@ -340,7 +383,7 @@ public class SkillItemManager implements Listener {
         ClassType ct = data.getClassType();
         var comboSlots = ComboSkillRegistry.getComboSlots(ct);
         String[] slotLetter = {"A","B","C","D"};
-        String[] slotLabel  = {"Chuột phải", "Sneak+Chuột phải", "Đổi tay (F)", "Vứt đồ (Q) ✦Tuyệt Kỹ"};
+        String[] slotLabel  = {"Chuột phải", "Sneak+Chuột phải", "Sneak+Chém / F", "Vứt đồ (Q) ✦Tuyệt Kỹ"};
 
         Material mat = getSkillMaterial(comboSlots.isEmpty() || comboSlots.get(0).isEmpty()
                 ? "default" : comboSlots.get(0).get(0).id());

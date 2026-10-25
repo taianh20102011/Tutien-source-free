@@ -54,7 +54,7 @@ public class PhaBaoListener implements Listener {
             return;
         }
         if (!data.hasClass()) {
-            player.sendMessage(plugin.prefix() + "§cCan chon class truoc! /tutien chon");
+            player.sendMessage(plugin.prefix() + "§cBạn cần chọn class trước! Dùng §e/tutien chon");
             return;
         }
 

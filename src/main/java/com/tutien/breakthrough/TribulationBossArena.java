@@ -75,7 +75,7 @@ public class TribulationBossArena implements Listener {
                                    Runnable onSuccess, Runnable onFail) {
         UUID uuid = player.getUniqueId();
         if (activeArenas.containsKey(uuid)) {
-            player.sendMessage(plugin.prefix() + "§cBan dang trong Boss Arena roi!");
+            player.sendMessage(plugin.prefix() + "§cBạn đang trong Boss Arena rồi!");
             return;
         }
 

@@ -1,8 +1,20 @@
-pack-version: "7.2.8-accented-2"
+pack-version: "7.7.3-vietnamese-full"
 # TuTienPlugin - English language pack
 locale: en
 # English translation pass can be completed independently; keys are kept stable.
 messages:
+  prefix: "&8[&6⚡&eTu Tiên&8] &r"
+  no-class: "&cYou haven't chosen a class! Use &e/tutien chon"
+  skill-cooldown: "&eSkill &6{skill} &ehas &c{time}s &ecooldown remaining!"
+  level-up: "&6&l✦ BREAKTHROUGH! &eYou reached &a{stage} {rank}!"
+  not-enough-lk: "&cNot enough Spiritual Qi! Keep cultivating."
+  not-enough-lt: "&cNot enough Spirit Stones!"
+  boss-spawn: "&4☠ Tribulation Boss has appeared! Prepare for battle!"
+  boss-defeated: "&6✦ Boss defeated! Breakthrough successful!"
+  breakthrough-fail: "&c✗ Breakthrough failed! Dropped 1 rank."
+  sword-enabled: "&aFlying Sword Flight mode enabled!"
+  sword-disabled: "&cFlying Sword Flight mode disabled."
+  mobile-slot-c-hint: "&7(Mobile PE: Sneak + Left Click to trigger Slot C)"
   auto_00897ee573: "§6§l╔════════════════════════════════╗"
   auto_009d81ca84: "  §7Số kiếm theo cảnh giới:"
   auto_00a22778f9: "  §7§lNhân Giới §8(0-4) §7— Luyện Khí → Trúc Cơ → Kết Đan → Nguyên Anh → Hóa Thần"

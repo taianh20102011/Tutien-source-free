@@ -1,13 +1,17 @@
 package com.tutien.lang;
 
 import com.tutien.TuTienPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
- * Lightweight locale manager.
+ * Lightweight locale manager with full UTF-8 support.
  *
  * Messages are extracted from source into lang/vi.yml and lang/en.yml.
  * Runtime locale is controlled by language.locale in config.yml.
@@ -24,7 +28,7 @@ public final class LangManager {
         reload();
     }
 
-    private static final String PACK_VERSION = "7.2.8-accented-2";
+    private static final String PACK_VERSION = "7.7.3-vietnamese-full";
 
     private void ensureFiles() {
         if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();
@@ -38,7 +42,7 @@ public final class LangManager {
         boolean update = !target.exists();
         if (!update) {
             try {
-                YamlConfiguration old = YamlConfiguration.loadConfiguration(target);
+                YamlConfiguration old = loadFile(target);
                 update = !PACK_VERSION.equals(old.getString("pack-version"));
             } catch (Exception ignored) { update = true; }
         }
@@ -58,13 +62,30 @@ public final class LangManager {
     private YamlConfiguration load(String locale) {
         File file = new File(plugin.getDataFolder(), "lang/" + locale.toLowerCase(Locale.ROOT) + ".yml");
         if (!file.exists()) file = new File(plugin.getDataFolder(), "lang/vi.yml");
-        return YamlConfiguration.loadConfiguration(file);
+        return loadFile(file);
+    }
+
+    private YamlConfiguration loadFile(File file) {
+        YamlConfiguration config = new YamlConfiguration();
+        if (file == null || !file.exists()) return config;
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+            config.load(reader);
+        } catch (Exception e) {
+            plugin.getLogger().warning("[LangManager] Không thể tải " + file.getName() + ": " + e.getMessage());
+        }
+        return config;
     }
 
     public String msg(String key) {
-        String value = current.getString("messages." + key);
-        if (value == null) value = fallback.getString("messages." + key);
+        if (key == null) return "";
+        String value = current != null ? current.getString("messages." + key) : null;
+        if (value == null && fallback != null) value = fallback.getString("messages." + key);
         if (value == null) value = plugin.getConfig().getString("messages." + key);
-        return value == null ? key : value;
+        if (value == null) {
+            if (current != null && current.contains(key)) value = current.getString(key);
+            else if (fallback != null && fallback.contains(key)) value = fallback.getString(key);
+        }
+        if (value == null) return key;
+        return ChatColor.translateAlternateColorCodes('&', value);
     }
 }

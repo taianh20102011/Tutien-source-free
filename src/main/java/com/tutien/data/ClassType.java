@@ -15,7 +15,7 @@ public enum ClassType {
         Arrays.asList("linhhoacau","dongbang","phaptran","thaicuchuanphap","phatthuan"),
         0, 30, 0, 0),
 
-    Y_TU("Ý Tu", "🍎", "§a",
+    Y_TU("Y Tu", "🍎", "§a",
         "Hồi máu, buff đồng đội",
         Arrays.asList("linhduoc","phuhotran","giaido","hoiduongcuunghich"),
         0, 0, 0, 0),
@@ -35,7 +35,7 @@ public enum ClassType {
         Arrays.asList("quyanhtan","hukhongdoat","tuanh","quyvuonggianthe","thienmatrao"),
         0, 0, 0, 0),
 
-    PHONG_TU("Phong Tự", "💨", "§b",
+    PHONG_TU("Phong Tu", "💨", "§b",
         "Tốc độ +40%, né đòn 50%+",
         Arrays.asList("phongtocthiet","toanphongne","phongnhan","cuongphongtran","phakhongthuandi"),
         0, 0, 0, 0),

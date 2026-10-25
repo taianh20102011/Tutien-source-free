@@ -856,7 +856,7 @@ public class PhaBaoManager {
             case "phaplucthung" -> {
                 long cost = 1000L;
                 if (data.getTien() < cost) {
-                    player.sendMessage(plugin.prefix() + "§cCan §e1000 §c" + plugin.getTienManager().tenTien() + "!"); yield false;
+                    player.sendMessage(plugin.prefix() + "§cCần §e1000 §c" + plugin.getTienManager().tenTien() + "!"); yield false;
                 }
                 data.spendTien(cost);
                 data.addLinhKhi(50000L);

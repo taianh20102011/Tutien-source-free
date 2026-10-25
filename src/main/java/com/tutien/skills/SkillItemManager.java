@@ -302,7 +302,7 @@ public class SkillItemManager implements Listener {
     private void tryUseSkill(Player player, String skillId) {
         PlayerData data = plugin.getDataManager().get(player);
         if (data == null || !data.hasClass()) {
-            player.sendMessage(plugin.prefix() + "§cChưa chọn class!");
+            player.sendMessage(plugin.prefix() + "§cBạn chưa chọn class tu tiên! Dùng §e/tutien chon");
             return;
         }
         if (!data.isModuleEnabled("ky_nang_them")) {
@@ -319,7 +319,7 @@ public class SkillItemManager implements Listener {
             skill.tryUse(player, data);
         } else {
             // Combo skill chua trien khai day du: dung placeholder
-            player.sendMessage(plugin.prefix() + "§e⚔ " + skillId + " §7(dang phat trien!)");
+            player.sendMessage(plugin.prefix() + "§e⚔ " + skillId + " §7(Đang phát triển!)");
             player.getWorld().spawnParticle(org.bukkit.Particle.ENCHANTED_HIT,
                 player.getLocation().add(0,1,0), 10, 0.4,0.4,0.4,0.1);
         }

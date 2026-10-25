@@ -1,7 +1,19 @@
-pack-version: "7.2.8-accented-2"
-# TuTienPlugin - Vietnamese language pack
+pack-version: "7.7.3-vietnamese-full"
+# TuTienPlugin - Vietnamese language pack (Tiếng Việt chuẩn có dấu)
 locale: vi
 messages:
+  prefix: "&8[&6⚡&eTu Tiên&8] &r"
+  no-class: "&cBạn chưa chọn class! Dùng &e/tutien chon"
+  skill-cooldown: "&eKỹ năng &6{skill} &ecòn &c{time}s &ecooldown!"
+  level-up: "&6&l✦ ĐỘT PHÁ! &eBạn đã đạt &a{stage} {rank}!"
+  not-enough-lk: "&cChưa đủ Linh Khí! Hãy tiếp tục tu luyện."
+  not-enough-lt: "&cKhông đủ Linh Thạch!"
+  boss-spawn: "&4☠ Boss Kiếp Nạn xuất hiện! Hãy chuẩn bị chiến đấu!"
+  boss-defeated: "&6✦ Boss bị tiêu diệt! Đột phá thành công!"
+  breakthrough-fail: "&c✗ Đột phá thất bại! Bị tụt 1 cấp rank."
+  sword-enabled: "&aĐã kích hoạt chế độ Ngự Kiếm Phi Hành!"
+  sword-disabled: "&cĐã tắt Ngự Kiếm Phi Hành."
+  mobile-slot-c-hint: "&7(Trên điện thoại PE: dùng Sneak + Chém để kích hoạt Slot C)"
   auto_00897ee573: "§6§l╔════════════════════════════════╗"
   auto_009d81ca84: "  §7Số kiếm theo cảnh giới:"
   auto_00a22778f9: "  §7§lNhân Giới §8(0-4) §7— Luyện Khí → Trúc Cơ → Kết Đan → Nguyên Anh → Hóa Thần"

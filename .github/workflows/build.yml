@@ -52,15 +52,9 @@ jobs:
 
       - name: Gửi thông báo & File JAR sang Discord
         if: env.DISCORD_WEBHOOK != ''
-        uses: tsickert/discord-webhook@v5.4.0
-        with:
-          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
-          filename: target/TuTienPlugin-free-${{ steps.ver.outputs.v }}.jar
-          content: |
-            🚀 **ĐÃ CÓ BẢN BUILD MỚI: TuTienPlugin v${{ steps.ver.outputs.v }}**
-            🔗 **Commit:** https://github.com/${{ github.repository }}/commit/${{ github.sha }}
-            📝 **Nội dung:** ${{ github.event.head_commit.message }}
-            🤖 **Pair Programmer:** Antigravity AI Assistant
-            📦 **Tải JAR tại GitHub Release:** https://github.com/${{ github.repository }}/releases/tag/v${{ steps.ver.outputs.v }}
+        run: |
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -F "payload_json={\"content\":\"@everyone 🚀 **BẢN CẬP NHẬT MỚI: TuTienPlugin v${{ steps.ver.outputs.v }}**\\n🔗 **Commit:** https://github.com/${{ github.repository }}/commit/${{ github.sha }}\\n📝 **Nội dung:** ${{ github.event.head_commit.message }}\\n🤖 **Pair Programmer:** Antigravity AI Assistant\\n📦 **Tải JAR tại GitHub Release:** https://github.com/${{ github.repository }}/releases/tag/v${{ steps.ver.outputs.v }}\",\"embeds\":[{\"title\":\"⚔️ TuTienPlugin v${{ steps.ver.outputs.v }} (Free)\",\"description\":\"Đã cập nhật tính năng Ngồi + Chém (Sneak + Left Click) cho Slot C trên Mobile & PC!\",\"color\":3447003,\"fields\":[{\"name\":\"🔗 Commit\",\"value\":\"[${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})\",\"inline\":true},{\"name\":\"📦 Tải Release\",\"value\":\"[GitHub Release](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.ver.outputs.v }})\",\"inline\":true}],\"footer\":{\"text\":\"TuTien Plugin • Hệ thống Tu Tiên Minecraft\"}}]}" \
+            -F "files[0]=@target/TuTienPlugin-free-${{ steps.ver.outputs.v }}.jar"
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

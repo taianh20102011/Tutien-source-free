@@ -49,3 +49,18 @@ jobs:
         run: mvn -B deploy -s ${{ github.workspace }}/settings.xml -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Gửi thông báo & File JAR sang Discord
+        if: env.DISCORD_WEBHOOK != ''
+        uses: tsickert/discord-webhook@v5.4.0
+        with:
+          webhook-url: ${{ secrets.DISCORD_WEBHOOK }}
+          filename: target/TuTienPlugin-free-${{ steps.ver.outputs.v }}.jar
+          content: |
+            🚀 **ĐÃ CÓ BẢN BUILD MỚI: TuTienPlugin v${{ steps.ver.outputs.v }}**
+            🔗 **Commit:** https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            📝 **Nội dung:** ${{ github.event.head_commit.message }}
+            🤖 **Pair Programmer:** Antigravity AI Assistant
+            📦 **Tải JAR tại GitHub Release:** https://github.com/${{ github.repository }}/releases/tag/v${{ steps.ver.outputs.v }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}

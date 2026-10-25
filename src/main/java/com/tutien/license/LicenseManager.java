@@ -60,43 +60,66 @@ public final class LicenseManager {
 
     /** Returns false only when a release build has no valid license or offline grace. */
     public boolean checkAtStartup() {
-        if (!required || "DEV".equals(edition)) {
+        if ("DEV".equals(edition)) {
             licensed = true;
-            premiumAccess = true; // developer convenience; never enabled in release profiles.
+            premiumAccess = true;
             plan = "DEV";
             plugin.getLogger().info("[License] DEV build — remote license check is disabled.");
             return true;
         }
 
         String key = plugin.getConfig().getString("licensing.key", "").trim();
-        if (key.isEmpty()) {
+
+        // 1. Nếu có nhập key (đặc biệt là key Premium TTP- hoặc bất kỳ key bản quyền nào)
+        if (!key.isEmpty() && !"none".equalsIgnoreCase(key)) {
+            plugin.getLogger().info("[License] Đang xác thực License Key: " + maskKey(key) + "...");
+            ValidationResult result = requestValidation(true);
+            if (result.valid()) {
+                applyValid(result.plan(), result.expiresAt());
+                plugin.getLogger().info("[License] License hợp lệ: plan=" + plan + ", expires=" + (result.expiresAt() == null ? "lifetime" : result.expiresAt()) + ".");
+                return true;
+            }
+
+            if (result.networkFailure() && restoreOfflineGrace()) {
+                plugin.getLogger().warning("[License] Không kết nối được license server; tiếp tục bằng offline grace (" + plan + ").");
+                return true;
+            }
+
+            // Nếu đây là bản compile riêng cho PREMIUM, bắt buộc phải có key hợp lệ
+            if ("PREMIUM".equals(edition)) {
+                licensed = false;
+                premiumAccess = false;
+                plugin.getLogger().severe("[License] Không thể xác thực license Premium: " + safeReason(result.reason()));
+                plugin.getLogger().severe("[License] Plugin sẽ tắt để bảo vệ bản quyền Premium.");
+                return false;
+            }
+
+            // Nếu bản Free mà người dùng nhập key không hợp lệ, thông báo và fallback về FREE
+            plugin.getLogger().warning("[License] Không thể kích hoạt key (" + safeReason(result.reason()) + "). Tự động chuyển về chế độ FREE vĩnh viễn.");
+        }
+
+        // 2. Không nhập key hoặc để trống key:
+        if ("PREMIUM".equals(edition)) {
             licensed = false;
-            plugin.getLogger().severe("[License] Chưa nhập licensing.key. Hãy tạo license trong TuTien License Control rồi cập nhật config.yml.");
+            premiumAccess = false;
+            plugin.getLogger().severe("[License] Chưa nhập licensing.key. Bản PREMIUM yêu cầu License Key trong config.yml!");
             return false;
         }
 
-        ValidationResult result = requestValidation(true);
-        if (result.valid()) {
-            applyValid(result.plan(), result.expiresAt());
-            plugin.getLogger().info("[License] License hợp lệ: edition=" + edition + ", plan=" + plan + ", expires=" + (result.expiresAt() == null ? "lifetime" : result.expiresAt()) + ".");
-            return true;
-        }
-
-        if (result.networkFailure() && restoreOfflineGrace()) {
-            plugin.getLogger().warning("[License] Không kết nối được license server; tiếp tục bằng offline grace đến khi hết hạn bộ nhớ đệm.");
-            return true;
-        }
-
-        licensed = false;
+        // Bản FREE vĩnh viễn: không cần key
+        licensed = true;
         premiumAccess = false;
-        plugin.getLogger().severe("[License] Không thể xác thực license: " + safeReason(result.reason()));
-        plugin.getLogger().severe("[License] Plugin sẽ tắt để bảo vệ bản quyền. Kiểm tra API URL, license key, IP host và trạng thái license.");
-        return false;
+        plan = "FREE";
+        plugin.getLogger().info("[License] Bản TuTiên FREE — Kích hoạt thành công, miễn phí vĩnh viễn không cần License Key!");
+        return true;
     }
 
     /** Start periodic revalidation after the plugin has fully initialized. */
     public void startPeriodicValidation() {
-        if (!required || "DEV".equals(edition) || refreshTask != null) return;
+        if ("DEV".equals(edition) || refreshTask != null) return;
+        // Chỉ revalidate nếu đang chạy bản quyền PREMIUM
+        if (!this.premiumAccess || !"PREMIUM".equalsIgnoreCase(this.plan)) return;
+
         long ticks = 20L * 60L * 60L * 6L; // every six hours
         refreshTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             ValidationResult result = requestValidation(false);
@@ -107,8 +130,14 @@ public final class LicenseManager {
             if (result.networkFailure() && restoreOfflineGrace()) return;
             licensed = false;
             premiumAccess = false;
-            plugin.getLogger().severe("[License] License bị thu hồi/hết hạn hoặc không còn hợp lệ: " + safeReason(result.reason()));
-            Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().disablePlugin(plugin));
+            plugin.getLogger().severe("[License] License Premium bị thu hồi/hết hạn hoặc không còn hợp lệ: " + safeReason(result.reason()));
+            if ("PREMIUM".equals(edition)) {
+                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().disablePlugin(plugin));
+            } else {
+                licensed = true;
+                plan = "FREE";
+                plugin.getLogger().warning("[License] Đã hạ cấp về bản FREE.");
+            }
         }, ticks, ticks);
     }
 
@@ -131,9 +160,10 @@ public final class LicenseManager {
         String endpoint = base + (activate ? "/api/activate" : "/api/validate");
         String key = plugin.getConfig().getString("licensing.key", "").trim();
         String serverName = Bukkit.getServer().getName();
+        String requestEdition = key.toUpperCase(java.util.Locale.ROOT).startsWith("TTP-") ? "PREMIUM" : edition;
         String body = "{\"licenseKey\":\"" + jsonEscape(key) + "\","
                 + "\"instanceId\":\"" + jsonEscape(instanceId) + "\","
-                + "\"edition\":\"" + jsonEscape(edition) + "\","
+                + "\"edition\":\"" + jsonEscape(requestEdition) + "\","
                 + "\"serverName\":\"" + jsonEscape(serverName) + "\"}";
         try {
             HttpRequest request = HttpRequest.newBuilder(URI.create(endpoint))
@@ -156,9 +186,6 @@ public final class LicenseManager {
             if ("PREMIUM".equals(edition) && !"PREMIUM".equals(returnedPlan)) {
                 return new ValidationResult(false, false, "Bản Premium cần license Premium", returnedPlan, null);
             }
-            if (!"FREE".equals(edition) && !"PREMIUM".equals(edition)) {
-                return new ValidationResult(false, false, "Edition phát hành không hợp lệ", returnedPlan, null);
-            }
             Instant expiry = extractExpiry(responseBody);
             return new ValidationResult(true, false, "OK", returnedPlan, expiry);
         } catch (InterruptedException e) {
@@ -170,9 +197,9 @@ public final class LicenseManager {
     }
 
     private void applyValid(String validatedPlan, Instant expiresAt) {
-        this.plan = validatedPlan == null ? "NONE" : validatedPlan;
+        this.plan = validatedPlan == null ? "NONE" : validatedPlan.toUpperCase(java.util.Locale.ROOT);
         this.licensed = true;
-        this.premiumAccess = "PREMIUM".equals(edition) && "PREMIUM".equalsIgnoreCase(this.plan);
+        this.premiumAccess = "PREMIUM".equalsIgnoreCase(this.plan);
         Properties p = new Properties();
         p.setProperty("plan", this.plan);
         p.setProperty("validatedAt", Long.toString(System.currentTimeMillis()));
@@ -190,12 +217,15 @@ public final class LicenseManager {
         long now = System.currentTimeMillis();
         if (validatedAt <= 0L || now - validatedAt > graceMs) return false;
         if (expiresAt < 0L || (expiresAt > 0L && now >= expiresAt)) return false;
-        if ("PREMIUM".equals(edition) && !"PREMIUM".equalsIgnoreCase(cachedPlan)) return false;
-        if (!"FREE".equals(edition) && !"PREMIUM".equals(edition)) return false;
         this.plan = cachedPlan.toUpperCase(java.util.Locale.ROOT);
         this.licensed = true;
-        this.premiumAccess = "PREMIUM".equals(edition) && "PREMIUM".equalsIgnoreCase(cachedPlan);
+        this.premiumAccess = "PREMIUM".equalsIgnoreCase(this.plan);
         return true;
+    }
+
+    private static String maskKey(String key) {
+        if (key == null || key.length() < 8) return "****";
+        return key.substring(0, 4) + "-****-" + key.substring(key.length() - 4);
     }
 
     private String readBuildProperty(String key, String fallback) {

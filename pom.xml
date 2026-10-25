@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Default is a developer build. Release builds must opt into -Pfree or -Ppremium. -->
         <tutien.edition>FREE</tutien.edition>
-        <tutien.license.required>true</tutien.license.required>
+        <tutien.license.required>false</tutien.license.required>
     </properties>
 
     <repositories>
@@ -133,7 +133,7 @@
             <activation><activeByDefault>true</activeByDefault></activation>
             <properties>
                 <tutien.edition>FREE</tutien.edition>
-                <tutien.license.required>true</tutien.license.required>
+                <tutien.license.required>false</tutien.license.required>
             </properties>
             <build>
                 <finalName>TuTienPlugin-free-${project.version}</finalName>

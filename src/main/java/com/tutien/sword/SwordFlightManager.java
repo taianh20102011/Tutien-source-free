@@ -57,6 +57,11 @@ public class SwordFlightManager implements Listener {
     private final Map<UUID, ItemDisplay> mounts = new ConcurrentHashMap<>();
     private BukkitTask loopTask;
 
+    public boolean isFlying(Player player) {
+        if (player == null) return false;
+        return mounts.containsKey(player.getUniqueId()) || (enabled.contains(player.getUniqueId()) && player.isFlying());
+    }
+
     private static final int MIN_ORD = 10; // BÁN_THÁNH trong hệ thống 25 cảnh giới
 
     // ============================================================
@@ -70,14 +75,19 @@ public class SwordFlightManager implements Listener {
     private static final double Y_OFFSET = -0.30;
 
     /**
+     * Đưa kiếm tiến/lùi theo hướng player.
+     */
+    private static final double FORWARD_OFFSET = 0.0;
+
+    /**
      * Nâng visual kiếm lên một khoảng nhỏ để đế giày tiếp xúc tự nhiên với sống kiếm.
      */
     private static final double FOOT_LIFT = 0.02;
 
     /**
-     * Kích thước phi kiếm (1.30f tạo cảm giác cự kiếm / phi kiếm tiên gia oai phong, rộng rãi).
+     * Kích thước phi kiếm (1.20f - 1.30f tạo cảm giác cự kiếm / phi kiếm tiên gia oai phong, rộng rãi).
      */
-    private static final float SWORD_SCALE = 1.30f;
+    private static final float SWORD_SCALE = 1.25f;
 
     /**
      * Tinh chỉnh góc pitch mặc định của kiếm nếu muốn chúc nhẹ.
@@ -88,8 +98,8 @@ public class SwordFlightManager implements Listener {
     // ✨ ANIMATION BỒNG BỀNH
     // ============================================================
 
-    private static final float BOB_HEIGHT = 0.016f;
-    private static final float BOB_SPEED = 0.14f;
+    private static final float BOB_HEIGHT = 0.018f;
+    private static final float BOB_SPEED = 0.16f;
 
     // ============================================================
     // 🎨 HỆ THỐNG KHÍ TỨC CẢNH GIỚI (STAGE AURA)
@@ -230,6 +240,7 @@ public class SwordFlightManager implements Listener {
             // Nội suy góc quay 1 tick siêu mượt trên client
             display.setInterpolationDuration(1);
             display.setInterpolationDelay(0);
+            display.setTeleportDuration(1);
 
             // Áp dụng góc quay chuẩn xác theo hướng nhìn người chơi
             applySwordTransformation(display, player, 0);
@@ -284,47 +295,33 @@ public class SwordFlightManager implements Listener {
             Player player,
             long tick
     ) {
-        Location pLoc = player.getLocation();
-        float yaw = pLoc.getYaw();
-        float pitch = pLoc.getPitch();
-
-        // Khống chế góc ngẩng/chúc [-75, +75] độ để phi kiếm bổ nhào / thăng thiên đẹp mắt
-        float effectivePitch = Math.max(-75.0f, Math.min(75.0f, pitch + SWORD_PITCH));
-
-        // Nhấp nhô bồng bềnh thanh thoát
         float bob = (float) Math.sin(tick * BOB_SPEED) * BOB_HEIGHT;
 
         /*
-         * CƠ CHẾ XOAY 3D CHUẨN XÁC (FIX BUG XOAY 360 VÀ SAI HƯỚNG):
-         *
-         * Model 2D của kiếm trong ItemDisplayTransform.NONE nằm chéo 45 độ trong mặt phẳng XY:
-         *   - Chuôi kiếm ở góc (-0.5, -0.5, 0).
-         *   - Mũi kiếm hướng chéo lên ở góc (+0.5, +0.5, 0).
-         *
-         * Bước 1 (qBase):
-         *   - Xoay quanh trục X: -90 độ.
-         *   - Xoay quanh trục Z: -135 độ.
-         *   -> Chuyển đổi model nằm ngang song song mặt đất, mũi kiếm hướng chuẩn về trục +Z (hướng Nam Minecraft),
-         *      sống kiếm nằm ngang và mặt phẳng kiếm hướng thẳng lên (+Y) làm bệ đứng vững chắc.
-         *
-         * Bước 2 (Look Rotation):
-         *   - Xoay quanh trục Y: (-yaw) đưa mũi kiếm quay theo góc nhìn ngang của người chơi.
-         *   - Xoay quanh trục X: (effectivePitch) ngẩng/chúc đầu kiếm theo góc nhìn dọc của người chơi.
-         *
-         * Vì Display entity giữ yaw=0, pitch=0 ở tọa độ thế giới, ma trận biến đổi này kiểm soát
-         * góc quay trực tiếp không bị cộng dồn hay triệt tiêu góc yaw như bản cũ.
+         * CĂN CHỈNH HƯỚNG KIẾM CHUẨN XÁC:
+         * 1. Texture 2D của Minecraft có trục V hướng xuống (V=0 ở trên, V=1 ở dưới).
+         *    Do đó vector lưỡi kiếm từ chuôi (0, 1) tới mũi (1, 0) là (1, -1, 0).
+         * 2. Phép quay rotateX(-90°).rotateZ(135°):
+         *    - Đặt mặt dẹt của thanh kiếm nằm phẳng ngang song song mặt đất (+Y là mặt trên để đứng).
+         *    - Hướng mũi kiếm thẳng về phía trước theo đúng hướng nhìn/bay (-Z trong local display space).
+         *    - Hai cạnh lưỡi kiếm mở đều sang hai bên trái và phải (+X, -X).
          */
-        Quaternionf qBase = new Quaternionf()
-                .rotateX((float) Math.toRadians(-90.0))
-                .rotateZ((float) Math.toRadians(-135.0));
-
         Quaternionf rotation = new Quaternionf()
-                .rotateY((float) -Math.toRadians(yaw))
-                .rotateX((float) Math.toRadians(effectivePitch))
-                .mul(qBase);
+                .rotateX((float) Math.toRadians(-90.0f))
+                .rotateZ((float) Math.toRadians(135.0f));
+
+        /*
+         * CĂN CHỈNH VỊ TRÍ ĐỨNG TRÊN KIẾM:
+         * - transX = 0f: thanh kiếm thẳng hàng với trục người chơi, không lệch trái/phải.
+         * - transY = FOOT_LIFT + bob: nhấp nhô nhẹ nhàng theo nhịp thở.
+         * - transZ = 0.20f * SWORD_SCALE: đặt bàn chân người chơi vào vị trí trung tâm thanh kiếm.
+         */
+        float transX = 0f;
+        float transY = (float) (FOOT_LIFT + bob);
+        float transZ = (float) (0.20f * SWORD_SCALE);
 
         Transformation transformation = new Transformation(
-                new Vector3f(0f, (float) (FOOT_LIFT + bob), 0f),
+                new Vector3f(transX, transY, transZ),
                 rotation,
                 new Vector3f(SWORD_SCALE, SWORD_SCALE, SWORD_SCALE),
                 new Quaternionf()
@@ -340,12 +337,18 @@ public class SwordFlightManager implements Listener {
 
     private Location getSwordLocation(Player player) {
         Location pLoc = player.getLocation();
-        Location loc = pLoc.clone().add(0, Y_OFFSET, 0);
+        Vector dir = pLoc.getDirection().setY(0);
+        if (dir.lengthSquared() > 0.0001) {
+            dir.normalize();
+        }
+        Location loc = pLoc.clone()
+                .add(dir.multiply(FORWARD_OFFSET))
+                .add(0, Y_OFFSET, 0);
 
-        // Đặt yaw=0, pitch=0 cố định để Translation & Rotation trong Transformation
-        // kiểm soát tuyệt đối và mượt mà góc xoay 3D
-        loc.setYaw(0f);
-        loc.setPitch(0f);
+        // Yaw theo đúng hướng quay đầu của player
+        loc.setYaw(pLoc.getYaw());
+        // Pitch đồng bộ chuẩn xác góc ngẩng lên / cúi xuống của player
+        loc.setPitch(pLoc.getPitch());
 
         return loc;
     }
@@ -415,6 +418,14 @@ public class SwordFlightManager implements Listener {
     // ✨ HIỆU ỨNG KIẾM KHÍ & VỆT ĐUÔI 3D NÂNG CẤP
     // ============================================================
 
+    private Vector getLookDirection(Player player) {
+        Vector dir = player.getLocation().getDirection();
+        if (dir.lengthSquared() < 0.0001) {
+            return new Vector(0, 0, 1);
+        }
+        return dir.normalize();
+    }
+
     private void spawnFlightParticles(
             Player player,
             ItemDisplay sword,
@@ -426,35 +437,22 @@ public class SwordFlightManager implements Listener {
         CultivationStage stage = (data != null) ? data.getStage() : null;
         StageAura aura = getStageAura(stage);
 
-        float yaw = pLoc.getYaw();
-        float pitch = pLoc.getPitch();
-        float effectivePitch = Math.max(-75.0f, Math.min(75.0f, pitch + SWORD_PITCH));
+        Vector forward = getLookDirection(player);
+        Vector backward = forward.clone().multiply(-1);
 
-        Quaternionf qBase = new Quaternionf()
-                .rotateX((float) Math.toRadians(-90.0))
-                .rotateZ((float) Math.toRadians(-135.0));
+        // Vector vuông góc sang ngang (trái/phải)
+        Vector side = forward.clone().crossProduct(new Vector(0, 1, 0));
+        if (side.lengthSquared() < 0.001) {
+            side = new Vector(1, 0, 0);
+        } else {
+            side.normalize();
+        }
 
-        Quaternionf rotation = new Quaternionf()
-                .rotateY((float) -Math.toRadians(yaw))
-                .rotateX((float) Math.toRadians(effectivePitch))
-                .mul(qBase);
-
-        // Vector 3D trực chuẩn chính xác tuyệt đối theo frame xoay của thanh kiếm
-        Vector3f tipV = new Vector3f(1, 1, 0).normalize();
-        Vector3f edgeV = new Vector3f(-1, 1, 0).normalize();
-        Vector3f normV = new Vector3f(0, 0, 1).normalize();
-
-        rotation.transform(tipV);
-        rotation.transform(edgeV);
-        rotation.transform(normV);
-
-        Vector lookDir = new Vector(tipV.x, tipV.y, tipV.z);
-        Vector side = new Vector(edgeV.x, edgeV.y, edgeV.z);
-        Vector orthoUp = new Vector(normV.x, normV.y, normV.z);
-        Vector backward = lookDir.clone().multiply(-1);
+        // Vector pháp tuyến hướng lên trên mặt phẳng thanh kiếm
+        Vector orthoUp = side.clone().crossProduct(forward).normalize();
 
         Location swordCenter = sword.getLocation().clone().add(0, FOOT_LIFT, 0);
-        Location tipLoc = swordCenter.clone().add(lookDir.clone().multiply(0.78 * SWORD_SCALE));
+        Location tipLoc = swordCenter.clone().add(forward.clone().multiply(0.78 * SWORD_SCALE));
         Location hiltLoc = swordCenter.clone().add(backward.clone().multiply(0.65 * SWORD_SCALE));
 
         boolean moving = player.getVelocity().lengthSquared() > 0.005;
@@ -494,7 +492,7 @@ public class SwordFlightManager implements Listener {
                 Location footPt = swordCenter.clone()
                         .add(side.clone().multiply(Math.cos(angle) * ringRadius))
                         .add(orthoUp.clone().multiply(Math.sin(angle) * ringRadius * 0.4))
-                        .add(lookDir.clone().multiply(Math.sin(angle) * ringRadius * 0.6));
+                        .add(forward.clone().multiply(Math.sin(angle) * ringRadius * 0.6));
 
                 world.spawnParticle(Particle.DUST, footPt, 1, 0, 0, 0, 0,
                         new Particle.DustOptions(i % 2 == 0 ? aura.primary : aura.secondary, 0.5f));

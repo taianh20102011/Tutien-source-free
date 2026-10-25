@@ -178,10 +178,8 @@ economy:
 
 # ─────────────────────────────────────────────────────────────
 # LICENSE / EDITION
-# Dev build ignores remote licensing. Release builds (-Pfree/-Ppremium)
-# enforce licensing from the packaged edition.properties; this config cannot
-# turn release enforcement off. FREE licenses are perpetual and bind to the
-# public egress IP + per-install UUID seen by the license service.
+# Bản TuTiên FREE là bản miễn phí vĩnh viễn (Perpetual Free), KHÔNG CẦN License Key.
+# Plugin tự động kích hoạt và hoạt động bình thường kể cả khi để trống key.
 licensing:
   api-url: "http://127.0.0.1:8787"
   key: ""

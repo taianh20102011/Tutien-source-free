@@ -249,8 +249,8 @@ commands:
 
   # ======= UY ÁP CẢNH GIỚI =======
   uyap:
-    description: "Bật hoặc tắt hiệu ứng Uy Áp cảnh giới lên bản thân"
-    usage: "/uyap [on|off|bat|tat|status]"
+    description: "Phóng thích kỹ năng Uy Áp hoặc quản lý chế độ áp chế cảnh giới"
+    usage: "/uyap [toggle|on|off|status]"
 
 permissions:
   tutien.admin:

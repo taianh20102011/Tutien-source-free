@@ -121,6 +121,13 @@ public class PlayerData {
 
     public long getMaxLinhKhi() { return stage.getMaxLinhKhiForRank(rank); }
 
+    public boolean spendLinhKhi(long amount) {
+        if (amount <= 0) return true;
+        if (linhKhi < amount) return false;
+        linhKhi -= amount;
+        return true;
+    }
+
     public boolean doBreakthrough() {
         if (linhKhi < getMaxLinhKhi()) return false;
         linhKhi -= getMaxLinhKhi();

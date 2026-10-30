@@ -256,11 +256,11 @@ public final class TuTienGuideGUI implements Listener {
 
         inv.setItem(32, makeItem(Material.DRAGON_HEAD, "§47. Uy Áp Cảnh Giới",
                 List.of(
-                        "§7Đại năng cảnh giới cao tỏa ra khí tức đè bẹp",
-                        "§7kẻ có tu vi thấp hơn trong bán kính xung quanh,",
-                        "§7khiến đối phương bị làm chậm, suy yếu và giảm sát thương.",
+                        "§7Phóng thích kình lực uy áp cảnh giới bộc phát",
+                        "§7đẩy lùi, hất tung và gây suy yếu, choáng váng kẻ địch,",
+                        "§7hoặc quản lý chế độ nhận áp chế thụ động xung quanh.",
                         "",
-                        "§eLệnh: §f/uyap [on|off|status]"
+                        "§eLệnh: §f/uyap [toggle|on|off|status]"
                 )));
         holder.actions.put(32, () -> runCommand(player, "uyap"));
 
@@ -700,7 +700,7 @@ public final class TuTienGuideGUI implements Listener {
                 new CommandEntry("trieukiem", "/trieukiem [mode]", "/tk, /kiemdao", "Triệu hồi kiếm bay hộ thể sau lưng (AUTO/SEMI/OFF)", Material.IRON_SWORD),
                 new CommandEntry("trieuthu", "/trieuthu", "/ls, /linhthu", "Triệu hồi hoặc thu hồi Linh Thú đồng hành", Material.BONE),
                 new CommandEntry("aura", "/aura [on|off]", "/tuvi", "Bật hoặc tắt hào quang vòng Tu Vi phát sáng", Material.BEACON),
-                new CommandEntry("uyap", "/uyap [on|off|status]", "", "Bật hoặc tắt hiệu ứng Uy Áp cảnh giới", Material.DRAGON_HEAD),
+                new CommandEntry("uyap", "/uyap [toggle|on|off|status]", "", "Phóng thích kỹ năng Uy Áp hoặc quản lý áp chế cảnh giới", Material.DRAGON_HEAD),
                 new CommandEntry("luyen", "/luyen [tên_đan|danh_sach]", "/ld", "Luyện đan dược theo 32 công thức huyền bí", Material.BREWING_STAND),
                 new CommandEntry("renduc", "/renduc", "/rd", "Rèn đúc nâng phẩm giai Pháp Bảo", Material.ANVIL),
                 new CommandEntry("cuonghoa", "/cuonghoa", "/chpb", "Cường hóa chỉ số Pháp Bảo từ +1 đến +10", Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE),

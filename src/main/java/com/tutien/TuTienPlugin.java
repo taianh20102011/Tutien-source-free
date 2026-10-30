@@ -285,7 +285,10 @@ public class TuTienPlugin extends JavaPlugin {
         petSummon           = new PetSummon(this);
         tienThao            = new TienThao(this);
         uyApSystem          = new UyApSystem(this);
-        if (getCommand("uyap") != null) getCommand("uyap").setExecutor(uyApSystem);
+        if (getCommand("uyap") != null) {
+            getCommand("uyap").setExecutor(uyApSystem);
+            getCommand("uyap").setTabCompleter(uyApSystem);
+        }
         meditationManager   = new MeditationManager(this);
         zoneManager         = new ZoneManager(this);
         uyApManager         = new UyApManager(this);

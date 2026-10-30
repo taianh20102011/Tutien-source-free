@@ -126,7 +126,7 @@ public class GuideCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§7• §e/dotpha              §8- §fKích hoạt lôi kiếp để đột phá cảnh giới khi đạt 100% LK.");
         sender.sendMessage("§7• §e/boqua               §8- §fBỏ qua thông báo sẵn sàng đột phá.");
         sender.sendMessage("§7• §e/aura [on|off]       §8- §fBật/tắt vòng hào quang tu vi phát sáng.");
-        sender.sendMessage("§7• §e/uyap [on|off]       §8- §fBật/tắt hiệu ứng uy áp áp chế đối thủ xung quanh.");
+        sender.sendMessage("§7• §e/uyap [toggle|on|off] §8- §fPhóng thích Uy Áp bộc phát (10m) / Quản lý áp chế cảnh giới.");
     }
 
     private void showTextKiemDao(CommandSender sender) {

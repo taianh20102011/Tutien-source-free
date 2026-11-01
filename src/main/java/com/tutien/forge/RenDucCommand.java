@@ -94,6 +94,9 @@ public class RenDucCommand implements CommandExecutor {
             default -> { cost = 0; rate = 0; }
         }
 
+        double forgeBonus = plugin.getBanMenhElementManager() != null ? plugin.getBanMenhElementManager().getForgeSuccessBonus(player) : 0.0;
+        rate = Math.min(1.0, rate + forgeBonus);
+
         PlayerData data = plugin.getDataManager().get(player);
 
         // Xem truoc (khong tham so) -> hien thong tin, khong tru tien

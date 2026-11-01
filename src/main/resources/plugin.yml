@@ -252,6 +252,22 @@ commands:
     description: "Phóng thích kỹ năng Uy Áp hoặc quản lý chế độ áp chế cảnh giới"
     usage: "/uyap [toggle|on|off|status]"
 
+  # ======= DỊ HỎA & THẦN LÔI BẢN MỆNH =======
+  dihoa:
+    description: "Thuần hóa và quản lý Dị Hỏa Thiên Địa bản mệnh"
+    aliases: [hoa, heavenlyflame]
+    usage: "/dihoa [dung|thao|status|list]"
+  thanloi:
+    description: "Thuần hóa và quản lý Thần Lôi Cửu Thiên bản mệnh"
+    aliases: [loi, divinethunder]
+    usage: "/thanloi [dung|thao|status|list]"
+
+  # ======= ĐỘNG PHỦ TIÊN GIA =======
+  dongphu:
+    description: "Dịch chuyển vào Động Thiên Phúc Địa và chăm sóc Dược Viên"
+    aliases: [dp, cave]
+    usage: "/dongphu [vao|ve|nuoc|status]"
+
 permissions:
   tutien.admin:
     description: "Quyền Quản Trị Viên cao nhất của TuTienPlugin"

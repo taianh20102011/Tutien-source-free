@@ -151,10 +151,12 @@ public class AlchemyManager {
     }
 
     private void finishBrew(Player player, PlayerData data, DanDuoc r) {
-        boolean success = ThreadLocalRandom.current().nextDouble() <= r.successRate;
+        double bonus = plugin.getBanMenhElementManager() != null ? plugin.getBanMenhElementManager().getAlchemySuccessBonus(player) : 0.0;
+        double effectiveRate = Math.min(1.0, r.successRate + bonus);
+        boolean success = ThreadLocalRandom.current().nextDouble() <= effectiveRate;
         if (!success) {
             player.sendTitle("§c§lLÒ ĐAN THẤT BẠI", "§7"+r.displayName+" — mất toàn bộ nguyên liệu", 5, 50, 10);
-            player.sendMessage(plugin.prefix()+"§c✗ Luyện đan thất bại! §7Tỉ lệ thành công: §e"+percent(r.successRate)+"%§7.");
+            player.sendMessage(plugin.prefix()+"§c✗ Luyện đan thất bại! §7Tỉ lệ thành công: §e"+percent(effectiveRate)+"%§7.");
             player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, .7f);
             player.getWorld().spawnParticle(Particle.SMOKE, player.getLocation().add(0,1,0), 25,.6,.8,.6,.05);
             return;

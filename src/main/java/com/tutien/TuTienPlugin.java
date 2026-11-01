@@ -131,6 +131,8 @@ public class TuTienPlugin extends JavaPlugin {
     private com.tutien.gui.TuTienPetGUI petGUI;
     private TienThao             tienThao;
     private UyApSystem           uyApSystem;
+    private com.tutien.element.BanMenhElementManager banMenhElementManager;
+    private com.tutien.dongphu.DongPhuManager dongPhuManager;
 
     // ── External Plugin Hooks (optional, null nếu plugin không cài) ──
     private MythicLibHook  mythicLibHook;
@@ -299,6 +301,22 @@ public class TuTienPlugin extends JavaPlugin {
         herbManager         = new HerbManager(this);
         linhChungShopCommand = new com.tutien.commands.LinhChungShopCommand(this);
         if (getCommand("linhchungshop") != null) getCommand("linhchungshop").setExecutor(linhChungShopCommand);
+
+        banMenhElementManager = new com.tutien.element.BanMenhElementManager(this);
+        dongPhuManager = new com.tutien.dongphu.DongPhuManager(this);
+
+        if (getCommand("dihoa") != null) {
+            getCommand("dihoa").setExecutor(banMenhElementManager);
+            getCommand("dihoa").setTabCompleter(banMenhElementManager);
+        }
+        if (getCommand("thanloi") != null) {
+            getCommand("thanloi").setExecutor(banMenhElementManager);
+            getCommand("thanloi").setTabCompleter(banMenhElementManager);
+        }
+        if (getCommand("dongphu") != null) {
+            getCommand("dongphu").setExecutor(dongPhuManager);
+            getCommand("dongphu").setTabCompleter(dongPhuManager);
+        }
 
         // Commands
         TuTienCommand  cmd    = new TuTienCommand(this);
@@ -510,6 +528,8 @@ public class TuTienPlugin extends JavaPlugin {
         pm.registerEvents(alchemyGUI,               this);
         pm.registerEvents(meditationSystem,         this);
         pm.registerEvents(uyApSystem,               this);
+        pm.registerEvents(banMenhElementManager,    this);
+        pm.registerEvents(dongPhuManager,           this);
         pm.registerEvents(herbManager,              this);
         pm.registerEvents(swordSummon,              this);
         pm.registerEvents(petSummon,                this);
@@ -659,6 +679,9 @@ public class TuTienPlugin extends JavaPlugin {
     public UyApManager          getUyApManager()         { return uyApManager; }
     public FlyingSwordManager   getFlyingSwordManager()  { return flyingSwordManager; }
     public HerbManager          getHerbManager()         { return herbManager; }
+
+    public com.tutien.element.BanMenhElementManager getBanMenhElementManager() { return banMenhElementManager; }
+    public com.tutien.dongphu.DongPhuManager getDongPhuManager() { return dongPhuManager; }
 
     // ── Hook getters (null-safe: trả null nếu plugin không được cài) ──
     public MythicLibHook  getMythicLibHook()  { return mythicLibHook; }

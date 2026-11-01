@@ -162,6 +162,9 @@ public class GuideCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§7• §e/coduyen status      §8- §fKiểm tra điểm Hệ Thống Kim Thủ Chỉ.");
         sender.sendMessage("§7• §e/coduyen dung        §8- §fSử dụng điểm Cơ Duyên đổi phúc lợi.");
         sender.sendMessage("§7• §e/thao                §8- §fXem thông tin và dược tính các loài Tiên Thảo.");
+        sender.sendMessage("§7• §e/dongphu             §8- §fĐộng Phủ cá nhân & tưới tiêu Dược Điền.");
+        sender.sendMessage("§7• §e/dihoa               §8- §fThuần hóa Dị Hỏa Thiên Địa bản mệnh.");
+        sender.sendMessage("§7• §e/thanloi             §8- §fHấp thu Thần Lôi Cửu Thiên bản mệnh.");
         sender.sendMessage("§7• §e/linhchungshop       §8- §fMua bán hạt giống Linh Chủng theo cảnh giới.");
         sender.sendMessage("§7• §e/tutien reroll       §8- §fQuay lại Linh Căn bằng Linh Thạch.");
         sender.sendMessage("§7• §e/tutien reroll_toc   §8- §fQuay lại Chủng Tộc bằng Linh Thạch.");

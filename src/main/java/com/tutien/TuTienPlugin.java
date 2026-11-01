@@ -84,6 +84,7 @@ public class TuTienPlugin extends JavaPlugin {
     private SkillItemManager     skillItemManager;
     private CombatListener       combatListener;
     private BreakthroughManager  breakthroughManager;
+    private com.tutien.breakthrough.quest.BreakthroughQuestManager breakthroughQuestManager;
     private TienManager          tienManager;
     private LangManager          langManager;
     private LinhCanManager       linhCanManager;
@@ -199,6 +200,7 @@ public class TuTienPlugin extends JavaPlugin {
         skillItemManager    = new SkillItemManager(this);
         combatListener      = new CombatListener(this);
         breakthroughManager = new BreakthroughManager(this);
+        breakthroughQuestManager = new com.tutien.breakthrough.quest.BreakthroughQuestManager(this);
         linhCanManager      = new LinhCanManager(this);
         phaBaoManager       = new PhaBaoManager(this);
         phaBaoEnhanceManager = new PhaBaoEnhanceManager(this);
@@ -633,6 +635,7 @@ public class TuTienPlugin extends JavaPlugin {
     public SkillItemManager     getSkillItemManager()    { return skillItemManager; }
     public CombatListener       getCombatListener()      { return combatListener; }
     public BreakthroughManager  getBreakthroughManager() { return breakthroughManager; }
+    public com.tutien.breakthrough.quest.BreakthroughQuestManager getBreakthroughQuestManager() { return breakthroughQuestManager; }
     public TienManager          getTienManager()         { return tienManager; }
     public LangManager          getLangManager()         { return langManager; }
     public String msg(String key)                         { return langManager.msg(key); }

@@ -200,9 +200,18 @@ public class TuTienBag implements Listener {
     }
 
     private void buildDanSlots(Inventory inv, PlayerData data) {
-        for (int i = 0; i < 6; i++)
-            inv.setItem(SLOT_DAN_START + i,
-                emptySlot("§7⚗ Linh Đan " + (i+1)));
+        // Slot 12: Linh Đan 1
+        inv.setItem(12, emptySlot("§7⚗ Linh Đan 1"));
+        // Slot 13: ✦ NHIỆM VỤ ĐỘT PHÁ ✦ (Giao diện chuẩn chỉ theo cảnh giới)
+        if (plugin.getBreakthroughQuestManager() != null) {
+            inv.setItem(13, plugin.getBreakthroughQuestManager().buildQuestItem(data));
+        } else {
+            inv.setItem(13, emptySlot("§6✦ Nhiệm Vụ Đột Phá"));
+        }
+        // Slot 14-17: Linh Đan 3, 4, 5, 6
+        for (int i = 2; i < 6; i++) {
+            inv.setItem(SLOT_DAN_START + i, emptySlot("§7⚗ Linh Đan " + (i + 1)));
+        }
     }
 
     private ItemStack buildLKItem(PlayerData data) {
@@ -257,6 +266,16 @@ public class TuTienBag implements Listener {
 
         // ── Bottom inv (player's own inventory): tu do ──
         if (raw >= 54) { e.setCancelled(false); return; }
+
+        // ── Slot 13: ✦ NHIỆM VỤ ĐỘT PHÁ ✦ ──
+        if (raw == 13) {
+            p.closeInventory();
+            if (plugin.getBreakthroughQuestManager() != null) {
+                plugin.getBreakthroughQuestManager().sendQuestChatStatus(p, data);
+            }
+            p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f);
+            return;
+        }
 
         // ── Buttons ──
         if (raw == SLOT_BTN_CLOSE)  { p.closeInventory(); return; }

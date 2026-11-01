@@ -1,8 +1,11 @@
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║          TU TIÊN PLUGIN v7.7.0 — CẤU HÌNH ĐẦY ĐỦ                   ║
-# ║    Sau khi chỉnh sửa: /ttadmin reload để áp dụng thay đổi      ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ==============================================================================
+#                       TU TIÊN PLUGIN — CẤU HÌNH TỔNG HỢP
+#       Sau khi chỉnh sửa cấu hình, dùng /ttadmin reload để nạp lại trực tiếp
+# ==============================================================================
 
+# ------------------------------------------------------------------------------
+# 1. THÔNG BÁO HỆ THỐNG
+# ------------------------------------------------------------------------------
 messages:
   prefix: "&8[&6⚡&eTu Tiên&8] &r"
   no-class: "&cBạn chưa chọn class! Dùng /tutien chon"
@@ -14,98 +17,73 @@ messages:
   boss-defeated: "&6✦ Boss bị tiêu diệt! Đột phá thành công!"
   breakthrough-fail: "&c✗ Đột phá thất bại! Tụt 1 cấp rank."
 
+# ------------------------------------------------------------------------------
+# 2. TU LUYỆN & THIÊN KIẾP (Cultivation & Breakthrough)
+# ------------------------------------------------------------------------------
 cultivation:
   linh-khi-per-mob: 80
   linh-khi-per-player-kill: 500
-  # Mau toi thieu de 1 quai co ten rieng (name tag) duoc tinh la "boss"
-  # (thuong x10 linh khi). TRUOC DAY chi can co ten la tinh boss -> nguoi
-  # choi co the dat ten cho quai thuong (vd con ga) de cay linh khi/boss-
-  # kill gia mao. Boss that (Vuot Kiep >=400hp, Huyet Cot Ma Vuong 250-
-  # 500hp) deu cao hon nguong nay rat nhieu; mob vanilla manh nhat (Iron
-  # Golem/Ravager) chi ~100hp - nen 150 la nguong an toan, khong anh
-  # huong toi cac boss that.
   boss-min-health: 150.0
-
-  # CAC MUC DUOI DAY TRUOC DAY BI THUT NHAM VAO "world-boss:" (loi YAML
-  # indentation, khong lien quan gi toi Boss Toi Thuong) — da chuyen ve
-  # dung cho tai day. Doc ky ghi chu tren tung dong: mot vai gia tri VAN
-  # CHUA duoc code doc toi (con "chet"), da ghi ro de tranh nham lan.
-  # CHUA duoc code doc toi o dau ca — Kill Boss van dung cong thuc
-  # "linh-khi-per-mob" x10 (xem CombatListener), khong dung so rieng nay.
   linh-khi-per-boss-kill: 2000
-  # CHUA duoc code doc toi — LK tu thao duoc dung "lk-percent" rieng cua
-  # tung loai trong "herbs.types.*", khong dung so gop nay.
   linh-khi-per-herb: 150
-  # CHUA co tinh nang AFK regen nao trong code doc gia tri nay ca.
   linh-khi-afk-rate: 8
-  # CHUA duoc code doc toi o dau ca.
   stage-lk-rate-nerf: 0.99
+
   meditation:
-    # CHUA duoc code doc toi — MeditationSystem tinh LK/giay theo % LK toi
-    # da (0.5%-3% tuy canh gioi), khong dung so LK/giay co dinh nay.
     lk-per-second: 28
-    # CHUA duoc code doc toi — vung Linh Mach hien dang nhan x2.0 (hardcode
-    # trong MeditationSystem), khong dung so 3.5 nay.
     linh-mach-multiplier: 3.5
-    # CHUA duoc code doc toi — chua co co che rieng cho Si Vuong trong vong
-    # lap thien dinh.
     si-vuong-multiplier: 6.0
+
   breakthrough:
-    # CHUA duoc code doc toi — ti le thanh cong Thien Kiep hien tinh theo
-    # bang rieng CultivationStage#getBreakthroughDifficulty() cho tung canh
-    # gioi (+ dieu chinh theo Linh Can/Dao/Toc), khong dung 1 so chung nay.
+    # Chế độ làm nhiệm vụ đột phá:
+    #   BUILT_IN : Tự động theo dõi 5 hoạt động tu tiên (quái, thảo dược, đan dược, thiền định, boss).
+    #              Khi hoàn tất 5 mục tiêu, hệ thống tự động mở khóa Thiên Kiếp (/dotpha) mà không cần lệnh bài.
+    #   TOKEN    : Cơ chế cũ, người chơi phải nộp vật phẩm "Đột Phá Lệnh" (dành cho server dùng plugin quest ngoài).
+    quest-mode: BUILT_IN
+
     base-success-rate: 0.88
-    # DA duoc code doc (xem PlayerData#failBreakthrough) — dot pha that
-    # bai se tut dung so cap nay (mac dinh 1 neu bo dong nay).
     fail-rank-loss: 1
-    # DA duoc code doc (xem BreakthroughManager#runTrial) — khoang cach
-    # giua 2 song Thien Kiep lien tiep.
     wave-interval-seconds: 2
-    # DA duoc code doc (xem BreakthroughManager#runTrial) — chinh DO KHO
-    # Thien Kiep THEO TUNG KHOANG CANH GIOI ma khong can sua code/build lai.
-    # Sat thuong 1 song = maxHP * (dmg-base cua khoang canh gioi tuong ung)
-    # * (0.8 -> 1.2 ngau nhien). "-start" la sat thuong o canh gioi DAU
-    # khoang, "-step" la muc tang THEM cho MOI canh gioi trong khoang do.
-    # "vo-thuong" la so co dinh cho canh gioi cuoi cung (khong co step).
-    #
-    # Vi du khoang Linh+De (ordinal 0-9, 10 canh gioi): dmg = linh-de-start
-    # + ordinal * linh-de-step -> voi mac dinh o duoi: canh gioi dau (ord 0)
-    # = 11%, canh gioi cuoi khoang (ord 9) = 11% + 9*0.8% = 18.2% moi song.
+
     trial:
       dmg-base:
-        linh-de-start: 0.11   # ordinal 0-9   (truoc: 0.07)
-        linh-de-step: 0.008   # (truoc: 0.005)
-        thanh-start: 0.18     # ordinal 10-14 (truoc: 0.12)
-        thanh-step: 0.015     # (truoc: 0.01)
-        tien-start: 0.28      # ordinal 15-19 (truoc: 0.18)
-        tien-step: 0.04       # (truoc: 0.03)
-        thien-start: 0.50     # ordinal 20-23 (truoc: 0.35)
-        thien-step: 0.13      # (truoc: 0.10)
-        vo-thuong: 0.95       # ordinal 24 - Vo Thuong Chi Ton (truoc: 0.85)
-      # % maxHP hoi lai sau MOI song. Day la ly do chinh khien Thien Kiep
-      # qua de o ban cu (0.26 = hoi gan het sat thuong vua nhan) -> GIAM
-      # xuong con 0.12 de sat thuong tich luy that su qua tung song.
-      heal-per-wave: 0.12   # (truoc: 0.26)
-      # Hoi phuc khong bao gio vuot qua % maxHP nay (ke ca cong don nhieu song).
-      heal-cap-percent: 0.75   # (truoc: 0.85)
-      # Khi HP < 15% maxHP sau 1 song, co them 1 lan roi xac suat that bai =
-      # (1 - do-de-cua-canh-gioi) * so nay. So cang cao = cang de chet khi
-      # mau thap. "Do de" xem CultivationStage#getBreakthroughDifficulty().
-      low-hp-fail-chance-multiplier: 0.65   # (truoc: 0.5)
+        linh-de-start: 0.11   # Sát thương cơ bản Linh Giới & Đế Giới (ordinal 0-9)
+        linh-de-step: 0.008   # Mức tăng thêm mỗi cảnh giới
+        thanh-start: 0.18     # Thánh Giới (ordinal 10-14)
+        thanh-step: 0.015
+        tien-start: 0.28      # Tiên Giới (ordinal 15-19)
+        tien-step: 0.04
+        thien-start: 0.50     # Thiên Giới (ordinal 20-23)
+        thien-step: 0.13
+        vo-thuong: 0.95       # Vô Thượng Chi Tôn (ordinal 24)
+      heal-per-wave: 0.12
+      heal-cap-percent: 0.75
+      low-hp-fail-chance-multiplier: 0.65
+
     boss-arena:
-      # LUU Y QUAN TRONG: toan bo he thong Boss Arena (TribulationBossArena)
-      # da duoc code day du (xay tuong barrier, spawn boss theo cap do 1-48,
-      # timeout...) NHUNG hien KHONG duoc goi o dau trong luong dot pha ca
-      # (BreakthroughManager#successTrial hoan tat dot pha thang, khong goi
-      # TribulationBossArena#startBossChallenge). Toan bo muc "boss-arena"
-      # nay (ke ca "enabled") CHUA CO TAC DUNG GI trong game cho toi khi
-      # tinh nang duoc noi lai vao luong dot pha.
       enabled: true
       radius: 9
       height: 5
       timeout-minutes: 15
       boss-hp-multiplier: 0.75
       boss-dmg-multiplier: 0.75
+
+    # Cấu hình chi tiết nhiệm vụ từng cảnh giới khi quest-mode là BUILT_IN
+    builtin-quests:
+      BAN_THANH:
+        target-stage: "Bán Thánh Sơ Kỳ"
+        kill-mobs: 450
+        mob-desc: "Săn quái dã ngoại ban đêm hoặc Dungeon"
+        herbs: 50
+        herb-name: "Huyết Linh Thảo (Red Tulip)"
+        alchemy: 6
+        dan-name: "Huyết Khí Đan (dùng lò luyện /dan)"
+        meditate-minutes: 50
+        meditate-desc: "Gõ /thiendinh ngồi yên tĩnh tọa nạp khí"
+        boss-kills: 2
+        boss-desc: "Boss Thế Giới hoặc Wither"
+        dan-ho-menh: "Chuẩn Thánh Đan"
+        dan-desc: "Chuẩn bị thành thánh chân chính, ngưng tụ thánh uy"
 
 # ─────────────────────────────────────────────────────────────
 # BOSS TỐI THƯỢNG — world boss tự động (can MythicMobs, xem
@@ -2152,47 +2130,15 @@ ban-board:
   # So nguoi hien thi toi da (khop voi so placeholder duoc dang ky).
   top-count: 10
 
-# ══════════════════════════════════════════════
-#  LENH CONSOLE TUY CHINH KHI DAT CANH GIOI MOI (khong bat buoc)
-#  %player% se duoc thay bang ten nguoi choi. Lenh chay bang CONSOLE.
-#
-#  LUU Y (v7.3.0): permission "tutien.<canh_gioi>" + group "tt_realm_*" +
-#  prefix GIO DA duoc LuckPermsHook.java tu dong xu ly qua LuckPerms API
-#  (1 lan ghi duy nhat/lan doi canh gioi, co self-heal + cache RAM).
-#  KHONG can (va KHONG nen) khai bao lai lenh "lp user ... permission set/unset"
-#  o day nua — truoc day moi lan sync se chay them ~25 lenh console rieng le
-#  cho MOI canh gioi (unset het 24 permission cu roi set 1 cai moi), khien
-#  LuckPerms phai xep hang xu ly lenh ("Another command is being executed...")
-#  va ngon RAM/CPU ro ret khi nhieu nguoi choi join/dot pha cung luc (vd luc
-#  restart server). Da go bo toan bo cac lenh do o day.
-#
-#  Chi dien vao day neu ban muon chay THEM lenh khac (khong phai LuckPerms)
-#  khi nguoi choi dat 1 canh gioi cu the, VD:
-#    LUYEN_KHI:
-#      - "broadcast %player% da nhap mon tu tien!"
+# ------------------------------------------------------------------------------
+# LỆNH CONSOLE TÙY CHỌN KHI ĐẠT CẢNH GIỚI MỚI (%player% = tên người chơi)
+# (Quyền LuckPerms đã được đồng bộ tự động, chỉ khai báo lệnh bổ sung nếu cần)
+# ------------------------------------------------------------------------------
 breakthrough-commands: {}
 
-# ══════════════════════════════════════════════
-#  DOT PHA QUA NPC (can plugin Citizens)
-#
-#  Khi "enabled: true": tai world duoc ghi trong "world" ben duoi, lenh
-#  /vuottamma va /dotpha SE BI CHAN — nguoi choi bat buoc phai den gap
-#  1 trong cac NPC (Citizens) co ID nam trong "npc-ids" va CLICK CHUOT
-#  PHAI vao NPC do thi moi bat dau duoc Thien Dinh / Thien Kiep.
-#
-#  Cach lay ID NPC: dung lenh Citizens "/npc list" hoac dung "/npc select"
-#  roi "/npc id" khi dang dung canh NPC do.
-#
-#  worlds: [] (rong) = KHONG khoa world nao (lenh /vuottamma, /dotpha van
-#  dung binh thuong o moi noi, NPC chi la 1 cach dot pha THEM).
-#  Dien 1 hoac NHIEU ten world (vd ["the_gioi_tu_luyen", "the_gioi_tu_luyen_nether"])
-#  = TAT CA cac world trong danh sach nay deu bi khoa lenh; world nao
-#  KHONG co trong danh sach thi khong bi anh huong.
-#
-#  npc-ids: [] = chua khai bao NPC nao (NPC se khong lam gi ca cho toi
-#  khi ban dien ID vao day). Co the khai bao nhieu NPC cung luc (moi NPC
-#  o 1 world khac nhau trong danh sach "worlds" cung duoc, mien la ID co
-#  trong danh sach nay thi click vao la dot pha duoc).
+# ------------------------------------------------------------------------------
+# ĐỘT PHÁ QUA NPC CITIZENS (Tùy chọn: khóa lệnh /dotpha và bắt buộc tương tác NPC)
+# ------------------------------------------------------------------------------
 breakthrough-npc:
   enabled: false
   worlds: []

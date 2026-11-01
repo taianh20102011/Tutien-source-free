@@ -203,8 +203,8 @@ commands:
     aliases: [congduc]
 
   quest:
-    description: "Xem và nhận thưởng nhiệm vụ Tu Tiên hàng ngày/tuần"
-    usage: "/quest"
+    description: "Xem tiến độ Nhiệm Vụ Đột Phá cảnh giới & Nhiệm vụ hàng ngày/tuần"
+    usage: "/quest [gui|status]"
     aliases: [nhiemvu, nv]
 
   party:

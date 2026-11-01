@@ -286,13 +286,22 @@ public class BreakthroughManager implements Listener {
         if (data.isInBreakthroughTrial()) {
             player.sendMessage(plugin.prefix() + "§cĐang trong Thiên Kiếp!"); return;
         }
-        // Bat buoc phai co "Dot Pha Lenh" cua canh gioi hien tai (nhan tu nhiem vu dot pha)
+        // Kiểm tra điều kiện nhiệm vụ đột phá: BUILT_IN (tự động theo dõi 5 mục tiêu) hoặc TOKEN (Đột Phá Lệnh)
         CultivationStage curStage = data.getStage();
-        if (!consumeToken(player, curStage)) {
-            player.sendMessage(plugin.prefix() + "§c✦ Cần có §dĐột Phá Lệnh §7- " + curStage.getColor() + curStage.getDisplayName()
-                    + " §cmới có thể bắt đầu Thiên Kiếp!");
-            player.sendMessage(plugin.prefix() + "§7Hoàn thành nhiệm vụ đột phá của cảnh giới hiện tại để nhận vật phẩm này.");
-            return;
+        if (plugin.getBreakthroughQuestManager() != null && plugin.getBreakthroughQuestManager().isBuiltinQuestMode()) {
+            if (!plugin.getBreakthroughQuestManager().isQuestCompleted(player, data)) {
+                player.sendMessage(plugin.prefix() + "§c✦ Bạn chưa hoàn thành §6Nhiệm Vụ Đột Phá §ccủa cảnh giới này!");
+                plugin.getBreakthroughQuestManager().sendQuestChatStatus(player, data);
+                player.sendMessage(plugin.prefix() + "§7Kiểm tra tiến độ tại §e/tuitutien §7(ô 13) hoặc gõ §e/quest§7.");
+                return;
+            }
+        } else {
+            if (!consumeToken(player, curStage)) {
+                player.sendMessage(plugin.prefix() + "§c✦ Cần có §dĐột Phá Lệnh §7- " + curStage.getColor() + curStage.getDisplayName()
+                        + " §cmới có thể bắt đầu Thiên Kiếp!");
+                player.sendMessage(plugin.prefix() + "§7Hoàn thành nhiệm vụ đột phá của cảnh giới hiện tại để nhận vật phẩm này.");
+                return;
+            }
         }
         data.setInBreakthroughTrial(true);
         data.setPendingBreakthrough(false);
@@ -448,6 +457,7 @@ public class BreakthroughManager implements Listener {
             plugin.getPetSummon().refreshIfActive(player);
 
         // ── Hook v4 systems ──
+        if (plugin.getBreakthroughQuestManager() != null) plugin.getBreakthroughQuestManager().resetProgress(data);
         if (plugin.getQuestManager() != null)  plugin.getQuestManager().onBreakthrough(player);
         if (plugin.getKarmaManager() != null)  plugin.getKarmaManager().addCongDuc(data, 50L);
         if (stageChanged) syncLuckPerms(player, data);

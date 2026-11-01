@@ -194,6 +194,16 @@ public class MeditationSystem implements Listener {
                     }
                     plugin.getSkillItemManager().updateInfoItem(p, data);
 
+                    // Tích lũy thời gian thiền định phục vụ nhiệm vụ đột phá & quest
+                    int medSec = data.getExtraInt("meditate_sec_accum", 0) + 3;
+                    if (medSec >= 60) {
+                        int mins = medSec / 60;
+                        data.setExtraInt("meditate_sec_accum", medSec % 60);
+                        if (plugin.getQuestManager() != null) plugin.getQuestManager().onMeditate(p, mins);
+                    } else {
+                        data.setExtraInt("meditate_sec_accum", medSec);
+                    }
+
                     String bonus = inZone ? " §6(Linh Mạch x2)" : "";
                     if (nearbyMeditators >= 1) bonus += " §a(Đồng Tu +" + (nearbyMeditators*15) + "%)";
                     String msg = "§9⛩ Thiền Định §8| §e+" + fmt(gain) + " LK" + bonus;

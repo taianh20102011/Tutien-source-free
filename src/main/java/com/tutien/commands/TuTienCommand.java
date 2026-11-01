@@ -37,7 +37,14 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
             showKarma(player); return true;
         }
         if (name.equals("quest") || name.equals("nhiemvu") || name.equals("nv")) {
-            showQuest(player); return true;
+            if (args.length > 0 && (args[0].equalsIgnoreCase("gui") || args[0].equalsIgnoreCase("menu"))) {
+                if (plugin.getBreakthroughQuestManager() != null) {
+                    plugin.getBreakthroughQuestManager().openQuestGUI(player);
+                    return true;
+                }
+            }
+            showQuest(player);
+            return true;
         }
         // Fix: /aura va alias /tuvi la command riêng (đăng ký trong plugin.yml)
         // nên phải kiểm tra theo `name`, không thể trông đợi args[0] == "aura"
@@ -106,6 +113,7 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
             case "toc"         -> { showToc(player); yield true; }
             case "aura"        -> { handleAuraToggle(player, args, 1); yield true; }
             case "phabao"      -> { givePhabaoDemo(player); yield true; }
+            case "quest", "nhiemvu", "nv" -> { showQuest(player); yield true; }
             case "reroll", "reroll_linhcan" -> { handleRerollLinhCan(player); yield true; }
             case "reroll_toc", "doitoc" -> { handleRerollToc(player); yield true; }
             default            -> { showHelp(player); yield true; }
@@ -671,11 +679,15 @@ public class TuTienCommand implements CommandExecutor, TabCompleter {
     //  /quest
     // ══════════════════════════════════════════════
     private void showQuest(Player player) {
-        var qm = plugin.getQuestManager();
-        if (qm == null) {
-            player.sendMessage(plugin.prefix() + "§cHệ thống Quest chưa khởi động!"); return;
+        PlayerData data = plugin.getDataManager().get(player);
+        if (data != null && plugin.getBreakthroughQuestManager() != null) {
+            plugin.getBreakthroughQuestManager().sendQuestChatStatus(player, data);
+            player.sendMessage("");
         }
-        qm.showQuestStatus(player);
-        player.sendMessage(plugin.msg("auto_7831fb6436"));
+        var qm = plugin.getQuestManager();
+        if (qm != null) {
+            qm.showQuestStatus(player);
+        }
+        player.sendMessage("§8Dùng §e/quest gui §8hoặc mở §e/tuitutien §8(ô 13) để xem giao diện trực quan.");
     }
 }

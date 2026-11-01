@@ -165,6 +165,7 @@ public class AlchemyManager {
         Map<Integer,ItemStack> left=player.getInventory().addItem(dan);
         left.values().forEach(it -> player.getWorld().dropItemNaturally(player.getLocation(),it));
         data.addLinhKhi(r.lkBonus);
+        if (plugin.getQuestManager() != null) plugin.getQuestManager().onAlchemy(player);
         plugin.getSkillItemManager().updateInfoItem(player,data);
         player.sendTitle("§a§lLUYỆN ĐAN THÀNH CÔNG", "§e"+r.displayName, 5, 60, 15);
         player.sendMessage(plugin.prefix()+"§a✓ Thành công! §e"+r.displayName+" §7| +§b"+r.lkBonus+" LK");

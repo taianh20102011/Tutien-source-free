@@ -159,14 +159,29 @@ public class QuestManager implements Listener {
         if (event.getEntity().getKiller() instanceof Player player) {
             if (event.getEntity() instanceof Player) return;
             PlayerData d = plugin.getDataManager().get(player);
-            addProgress(d, "MOB_KILL", 1);
+            if (d != null) addProgress(d, "MOB_KILL", 1);
+            if (plugin.getBreakthroughQuestManager() != null) {
+                plugin.getBreakthroughQuestManager().onMobKill(player, event.getEntity());
+            }
         }
     }
 
     public void onBreakthrough(Player p)  { addProgress(plugin.getDataManager().get(p), "BREAKTHROUGH", 1); }
-    public void onAlchemy(Player p)       { addProgress(plugin.getDataManager().get(p), "ALCHEMY", 1); }
-    public void onHerb(Player p)          { addProgress(plugin.getDataManager().get(p), "HERB", 1); }
-    public void onMeditate(Player p, int min){ addProgress(plugin.getDataManager().get(p), "MEDITATE", min); }
-    public void onBossKill(Player p)      { addProgress(plugin.getDataManager().get(p), "BOSS_KILL", 1); }
+    public void onAlchemy(Player p)       {
+        addProgress(plugin.getDataManager().get(p), "ALCHEMY", 1);
+        if (plugin.getBreakthroughQuestManager() != null) plugin.getBreakthroughQuestManager().onAlchemy(p);
+    }
+    public void onHerb(Player p)          {
+        addProgress(plugin.getDataManager().get(p), "HERB", 1);
+        if (plugin.getBreakthroughQuestManager() != null) plugin.getBreakthroughQuestManager().onHerbHarvest(p);
+    }
+    public void onMeditate(Player p, int min){
+        addProgress(plugin.getDataManager().get(p), "MEDITATE", min);
+        if (plugin.getBreakthroughQuestManager() != null) plugin.getBreakthroughQuestManager().onMeditate(p, min);
+    }
+    public void onBossKill(Player p)      {
+        addProgress(plugin.getDataManager().get(p), "BOSS_KILL", 1);
+        if (plugin.getBreakthroughQuestManager() != null) plugin.getBreakthroughQuestManager().onBossKill(p);
+    }
     public void onPvpFight(Player p)      { addProgress(plugin.getDataManager().get(p), "PVP_FIGHT", 1); }
 }

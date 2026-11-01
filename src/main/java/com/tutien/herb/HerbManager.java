@@ -300,6 +300,7 @@ public class HerbManager implements Listener {
             long lk = (long) (data.getMaxLinhKhi() * herb.lkPct()) * amount;
             if (lk > 0) data.addLinhKhi(lk);
         }
+        if (plugin.getQuestManager() != null) plugin.getQuestManager().onHerb(player);
         player.sendMessage(plugin.prefix() + herb.color() + "✿ Hái được §l" + herb.name()
                 + " §r" + herb.color() + "×" + amount + " §7| node hồi §e" + (cd / 1000) + "s");
 
@@ -501,6 +502,7 @@ public class HerbManager implements Listener {
             long lk = (long) (data.getMaxLinhKhi() * herb.lkPct() * (premium ? 1.5 : 1.0)) * amount;
             if (lk > 0) data.addLinhKhi(lk);
         }
+        if (plugin.getQuestManager() != null) plugin.getQuestManager().onHerb(player);
         player.sendMessage(plugin.prefix() + herb.color() + "✿ Thu hoạch " + (premium ? "§6★ Thượng Phẩm §r" : "")
                 + herb.name() + " §r" + herb.color() + "×" + amount + " §7từ vườn trồng.");
         block.getWorld().spawnParticle(Particle.ENCHANTED_HIT, block.getLocation().add(.5, .6, .5),

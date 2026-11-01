@@ -276,58 +276,68 @@ public class EffectEngine {
 
         if (plugin.getItemsAdderEffectHook().tryPlay("thi-luyen-song", loc)) return;
 
-        // Sam set that su
-        int nStrikes = 1 + (int)(prog*3) + (stageOrd>52?3:0) + (stageOrd>70?3:0);
+        // Sấm sét thật sự theo cảnh giới (25 cảnh giới: 0-24)
+        int nStrikes = 1 + (int)(prog * 3) + (stageOrd >= 15 ? 2 : 0) + (stageOrd >= 20 ? 2 : 0) + (stageOrd >= 24 ? 2 : 0);
         for (int i = 0; i < nStrikes; i++) {
-            final int di = i*4;
+            final int di = i * 4;
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (!player.isOnline()) return;
-                double a = rng.nextDouble()*Math.PI*2; double d = 2+rng.nextDouble()*6;
-                w.strikeLightning(loc.clone().add(Math.cos(a)*d, 0, Math.sin(a)*d));
+                double a = rng.nextDouble() * Math.PI * 2;
+                double d = 2 + rng.nextDouble() * 6;
+                w.strikeLightning(loc.clone().add(Math.cos(a) * d, 0, Math.sin(a) * d));
             }, di);
         }
 
-        // Song xung mo rong
+        // Sóng xung kích lôi kiếp mở rộng
         new BukkitRunnable() {
-            double r = 0.3; int t = 0;
+            double r = 0.3;
+            int t = 0;
             public void run() {
                 if (t++ >= 20 || r > 11) { cancel(); return; }
-                Color wc  = prog>0.8f?C_RED:prog>0.5f?C_ORANGE:(stageOrd>70?C_VIOLET:C_GOLD);
-                Color wc2 = prog>0.6f?C_RED:C_AMBER;
-                ring(w, loc, wc,  1.0f+prog*0.9f, r, 0.05, t*10);
-                if (t%2==0) ring(w, loc, wc2, 0.7f, r*0.7, 0.12, -t*8);
-                if (stageOrd>70 && t%3==0) ring(w, loc, C_VIOLET, 0.5f, r*1.15, 0.2, t*15);
-                r += prog>0.7f?0.65:0.5;
+                Color wc  = prog > 0.8f ? C_RED : prog > 0.5f ? C_ORANGE : (stageOrd >= 20 ? C_VIOLET : C_GOLD);
+                Color wc2 = prog > 0.6f ? C_RED : C_AMBER;
+                ring(w, loc, wc, 1.0f + prog * 0.9f, r, 0.05, t * 10);
+                if (t % 2 == 0) ring(w, loc, wc2, 0.7f, r * 0.7, 0.12, -t * 8);
+                if (stageOrd >= 20 && t % 3 == 0) ring(w, loc, C_VIOLET, 0.8f, r * 1.15, 0.2, t * 15);
+                r += prog > 0.7f ? 0.65 : 0.5;
             }
         }.runTaskTimer(plugin, 0, 1);
 
-        // Lua bong (canh gioi cao)
-        if (stageOrd > 30) {
+        // Lửa kiếp bốc cháy (Thánh Giới trở lên: stageOrd >= 10)
+        if (stageOrd >= 10) {
             new BukkitRunnable() {
                 int t = 0;
                 public void run() {
                     if (t++ >= 10 || !player.isOnline()) { cancel(); return; }
                     for (int i = 0; i < 6; i++) {
-                        double a = rng.nextDouble()*Math.PI*2; double d = rng.nextDouble()*4;
-                        Location fl = loc.clone().add(Math.cos(a)*d, rng.nextDouble()*3, Math.sin(a)*d);
-                        w.spawnParticle(Particle.FLAME, fl, 1, 0.1,0.2,0.1,0.05);
-                        if (stageOrd>52) w.spawnParticle(Particle.SOUL_FIRE_FLAME, fl, 1, 0.1,0.2,0.1,0.04);
+                        double a = rng.nextDouble() * Math.PI * 2;
+                        double d = rng.nextDouble() * 4;
+                        Location fl = loc.clone().add(Math.cos(a) * d, rng.nextDouble() * 3, Math.sin(a) * d);
+                        w.spawnParticle(Particle.FLAME, fl, 1, 0.1, 0.2, 0.1, 0.05);
+                        // Tiên Giới trở lên (>= 15): U Hồn Lam Diễm thiêu đốt
+                        if (stageOrd >= 15) w.spawnParticle(Particle.SOUL_FIRE_FLAME, fl, 1, 0.1, 0.2, 0.1, 0.04);
                     }
                 }
             }.runTaskTimer(plugin, 2, 2);
         }
-        if (stageOrd>70) {
-            dustS(w, loc.clone().add(0,1,0), C_VIOLET, 2.5f, 20, 1.5f,1f,1.5f);
-            dustS(w, loc.clone().add(0,1,0), C_AMBER,  2.0f, 15, 1.5f,1f,1.5f);
+        // Thiên Giới trở lên (>= 20): Bụi tử lôi kim sắc cực kỳ huyền ảo
+        if (stageOrd >= 20) {
+            dustS(w, loc.clone().add(0, 1, 0), C_VIOLET, 2.5f, 25, 1.5f, 1f, 1.5f);
+            dustS(w, loc.clone().add(0, 1, 0), C_AMBER,  2.0f, 20, 1.5f, 1f, 1.5f);
+        }
+        // Vô Thượng Chi Tôn (24): Sóng xung kích Sonic Boom bộc phá
+        if (stageOrd >= 24) {
+            w.spawnParticle(Particle.SONIC_BOOM, loc.clone().add(0, 1.0, 0), 1);
+            w.spawnParticle(Particle.FLASH, loc.clone().add(0, 1.5, 0), 1);
         }
 
-        w.spawnParticle(Particle.CRIT, loc.clone().add(0,1.5,0), 8, 0.6f,0.4f,0.6f,0.3f);
-        w.spawnParticle(Particle.ENCHANTED_HIT, loc.clone().add(0,1,0), 6, 0.5f,0.3f,0.5f,0.2f);
-        float pitch = 0.6f + prog*0.7f;
+        w.spawnParticle(Particle.CRIT, loc.clone().add(0, 1.5, 0), 8, 0.6f, 0.4f, 0.6f, 0.3f);
+        w.spawnParticle(Particle.ENCHANTED_HIT, loc.clone().add(0, 1, 0), 6, 0.5f, 0.3f, 0.5f, 0.2f);
+        float pitch = 0.6f + prog * 0.7f;
         w.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.6f, pitch);
-        if (prog>0.4f) plugin.getServer().getScheduler().runTaskLater(plugin,
-                () -> w.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.2f, pitch*0.55f), 6L);
-        if (prog>0.75f && stageOrd>52) w.playSound(loc, Sound.ENTITY_WITHER_HURT, 0.7f, 0.5f);
+        if (prog > 0.4f) plugin.getServer().getScheduler().runTaskLater(plugin,
+                () -> w.playSound(loc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.2f, pitch * 0.55f), 6L);
+        if (prog > 0.75f && stageOrd >= 15) w.playSound(loc, Sound.ENTITY_WITHER_HURT, 0.8f, 0.5f);
 
         int blocks = Math.min(10,(int)(prog*10));
         String bar = "§c"+"█".repeat(blocks)+"§8"+"█".repeat(10-blocks);
@@ -456,17 +466,17 @@ public class EffectEngine {
             spawnRealmEffect(player, data.getStage(), loc, col);
         }, 62L);
 
-        // PHASE 4: high-realm finisher.
-        if (ord > 52) {
+        // PHASE 4: Hiệu ứng hoàng kim chung kết cho Tiên Giới & Thiên Giới (ord >= 15)
+        if (ord >= 15) {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (!player.isOnline()) return;
 
                 for (int i = 0; i < 8; i++) {
                     double a = Math.toRadians(i * 45);
                     Location p = loc.clone().add(
-                            Math.cos(a) * (3.0 + (ord > 70 ? 3.0 : 0)),
+                            Math.cos(a) * (3.0 + (ord >= 24 ? 3.0 : 0)),
                             1.5 + (i % 3) * 0.55,
-                            Math.sin(a) * (3.0 + (ord > 70 ? 3.0 : 0))
+                            Math.sin(a) * (3.0 + (ord >= 24 ? 3.0 : 0))
                     );
 
                     delayedFirework(p, i % 2 == 0 ? col : col2,
@@ -480,7 +490,8 @@ public class EffectEngine {
                 sphere(w, loc.clone().add(0, 3.5, 0), col2, 1.8f, 4.2, 65);
                 sphere(w, loc.clone().add(0, 3.5, 0), C_WHITE, 1.0f, 2.4, 35);
 
-                if (ord > 70) {
+                // Thiên Giới & Vô Thượng Chí Tôn (ord >= 20): Bão lôi quang + âm vang rồng thần
+                if (ord >= 20) {
                     spiral(w, loc, col, col2, 100, 4.8, 9.0);
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -691,56 +702,118 @@ public class EffectEngine {
         int ord = stage.ordinal();
         Color col2 = getRealmColor2(stage);
 
-        if (ord == 52) { // Vo Thuong Chi Ton (canh gioi cuoi cung): TUYET DINH EFFECT
-            for (int i=0;i<8;i++) { final int fi=i;
-                plugin.getServer().getScheduler().runTaskLater(plugin,()->{
-                    double a=fi*45*(Math.PI/180);
-                    fw(loc.clone().add(Math.cos(a)*6,fi*0.3+1,Math.sin(a)*6), col, col2, FireworkEffect.Type.BALL_LARGE, true);
-                    fw(loc.clone().add(Math.cos(a)*3,fi*0.3+2.5,Math.sin(a)*3), col2, col, FireworkEffect.Type.STAR, fi%2==0);
-                }, fi*8L);
+        // Vô Thượng Chí Tôn (Cảnh giới 24 - Đỉnh Cao Tuyệt Đối): TUYỆT ĐỈNH EFFECT
+        if (stage == CultivationStage.VO_THUONG_CHI_TON || ord >= 24) {
+            for (int i = 0; i < 8; i++) {
+                final int fi = i;
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    double a = fi * 45 * (Math.PI / 180);
+                    fw(loc.clone().add(Math.cos(a) * 6, fi * 0.3 + 1, Math.sin(a) * 6), col, col2, FireworkEffect.Type.BALL_LARGE, true);
+                    fw(loc.clone().add(Math.cos(a) * 3, fi * 0.3 + 2.5, Math.sin(a) * 3), col2, col, FireworkEffect.Type.STAR, fi % 2 == 0);
+                }, fi * 8L);
             }
-            plugin.getServer().getScheduler().runTaskLater(plugin,()->{
-                sphere(w,loc.clone().add(0,3,0),col,  3.5f,8.0,100);
-                sphere(w,loc.clone().add(0,3,0),col2, 2.5f,5.5, 70);
-                sphere(w,loc.clone().add(0,3,0),C_WHITE,1.5f,3.0, 40);
-            },10L);
-            spiral(w, loc, col, col2, 80, 4.0, 8.0);
-            plugin.getServer().getScheduler().runTaskLater(plugin,()->{
-                for (int i=0;i<4;i++){double a=i*90*(Math.PI/180);w.strikeLightningEffect(loc.clone().add(Math.cos(a)*5,0,Math.sin(a)*5));}
-                dustS(w,loc.clone().add(0,5,0),col,5.0f,150,8,8,8);
-                w.spawnParticle(Particle.EXPLOSION,loc.clone().add(0,4,0),12,2.5,2,2.5,0);
-                w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_DEATH,2f,0.25f);
-                w.playSound(loc,Sound.ENTITY_WITHER_DEATH,1f,1.8f);
-                w.playSound(loc,Sound.UI_TOAST_CHALLENGE_COMPLETE,2f,1.2f);
-                w.playSound(loc,Sound.BLOCK_BEACON_POWER_SELECT,2f,0.2f);
-            },25L);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                sphere(w, loc.clone().add(0, 3, 0), col, 3.5f, 8.0, 120);
+                sphere(w, loc.clone().add(0, 3, 0), col2, 2.5f, 5.5, 80);
+                sphere(w, loc.clone().add(0, 3, 0), C_WHITE, 1.5f, 3.0, 50);
+            }, 10L);
+            spiral(w, loc, col, col2, 90, 4.0, 8.0);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                for (int i = 0; i < 4; i++) {
+                    double a = i * 90 * (Math.PI / 180);
+                    w.strikeLightningEffect(loc.clone().add(Math.cos(a) * 5, 0, Math.sin(a) * 5));
+                }
+                dustS(w, loc.clone().add(0, 5, 0), col, 5.0f, 160, 8, 8, 8);
+                w.spawnParticle(Particle.EXPLOSION, loc.clone().add(0, 4, 0), 12, 2.5, 2, 2.5, 0);
+                w.spawnParticle(Particle.SONIC_BOOM, loc.clone().add(0, 2, 0), 2);
+                w.playSound(loc, Sound.ENTITY_ENDER_DRAGON_DEATH, 2f, 0.25f);
+                w.playSound(loc, Sound.ENTITY_WITHER_DEATH, 1f, 1.8f);
+                w.playSound(loc, Sound.UI_TOAST_CHALLENGE_COMPLETE, 2f, 1.2f);
+                w.playSound(loc, Sound.BLOCK_BEACON_POWER_SELECT, 2f, 0.2f);
+            }, 25L);
             return;
         }
 
-        if (ord >= 44) { // Hong Mong Gioi tro len (3 tang lon truoc dinh cao)
-            for (int i=0;i<6;i++) { final int fi=i;
-                plugin.getServer().getScheduler().runTaskLater(plugin,()->{
-                    double a=fi*60*(Math.PI/180);
-                    fw(loc.clone().add(Math.cos(a)*4,fi*0.5,Math.sin(a)*4),col,col2,FireworkEffect.Type.values()[fi%FireworkEffect.Type.values().length],true);
-                },fi*10L);
+        // Thiên Giới (ord 20-23: Thiên Tôn, Thiên Đạo, Thiên Đế, Hỗn Nguyên)
+        if (ord >= 20) {
+            for (int i = 0; i < 6; i++) {
+                final int fi = i;
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    double a = fi * 60 * (Math.PI / 180);
+                    fw(loc.clone().add(Math.cos(a) * 4, fi * 0.5, Math.sin(a) * 4), col, col2,
+                            FireworkEffect.Type.values()[fi % FireworkEffect.Type.values().length], true);
+                }, fi * 10L);
             }
-            sphere(w,loc.clone().add(0,3,0),col,3.0f,6.0,80);
-            sphere(w,loc.clone().add(0,3,0),C_WHITE,1.5f,4.0,40);
-            dustS(w,loc.clone().add(0,4,0),col,4.0f,100,6,6,6);
-            w.spawnParticle(Particle.EXPLOSION,loc.clone().add(0,3,0),10,2,1.5,2,0);
-            w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_DEATH,2f,0.3f);
-            w.playSound(loc,Sound.UI_TOAST_CHALLENGE_COMPLETE,2f,1f);
+            sphere(w, loc.clone().add(0, 3, 0), col, 3.0f, 6.0, 80);
+            sphere(w, loc.clone().add(0, 3, 0), C_WHITE, 1.5f, 4.0, 40);
+            dustS(w, loc.clone().add(0, 4, 0), col, 4.0f, 100, 6, 6, 6);
+            w.spawnParticle(Particle.EXPLOSION, loc.clone().add(0, 3, 0), 10, 2, 1.5, 2, 0);
+            w.playSound(loc, Sound.ENTITY_ENDER_DRAGON_DEATH, 2f, 0.3f);
+            w.playSound(loc, Sound.UI_TOAST_CHALLENGE_COMPLETE, 2f, 1f);
             return;
         }
 
         switch (stage.getRealm()) {
-            case "Nhân Giới" -> { new BukkitRunnable(){int t=0;public void run(){if(t++>=20){cancel();return;}dustS(w,loc.clone().add(0,t*0.1,0),col,1.2f,3,0.4,0.1,0.4);}}.runTaskTimer(plugin,0,2); w.playSound(loc,Sound.BLOCK_NOTE_BLOCK_CHIME,1f,1.5f); }
-            case "Linh Giới" -> { new BukkitRunnable(){int t=0;public void run(){if(t++>=30){cancel();return;}ring(w,loc,col,1.4f,t*0.15,0.05,t*8);dustS(w,loc.clone().add(0,t*0.12,0),C_WHITE,0.9f,2,0.3,0.1,0.3);}}.runTaskTimer(plugin,0,1); w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_FLAP,0.8f,1.8f); }
-            case "Tiên Giới" -> { fw(loc.clone().add(0,2,0),col,C_WHITE,FireworkEffect.Type.BALL,true); new BukkitRunnable(){int t=0;public void run(){if(t++>=40){cancel();return;}double r=t*0.18;ring(w,loc,col,1.6f,r,0.05,t*6);ring(w,loc,C_WHITE,0.8f,r*0.55,0.15,-t*9);}}.runTaskTimer(plugin,0,1); w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_DEATH,0.5f,1.8f); }
-            case "Đế Giới"   -> { fw(loc.clone().add(0,3,0),C_RED,C_ORANGE,FireworkEffect.Type.STAR,true); new BukkitRunnable(){int t=0;public void run(){if(t++>=45){cancel();return;}double r=t*0.15;ring(w,loc,C_RED,1.8f,r,0.05,t*6);ring(w,loc,C_ORANGE,1.1f,r*0.75,0.15,-t*9);if(t%4==0)w.spawnParticle(Particle.FLAME,loc.clone().add(0,0.5,0),5,r,0.3,r,0.05);}}.runTaskTimer(plugin,0,1); w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_DEATH,0.7f,0.5f); }
-            case "Thánh Giới"-> { fw(loc.clone().add(0,4,0),C_WHITE,C_GOLD,FireworkEffect.Type.BALL_LARGE,true); fw(loc.clone().add(1,3,0),C_GOLD,C_WHITE,FireworkEffect.Type.STAR,false); new BukkitRunnable(){int t=0;public void run(){if(t++>=55){cancel();return;}for(double y=0;y<12;y+=0.6){if(rng.nextDouble()<0.35)dust(w,loc.clone().add((rng.nextDouble()-0.5)*0.4,y,(rng.nextDouble()-0.5)*0.4),C_WHITE,1.6f,1);}double r=t*0.12;ring(w,loc,C_WHITE,2.0f,r,0.05,t*4);ring(w,loc,C_GOLD,1.2f,r*0.8,0.15,-t*6);}}.runTaskTimer(plugin,0,1); w.playSound(loc,Sound.ENTITY_PLAYER_LEVELUP,2f,0.4f); w.playSound(loc,Sound.BLOCK_BEACON_POWER_SELECT,1.5f,0.3f); }
-            case "Thiên Giới"-> { for(int i=0;i<4;i++){final int fi=i;plugin.getServer().getScheduler().runTaskLater(plugin,()->{double a=fi*90*(Math.PI/180);fw(loc.clone().add(Math.cos(a)*3,fi+1,Math.sin(a)*3),C_GOLD,C_WHITE,FireworkEffect.Type.BALL_LARGE,true);},fi*12L);} new BukkitRunnable(){int t=0;public void run(){if(t++>=50){cancel();return;}double r=t*0.2;ring(w,loc,C_GOLD,2.2f,r,0.05,t*6);ring(w,loc,C_WHITE,1.2f,r*0.7,0.18,-t*8);}}.runTaskTimer(plugin,0,1); w.playSound(loc,Sound.ENTITY_ENDER_DRAGON_DEATH,1.0f,0.4f); }
-            default          -> { sphere(w,loc.clone().add(0,2,0),col,2.2f,4.0,50); fw(loc.clone().add(0,3,0),col,C_WHITE,FireworkEffect.Type.BURST,true); }
+            case "Linh Giới" -> {
+                new BukkitRunnable() {
+                    int t = 0;
+                    public void run() {
+                        if (t++ >= 30) { cancel(); return; }
+                        ring(w, loc, col, 1.4f, t * 0.15, 0.05, t * 8);
+                        dustS(w, loc.clone().add(0, t * 0.12, 0), C_WHITE, 0.9f, 2, 0.3, 0.1, 0.3);
+                    }
+                }.runTaskTimer(plugin, 0, 1);
+                w.playSound(loc, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.8f, 1.8f);
+            }
+            case "Đế Giới" -> {
+                fw(loc.clone().add(0, 3, 0), C_RED, C_ORANGE, FireworkEffect.Type.STAR, true);
+                new BukkitRunnable() {
+                    int t = 0;
+                    public void run() {
+                        if (t++ >= 45) { cancel(); return; }
+                        double r = t * 0.15;
+                        ring(w, loc, C_RED, 1.8f, r, 0.05, t * 6);
+                        ring(w, loc, C_ORANGE, 1.1f, r * 0.75, 0.15, -t * 9);
+                        if (t % 4 == 0) w.spawnParticle(Particle.FLAME, loc.clone().add(0, 0.5, 0), 5, r, 0.3, r, 0.05);
+                    }
+                }.runTaskTimer(plugin, 0, 1);
+                w.playSound(loc, Sound.ENTITY_ENDER_DRAGON_DEATH, 0.7f, 0.5f);
+            }
+            case "Thánh Giới" -> {
+                fw(loc.clone().add(0, 4, 0), C_WHITE, C_GOLD, FireworkEffect.Type.BALL_LARGE, true);
+                fw(loc.clone().add(1, 3, 0), C_GOLD, C_WHITE, FireworkEffect.Type.STAR, false);
+                new BukkitRunnable() {
+                    int t = 0;
+                    public void run() {
+                        if (t++ >= 55) { cancel(); return; }
+                        for (double y = 0; y < 12; y += 0.6) {
+                            if (rng.nextDouble() < 0.35) dust(w, loc.clone().add((rng.nextDouble() - 0.5) * 0.4, y, (rng.nextDouble() - 0.5) * 0.4), C_WHITE, 1.6f, 1);
+                        }
+                        double r = t * 0.12;
+                        ring(w, loc, C_WHITE, 2.0f, r, 0.05, t * 4);
+                        ring(w, loc, C_GOLD, 1.2f, r * 0.8, 0.15, -t * 6);
+                    }
+                }.runTaskTimer(plugin, 0, 1);
+                w.playSound(loc, Sound.ENTITY_PLAYER_LEVELUP, 2f, 0.4f);
+                w.playSound(loc, Sound.BLOCK_BEACON_POWER_SELECT, 1.5f, 0.3f);
+            }
+            case "Tiên Giới" -> {
+                fw(loc.clone().add(0, 2, 0), col, C_WHITE, FireworkEffect.Type.BALL, true);
+                new BukkitRunnable() {
+                    int t = 0;
+                    public void run() {
+                        if (t++ >= 40) { cancel(); return; }
+                        double r = t * 0.18;
+                        ring(w, loc, col, 1.6f, r, 0.05, t * 6);
+                        ring(w, loc, C_WHITE, 0.8f, r * 0.55, 0.15, -t * 9);
+                    }
+                }.runTaskTimer(plugin, 0, 1);
+                w.playSound(loc, Sound.ENTITY_ENDER_DRAGON_DEATH, 0.5f, 1.8f);
+            }
+            default -> {
+                sphere(w, loc.clone().add(0, 2, 0), col, 2.2f, 4.0, 50);
+                fw(loc.clone().add(0, 3, 0), col, C_WHITE, FireworkEffect.Type.BURST, true);
+            }
         }
     }
 
@@ -1058,20 +1131,29 @@ public class EffectEngine {
         if(id.contains("loi"))return 0.5f; return 1.0f;
     }
     private Color getRealmColor(CultivationStage s) {
-        int ord=s.ordinal();
-        if(ord>70)return C_AMBER; if(ord>52)return C_VIOLET;
-        return switch(s.getRealm()) {
-            case "Nhân Giới"->Color.fromRGB(180,180,255); case "Linh Giới"->Color.fromRGB(255,160,30);
-            case "Tiên Giới"->Color.fromRGB(80,220,255);  case "Đế Giới"->Color.fromRGB(255,60,60);
-            case "Thánh Giới"->C_WHITE; case "Thiên Giới","Thiên Đế"->C_GOLD;
-            case "Thiên Tiên Đế"->Color.fromRGB(255,200,0); default->C_WHITE;
+        int ord = s.ordinal();
+        if (ord >= 24) return C_AMBER;   // Vô Thượng Chí Tôn - Hổ phách kim quang
+        if (ord >= 20) return C_GOLD;    // Thiên Giới - Hoàng kim thiên đạo
+        return switch (s.getRealm()) {
+            case "Linh Giới"  -> Color.fromRGB(80, 220, 120);   // Thanh ngọc linh quang
+            case "Đế Giới"    -> Color.fromRGB(255, 60, 60);    // Huyết đế hồng diễm
+            case "Thánh Giới" -> Color.fromRGB(240, 240, 255);  // Thánh bạch thuần khiết
+            case "Tiên Giới"  -> Color.fromRGB(80, 200, 255);   // Băng lam tiên khí
+            case "Thiên Giới" -> C_GOLD;
+            default -> C_WHITE;
         };
     }
     private Color getRealmColor2(CultivationStage s) {
-        int ord=s.ordinal();
-        if(ord>70)return C_ROSE; if(ord>52)return C_CYAN;
-        return switch(s.getRealm()) {
-            case "Đế Giới"->C_ORANGE; case "Thánh Giới","Thiên Giới"->C_GOLD; default->C_GOLD;
+        int ord = s.ordinal();
+        if (ord >= 24) return C_VIOLET;  // Tử khí đông lai
+        if (ord >= 20) return C_CYAN;    // Huyền thiên thanh lam
+        return switch (s.getRealm()) {
+            case "Linh Giới"  -> Color.fromRGB(200, 255, 200);
+            case "Đế Giới"    -> C_ORANGE;
+            case "Thánh Giới" -> C_GOLD;
+            case "Tiên Giới"  -> C_WHITE;
+            case "Thiên Giới" -> C_GOLD;
+            default -> C_GOLD;
         };
     }
     private Color getTocColor(com.tutien.toc.TocType toc) {

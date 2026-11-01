@@ -389,16 +389,13 @@ public class MythicMobsHook implements Listener {
     /** Tên aura skill MythicMobs theo cảnh giới */
     private String getAuraSkillName(CultivationStage stage) {
         int ord = stage.ordinal();
-        if (ord == 52) return "TT_Aura_SieuCap";       // Vo Thuong Chi Ton - canh gioi cuoi cung
+        if (ord >= 24) return "TT_Aura_SieuCap";       // Vô Thượng Chí Tôn - đỉnh cao tuyệt đối
         return switch (stage.getRealm()) {
-            case "Nhân Giới"     -> "TT_Aura_Nhan";
             case "Linh Giới"     -> "TT_Aura_Linh";
             case "Đế Giới"       -> "TT_Aura_De";
             case "Thánh Giới"    -> "TT_Aura_Thanh";
             case "Tiên Giới"     -> "TT_Aura_Tien";
-            case "Thiên Giới",
-                 "Thiên Đế"      -> "TT_Aura_Thien";
-            case "Thiên Tiên Đế" -> "TT_Aura_ThienTienDe";
+            case "Thiên Giới"    -> "TT_Aura_Thien";
             default              -> "TT_Aura_Base";
         };
     }

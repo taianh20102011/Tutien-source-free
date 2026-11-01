@@ -79,9 +79,8 @@ public class TribulationBossArena implements Listener {
             return;
         }
 
-        // Calculate boss level (1 - 18) based on stage ordinal
-        int bossLevel = stage.ordinal() - CultivationStage.VO_THUONG_CHI_TON.ordinal(); // 1..48
-        bossLevel = Math.max(1, Math.min(48, bossLevel));
+        // Calculate boss level (1 - 25) based on stage ordinal
+        int bossLevel = Math.max(1, Math.min(48, stage.ordinal() + 1));
 
         successCallbacks.put(uuid, onSuccess);
         failCallbacks.put(uuid, onFail);

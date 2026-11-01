@@ -95,9 +95,16 @@ public class AuraManager {
             case HOA_TU   -> renderHoaAura(w, base, angle, tick, radius, numRings, density);
         }
 
-        // Thien De+ co them vong vang ngoai cung
-        if (data.getStage().canUseAllSkills() && tick % 2 == 0) {
+        // Thiên Giới (stageOrd >= 20) hoặc Thần Cấp (canUseAllSkills): Vòng Thiên Đạo Kim Quang
+        if ((data.getStage().canUseAllSkills() || stageOrd >= 20) && tick % 2 == 0) {
             renderThienDeRing(w, base, angle, tick, radius + 0.6, stageOrd);
+        }
+
+        // Vô Thượng Chí Tôn (stageOrd >= 24): Tinh tú lấp lánh và hắc kim tử diễm linh quang
+        if (stageOrd >= 24 && tick % 4 == 0) {
+            double a = Math.toRadians(tick * 8);
+            w.spawnParticle(Particle.END_ROD, base.clone().add(Math.cos(a) * (radius + 0.8), 1.2 + Math.sin(tick * 0.1) * 0.5, Math.sin(a) * (radius + 0.8)), 1, 0, 0, 0, 0.02);
+            w.spawnParticle(Particle.FIREWORK, base.clone().add(Math.cos(-a) * (radius + 0.5), 0.8, Math.sin(-a) * (radius + 0.5)), 1, 0, 0, 0, 0.01);
         }
     }
 

@@ -280,6 +280,7 @@ public class PlayerData {
     public long getLinhKhi()            { return linhKhi; }
     public void setLinhKhi(long v)      { this.linhKhi = v; }
     public long getTotalLinhKhiEarned() { return totalLinhKhiEarned; }
+    public void setTotalLinhKhiEarned(long v) { this.totalLinhKhiEarned = v; }
 
     // Linh Can
     public List<LinhCanElement> getLinhCan()         { return linhCan; }
@@ -305,7 +306,9 @@ public class PlayerData {
     public void setBossToiThuongKills(int v) { bossToiThuongKills = v; }
 
     public int  getBreakthroughSuccess() { return breakthroughSuccess; }
+    public void setBreakthroughSuccess(int v) { this.breakthroughSuccess = v; }
     public int  getBreakthroughFail()    { return breakthroughFail; }
+    public void setBreakthroughFail(int v)    { this.breakthroughFail = v; }
 
     public boolean isPendingBreakthrough()           { return pendingBreakthrough; }
     public void setPendingBreakthrough(boolean b)    { this.pendingBreakthrough = b; }

@@ -28,7 +28,7 @@ public final class LangManager {
         reload();
     }
 
-    private static final String PACK_VERSION = "7.7.3-vietnamese-full";
+    private static final String PACK_VERSION = "7.7.4-vietnamese-full";
 
     private void ensureFiles() {
         if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();

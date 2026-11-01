@@ -338,6 +338,7 @@ public class TuTienBag implements Listener {
             ItemStack s = inv.getItem(STORE_START + i);
             store[i] = (s != null && s.getType() != Material.AIR && !isEmpty(s)) ? s.clone() : null;
         }
+        plugin.getDataManager().save(data);
         p.playSound(p.getLocation(), Sound.BLOCK_CHEST_CLOSE, 0.6f, 1.0f);
     }
 

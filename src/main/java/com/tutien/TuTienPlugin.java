@@ -576,6 +576,11 @@ public class TuTienPlugin extends JavaPlugin {
         }, 6000L, 6000L);
         licenseManager.startPeriodicValidation();
 
+        // Đồng bộ toàn bộ người chơi đang trực tuyến (nếu server reload hoặc cập nhật nóng plugin)
+        for (org.bukkit.entity.Player online : getServer().getOnlinePlayers()) {
+            dataManager.getOrCreate(online);
+        }
+
         getLogger().info("╔═══════════════════════════════════════════╗");
         getLogger().info("║    TU TIÊN PLUGIN v" + getDescription().getVersion() + "                  ║");
         getLogger().info("║ 100+ cảnh giới | 83 Pháp Bảo | Karma+Quest║");

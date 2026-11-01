@@ -18,6 +18,16 @@ public class SkillManager {
     private final TuTienPlugin plugin;
     private final Map<String, Skill> skills = new HashMap<>();
 
+    private static final ThreadLocal<Boolean> SKILL_DAMAGE = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
+    public static boolean isSkillDamage() {
+        return Boolean.TRUE.equals(SKILL_DAMAGE.get());
+    }
+
+    public static void setSkillDamage(boolean value) {
+        SKILL_DAMAGE.set(value);
+    }
+
     // Helper: lay PotionEffectType theo ten Minecraft (tuong thich moi phien ban)
     private static PotionEffectType ef(String key) {
         PotionEffectType t = PotionEffectType.getByName(key);

@@ -55,7 +55,7 @@ public class CombatListener implements Listener {
         // === ATTACKER ===
         if (event.getDamager() instanceof Player attacker) {
             PlayerData atkData = plugin.getDataManager().get(attacker);
-            if (atkData != null && atkData.hasClass()) {
+            if (atkData != null && atkData.hasClass() && !com.tutien.skills.SkillManager.isSkillDamage()) {
                 double mult = atkData.calculateDamageMultiplier();
                 if (atkData.hasBuff("stealth_bonus")) {
                     mult *= 2.0;

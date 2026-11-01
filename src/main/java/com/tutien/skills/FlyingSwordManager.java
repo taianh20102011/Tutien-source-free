@@ -190,7 +190,12 @@ public class FlyingSwordManager implements Listener {
             if (!isValidHostileTarget(e)) continue;
             LivingEntity le = (LivingEntity) e;
             double totalDmg = dmgPerSword * count * 0.3; // Moi kiem gay 30% sát thương co ban
-            le.damage(totalDmg, player);
+            SkillManager.setSkillDamage(true);
+            try {
+                le.damage(totalDmg, player);
+            } finally {
+                SkillManager.setSkillDamage(false);
+            }
             Location hitLoc = le.getLocation().add(0, 1.0, 0);
             le.getWorld().spawnParticle(Particle.SWEEP_ATTACK, hitLoc, 1, 0, 0, 0, 0);
             le.getWorld().spawnParticle(Particle.CRIT, hitLoc, 8, 0.3, 0.3, 0.3, 0.15);

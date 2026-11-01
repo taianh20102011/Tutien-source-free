@@ -33,6 +33,9 @@ public class SkillItemManager implements Listener {
 
     private final TuTienPlugin plugin;
 
+    // Set tracking players dang thuc thi skill de chong vong lap de quy / StackOverflow
+    private final Set<UUID> activeCastingPlayers = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+
     // Map: ten item (lowercase, bo mau) -> skillId
     private final Map<String, String> itemNameToSkill = new HashMap<>();
 
@@ -153,6 +156,9 @@ public class SkillItemManager implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
         if (!player.isSneaking()) return;
+
+        // Chống đệ quy vô hạn: Bỏ qua nếu sát thương xuất phát từ skill hoặc player đang cast skill
+        if (SkillManager.isSkillDamage() || activeCastingPlayers.contains(player.getUniqueId())) return;
 
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!isMergedWeapon(item)) return;
@@ -300,28 +306,37 @@ public class SkillItemManager implements Listener {
     }
 
     private void tryUseSkill(Player player, String skillId) {
-        PlayerData data = plugin.getDataManager().get(player);
-        if (data == null || !data.hasClass()) {
-            player.sendMessage(plugin.prefix() + "§cBạn chưa chọn class tu tiên! Dùng §e/tutien chon");
-            return;
+        if (player == null || skillId == null) return;
+        UUID uuid = player.getUniqueId();
+        if (!activeCastingPlayers.add(uuid)) {
+            return; // Đang kích hoạt skill, chặn gọi lồng nhau đệ quy
         }
-        if (!data.isModuleEnabled("ky_nang_them")) {
-            player.sendMessage(plugin.prefix() + "§cBạn đã tắt hệ thống Kỹ Năng Thêm trong /kinang.");
-            return;
-        }
-        String normalizedSkillId = skillId == null ? "" : skillId.toLowerCase(java.util.Locale.ROOT);
-        if (isEvasionSkill(normalizedSkillId) && !data.isModuleEnabled("don_thuat")) {
-            player.sendMessage(plugin.prefix() + "§cBạn đã tắt Độn Thuật trong /kinang.");
-            return;
-        }
-        Skill skill = plugin.getSkillManager().getSkill(skillId);
-        if (skill != null) {
-            skill.tryUse(player, data);
-        } else {
-            // Combo skill chua trien khai day du: dung placeholder
-            player.sendMessage(plugin.prefix() + "§e⚔ " + skillId + " §7(Đang phát triển!)");
-            player.getWorld().spawnParticle(org.bukkit.Particle.ENCHANTED_HIT,
-                player.getLocation().add(0,1,0), 10, 0.4,0.4,0.4,0.1);
+        try {
+            PlayerData data = plugin.getDataManager().get(player);
+            if (data == null || !data.hasClass()) {
+                player.sendMessage(plugin.prefix() + "§cBạn chưa chọn class tu tiên! Dùng §e/tutien chon");
+                return;
+            }
+            if (!data.isModuleEnabled("ky_nang_them")) {
+                player.sendMessage(plugin.prefix() + "§cBạn đã tắt hệ thống Kỹ Năng Thêm trong /kinang.");
+                return;
+            }
+            String normalizedSkillId = skillId.toLowerCase(java.util.Locale.ROOT);
+            if (isEvasionSkill(normalizedSkillId) && !data.isModuleEnabled("don_thuat")) {
+                player.sendMessage(plugin.prefix() + "§cBạn đã tắt Độn Thuật trong /kinang.");
+                return;
+            }
+            Skill skill = plugin.getSkillManager().getSkill(skillId);
+            if (skill != null) {
+                skill.tryUse(player, data);
+            } else {
+                // Combo skill chua trien khai day du: dung placeholder
+                player.sendMessage(plugin.prefix() + "§e⚔ " + skillId + " §7(Đang phát triển!)");
+                player.getWorld().spawnParticle(org.bukkit.Particle.ENCHANTED_HIT,
+                    player.getLocation().add(0,1,0), 10, 0.4,0.4,0.4,0.1);
+            }
+        } finally {
+            activeCastingPlayers.remove(uuid);
         }
     }
 

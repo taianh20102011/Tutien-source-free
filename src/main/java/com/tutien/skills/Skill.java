@@ -68,18 +68,29 @@ public abstract class Skill {
     public boolean tryUse(Player player, PlayerData data) {
         if (!canUse(player, data)) return false;
         plugin.debug("Skill attempt: player=" + player.getName() + ", skill=" + id + ", stage=" + data.getStage() + ", rank=" + data.getRank());
-        boolean success;
+        
+        // Đặt cooldown TRƯỚC để chặn vòng lặp đệ quy / re-entrancy khi skill gây sát thương
+        data.setSkillCooldown(id, cooldownMs);
+
+        boolean success = false;
+        SkillManager.setSkillDamage(true);
         try {
             success = execute(player, data);
         } catch (RuntimeException ex) {
+            data.setSkillCooldown(id, 0);
             plugin.getLogger().warning("Skill '" + id + "' bị lỗi khi thực thi: " + ex.getClass().getSimpleName());
             player.sendMessage(plugin.prefix() + "§cSkill gặp lỗi và chưa bị trừ hồi chiêu. Hãy báo admin.");
             return false;
+        } finally {
+            SkillManager.setSkillDamage(false);
         }
+
         plugin.debug("Skill result: player=" + player.getName() + ", skill=" + id + ", success=" + success);
         if (success) {
-            data.setSkillCooldown(id, cooldownMs);
             if (plugin.getEffectEngine() != null) plugin.getEffectEngine().skillCast(player, id);
+        } else {
+            // Nếu execute trả về false (hủy bỏ, không có mục tiêu, ...) thì hoàn lại hồi chiêu
+            data.setSkillCooldown(id, 0);
         }
         return success;
     }

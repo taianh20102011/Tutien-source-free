@@ -17,7 +17,7 @@ public class TuTienPlaceholderExpansion extends PlaceholderExpansion {
     public TuTienPlaceholderExpansion(TuTienPlugin plugin) { this.plugin = plugin; }
 
     @Override public @NotNull String getIdentifier() { return "tutien"; }
-    @Override public @NotNull String getAuthor()     { return "TuTienDev"; }
+    @Override public @NotNull String getAuthor()     { return "Hanita - Phạm Ngọc Tài Anh"; }
     @Override public @NotNull String getVersion()    { return "4.0"; }
     @Override public boolean persist()               { return true; }
     @Override public boolean canRegister()           { return true; }

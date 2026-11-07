@@ -3,7 +3,8 @@ version: '${project.version}'
 main: com.tutien.TuTienPlugin
 api-version: '1.21'
 description: "Tu Tien Plugin v7 - He thong tu luyen day du + MythicLib/MythicMobs Hook"
-authors: [TuTienDev]
+author: "Hanita - Phạm Ngọc Tài Anh"
+authors: ["Hanita - Phạm Ngọc Tài Anh"]
 depend: []
 softdepend: [LuckPerms, Vault, WorldEdit, WorldGuard, GriefPrevention, PlaceholderAPI, BetterHud, MythicLib, MythicMobs, SimplePets, ItemsAdder, Citizens]
 

@@ -541,9 +541,12 @@ public class TuTienPlugin extends JavaPlugin {
         pm.registerEvents(guideGUI,                 this);
         pm.registerEvents(breakthroughManager,      this);
 
-        // Kiểm tra an toàn cho Boss Arena
+        // Kiểm tra an toàn cho Boss Arena & Tribulation Cinematic
         if (breakthroughManager != null && breakthroughManager.getBossArena() != null) {
             pm.registerEvents(breakthroughManager.getBossArena(), this);
+        }
+        if (breakthroughManager != null && breakthroughManager.getCinematic() != null) {
+            pm.registerEvents(breakthroughManager.getCinematic(), this);
         }
 
         // Dot pha qua NPC Citizens (xem config "breakthrough-npc"). CHI dang
@@ -602,6 +605,9 @@ public class TuTienPlugin extends JavaPlugin {
         if (zoneManager != null) zoneManager.saveZones();
         if (swordFlightManager != null) swordFlightManager.cleanup();
         if (petSummon != null) petSummon.cleanup();
+        if (breakthroughManager != null && breakthroughManager.getCinematic() != null) {
+            breakthroughManager.getCinematic().cleanupAll();
+        }
         if (licenseManager != null) licenseManager.shutdown();
         instance = null;
         getLogger().info("TuTien đã tắt. Đã lưu dữ liệu.");

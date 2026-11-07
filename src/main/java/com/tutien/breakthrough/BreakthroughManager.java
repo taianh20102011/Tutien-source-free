@@ -22,6 +22,7 @@ public class BreakthroughManager implements Listener {
     private final TuTienPlugin plugin;
     private final Random random = new Random();
     private final TribulationBossArena bossArena;
+    private final TribulationCinematic cinematic;
 
     /** PDC key luu ten canh gioi (VD "BAN_THANH") tren item "Dot Pha Lenh". */
     private final NamespacedKey tokenKey;
@@ -29,10 +30,12 @@ public class BreakthroughManager implements Listener {
     public BreakthroughManager(TuTienPlugin plugin) {
         this.plugin = plugin;
         this.bossArena = new TribulationBossArena(plugin);
+        this.cinematic = new TribulationCinematic(plugin);
         this.tokenKey = new NamespacedKey(plugin, "dotpha_token");
     }
 
     public TribulationBossArena getBossArena() { return bossArena; }
+    public TribulationCinematic getCinematic() { return cinematic; }
 
     // ========================
     //  DOT PHA QUA NPC (KHOA LENH THEO WORLD)
@@ -309,6 +312,7 @@ public class BreakthroughManager implements Listener {
         CultivationStage stage = data.getStage();
         int waves = getWaveCount(stage);
         double difficulty = calculateDifficulty(data);
+        cinematic.startCinematic(player, stage, waves);
         plugin.getEffectEngine().breakthroughCharge(player, data);
         player.sendMessage(plugin.msg("auto_c64f9d2597"));
         player.sendMessage(plugin.msg("auto_9a357c49cc"));
@@ -393,6 +397,7 @@ public class BreakthroughManager implements Listener {
 
                 player.setHealth(newHp);
                 plugin.getEffectEngine().breakthroughTrialWave(player, wave, totalWaves);
+                cinematic.onWaveStrike(player, wave, totalWaves);
 
                 // Hoi phuc nho sau moi song (tao cam giac thu vi, khong bi thua mat)
                 double healAmount = maxHp * healPerWave;
@@ -425,6 +430,7 @@ public class BreakthroughManager implements Listener {
         data.setInBreakthroughTrial(false);
         CultivationStage oldStage = data.getStage();
         int oldRank = data.getRank();
+        cinematic.onSuccess(player, oldStage);
         // Tam Ma da duoc xu ly o Buoc 1 (Thien Dinh) nen di thang vao completeBreakthrough
         completeBreakthrough(player, data, oldStage, oldRank);
     }
@@ -489,6 +495,7 @@ public class BreakthroughManager implements Listener {
         data.setPendingBreakthrough(false);
         data.setPendingDotPha(false);
         data.setInThienDinh(false);
+        cinematic.onFail(player);
         int newRank = data.getRank() - 1;
         if (newRank < 1) {
             CultivationStage prev = data.getStage().prevStage();
@@ -522,6 +529,7 @@ public class BreakthroughManager implements Listener {
         if (data == null || !data.isInBreakthroughTrial()) return;
         if (player.getHealth() - event.getFinalDamage() <= 0) {
             data.setInBreakthroughTrial(false);
+            cinematic.cleanup(player.getUniqueId());
             plugin.getServer().getScheduler().runTaskLater(plugin,
                     () -> failTrial(player, data), 1L);
         }

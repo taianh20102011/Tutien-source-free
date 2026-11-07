@@ -11,7 +11,7 @@ Dự án này được phát hành theo giấy phép **Creative Commons Attribut
 
 * ✅ **ĐƯỢC PHÉP:** Tải xuống mã nguồn, biên dịch, sử dụng, tự do chỉnh sửa (custom) tính năng theo ý muốn cho bản thân và bạn bè trải nghiệm trên máy chủ của bạn.
 * ❌ **KHÔNG ĐƯỢC PHÉP (NON-COMMERCIAL):** Nghiêm cấm mọi hình thức thương mại hóa, mua bán lại mã nguồn/file JAR, hoặc phân phối lại nhằm mục đích thu lợi nhuận tài chính dưới bất kỳ hình thức nào.
-* 📌 **Ghi nhận nguồn:** Giữ nguyên thông tin tác giả gốc (TuTienDev / TuTienPlugin).
+* 📌 **Ghi nhận nguồn:** Giữ nguyên thông tin tác giả gốc (Hanita - Phạm Ngọc Tài Anh / TuTienPlugin).
 
 Xem chi tiết điều khoản pháp lý tại tệp [LICENSE](LICENSE).
 

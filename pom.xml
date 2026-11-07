@@ -12,6 +12,17 @@
     <name>TuTienPlugin</name>
     <description>Tu Tien Cultivation Plugin for Spigot/Paper</description>
 
+    <developers>
+        <developer>
+            <id>hanita</id>
+            <name>Hanita - Phạm Ngọc Tài Anh</name>
+            <roles>
+                <role>Lead Developer</role>
+                <role>Author</role>
+            </roles>
+        </developer>
+    </developers>
+
     <distributionManagement>
         <repository>
             <id>github</id>

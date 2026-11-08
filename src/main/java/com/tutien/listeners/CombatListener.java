@@ -63,6 +63,12 @@ public class CombatListener implements Listener {
                     atkData.setInvisible(false);
                     attacker.sendMessage(plugin.prefix() + "§5Tan cong tang hinh §dx2 sát thương!");
                 }
+                if (atkData.hasBuff("doc_amplify") && atkData.getClassType() == com.tutien.data.ClassType.DOC_TU) {
+                    mult *= 1.5;
+                }
+                if (atkData.hasBuff("hoa_amplify") && atkData.getClassType() == com.tutien.data.ClassType.HOA_TU) {
+                    mult *= 1.5;
+                }
                 event.setDamage(event.getDamage() * mult);
                 // Phabao passive ATK
                 double pbAtk = plugin.getPhaBaoManager().getPassiveAtkMult(attacker);
@@ -169,14 +175,14 @@ public class CombatListener implements Listener {
                 event.setDamage(event.getDamage() * 0.75);
             }
 
-            // Kim Cuong Bat Hoai
-            if (defData.hasBuff("kimcuong_invincible")) {
+            // Kim Cương Bất Hoại & Bạch Ngọc Bất Tử
+            if (defData.hasBuff("kimcuong_invincible") || defData.hasBuff("bachngoc_invincible")) {
                 event.setDamage(0);
                 return;
             }
 
-            // Dodge (Phong Tu)
-            if (defData.hasDodgeBuff() && defData.hasBuff("dodge") && random.nextDouble() < 0.70) {
+            // Dodge (Phong Tu: Né đòn thường 70% hoặc Né tuyệt đối 100%)
+            if (defData.hasBuff("phong_dodge_100") || (defData.hasDodgeBuff() && defData.hasBuff("dodge") && random.nextDouble() < 0.70)) {
                 event.setCancelled(true);
                 defender.getWorld().spawnParticle(Particle.CLOUD,
                     defender.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.1);
@@ -189,16 +195,27 @@ public class CombatListener implements Listener {
                 event.setDamage(event.getDamage() / defData.calculateDefenseMultiplier());
             }
 
-            // Phan Don
-            if (defData.isModuleEnabled("phan_don") && defData.hasCounterBuff() && defData.hasBuff("phandon")
-                    && event.getDamager() instanceof Player atk) {
-                double counterDmg = event.getDamage() * 2.0;
-                atk.damage(counterDmg, defender);
-                defData.setCounterBuff(false);
-                defData.removeBuff("phandon");
-                defender.getWorld().spawnParticle(Particle.CRIT,
-                    defender.getLocation().add(0, 1, 0), 15, 0.3, 0.3, 0.3, 0.2);
-                defender.sendMessage(plugin.prefix() + "§7⚡ Phản Đòn §c" + (int)counterDmg + " §7sát thương!");
+            // Phản Đòn: Thể Tu (phandon x2.0, vanlinh_reflect 50%) & Kiếm Tu (kiem_phan_reflect 30%)
+            if (event.getDamager() instanceof LivingEntity atk && !atk.equals(defender)) {
+                if (defData.isModuleEnabled("phan_don") && defData.hasCounterBuff() && defData.hasBuff("phandon")) {
+                    double counterDmg = event.getDamage() * 2.0;
+                    atk.damage(counterDmg, defender);
+                    defData.setCounterBuff(false);
+                    defData.removeBuff("phandon");
+                    defender.getWorld().spawnParticle(Particle.CRIT,
+                        defender.getLocation().add(0, 1, 0), 15, 0.3, 0.3, 0.3, 0.2);
+                    defender.sendMessage(plugin.prefix() + "§7⚡ Phản Đòn §c" + (int)counterDmg + " §7sát thương!");
+                } else if (defData.hasBuff("vanlinh_reflect")) {
+                    double counterDmg = event.getDamage() * 0.5;
+                    atk.damage(counterDmg, defender);
+                    defender.getWorld().spawnParticle(Particle.CRIT,
+                        defender.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.15);
+                } else if (defData.hasBuff("kiem_phan_reflect")) {
+                    double counterDmg = event.getDamage() * 0.3;
+                    atk.damage(counterDmg, defender);
+                    defender.getWorld().spawnParticle(Particle.ENCHANTED_HIT,
+                        defender.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.15);
+                }
             }
         }
     }
